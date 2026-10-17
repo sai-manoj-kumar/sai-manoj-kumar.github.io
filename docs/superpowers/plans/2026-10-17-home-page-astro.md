@@ -18,7 +18,7 @@ Every task's requirements include these. Values are copied from the spec and fro
 - Plain JavaScript and CSS only: no TypeScript, no CSS framework.
 - All page text lives in `src/data/site.js`. Illustration labels inside diagram components are also content and follow the same rules.
 - The name is exactly "Sai Manoj".
-- Contact is LinkedIn `https://www.linkedin.com/in/sai-manoj-kumar` and GitHub profile `https://github.com/sai-manoj-kumar` only. No email address, no resume or PDF link, no link to any individual GitHub repository.
+- Contact is LinkedIn `https://www.linkedin.com/in/sai-manoj-kumar` and GitHub profile `https://github.com/sai-manoj-kumar` only. LinkedIn is the one way to contact Sai. No email address appears anywhere on the site: not in the page text, a `mailto:` link, meta tags, structured data, the manifest, any text file such as `robots.txt`, or an image's embedded metadata. No resume or PDF link, no link to any individual GitHub repository.
 - Experience comes from the resume source. PhonePe is not shown. No dates or durations are shown for roles.
 - Never publish internal codenames (for example "Gaap", "restli"), or the duration of the rate-limit incident. The "100 million events a day" figure belongs to the three webhook delivery services; the "1 billion requests a day" figure belongs to the API Gateway; they are never merged.
 - Years: "about nine years of backend experience". Never state "12+", "more than a decade" or "a decade of".
@@ -1702,7 +1702,7 @@ git commit -m "Add tech stack, about, connect and footer"
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { execSync } from 'node:child_process';
-import { existsSync, readdirSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { doc, html } from './helpers.js';
 
 const text = doc.body.textContent;
@@ -1735,6 +1735,24 @@ test('no email, resume or repository links', () => {
   assert.doesNotMatch(html, /mailto:/i);
   assert.doesNotMatch(html, /\.pdf|resume/i);
   assert.doesNotMatch(html, /github\.com\/sai-manoj-kumar\/[A-Za-z]/);
+});
+
+test('no email address in any file the site publishes', () => {
+  const dist = new URL('../../dist/', import.meta.url);
+  const files = readdirSync(dist, { recursive: true }).filter((f) => !f.endsWith('.woff2') && /\.[a-z0-9]+$|_headers$/i.test(f));
+  assert.ok(files.length >= 8, `scanned ${files.length} files, expected the whole build`);
+  for (const f of files) {
+    // latin1 reads any byte sequence, so images are scanned for embedded EXIF/XMP too
+    const body = readFileSync(new URL(f, dist), 'latin1');
+    assert.doesNotMatch(body, /mailto:/i, `mailto: in ${f}`);
+    assert.doesNotMatch(body, /[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}/, `email address in ${f}`);
+  }
+});
+
+test('LinkedIn is the contact route, and it is a profile link', () => {
+  const links = [...doc.querySelectorAll('a[href*="linkedin.com"]')].map((a) => a.getAttribute('href'));
+  assert.ok(links.length >= 2, 'LinkedIn linked from the hero card and the connect section');
+  for (const href of links) assert.equal(href, 'https://www.linkedin.com/in/sai-manoj-kumar');
 });
 
 test('forbidden terms never reach the page', () => {

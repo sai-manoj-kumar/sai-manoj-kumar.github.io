@@ -80,8 +80,9 @@ a working limit. Without JavaScript the button is disabled and a sentence explai
 These come from Sai's instructions and the resume source. They apply to every line on the page.
 
 - The name is "Sai Manoj".
-- Contact is LinkedIn and GitHub **profile** links only. No email address, no resume download, no links to
-  individual GitHub repositories.
+- Contact is LinkedIn and GitHub **profile** links only; LinkedIn is the one way to contact Sai. No email address
+  appears anywhere on the site (page text, `mailto:` links, meta tags, structured data, the manifest, text files,
+  image metadata). No resume download, no links to individual GitHub repositories.
 - Experience is taken from `full_experience.md`. PhonePe is left out on purpose (it was iOS-only work). Role dates
   are not shown.
 - Internal codenames and sensitive details are never published (for example the internal framework names and the
