@@ -2200,10 +2200,10 @@ git switch astro
 
 - [ ] **Rollback (any time before step 5; and after it, via `jekyll-rollback`)**
 
-1. Cloudflare, Pages project, Custom domains: remove `saimanoj.com` and `www.saimanoj.com`.
-2. Cloudflare DNS for saimanoj.com, grey cloud (DNS only): add four `A` records for the apex to `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`, and a `CNAME` for `www` to `sai-manoj-kumar.github.io`.
-3. GitHub repository settings, Pages: source branch `jekyll-rollback`, folder `/ (root)`, custom domain `saimanoj.com`, enforce HTTPS.
-4. Wait for the certificate, then `curl -sI https://saimanoj.com`: the response is the old Jekyll site (`server: GitHub.com`).
+1. GitHub repository settings, Pages: source branch `jekyll-rollback`, folder `/ (root)`, custom domain `saimanoj.com`. Do this first, so the domain is claimed in the repository before any DNS record points at GitHub (a record that points at GitHub Pages for a domain no repository claims can be taken over by someone else's Pages site). GitHub will warn that DNS is not yet configured; that is expected.
+2. Cloudflare, Pages project, Custom domains: remove `saimanoj.com` and `www.saimanoj.com`.
+3. Cloudflare DNS for saimanoj.com, grey cloud (DNS only): add four `A` records for the apex to `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`, and a `CNAME` for `www` to `sai-manoj-kumar.github.io`.
+4. GitHub repository settings, Pages: enforce HTTPS once the certificate is ready, then `curl -sI https://saimanoj.com`: the response is the old Jekyll site (`server: GitHub.com`).
 
 ---
 
