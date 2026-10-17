@@ -2218,3 +2218,26 @@ git switch astro
 **Type and name consistency.** `createBucket`, `describeDenial`, `tryTake`, `available`, `capacity` (Task 3) match their use in `limiter.js` (Task 7). Element ids `dispenser`, `take`, `tickets`, `bucket-label`, `fallback` (Task 7) match the Playwright selectors (Task 9). `site` keys in Task 2 match every component. `helpers.js` exports `html` and `doc` (Task 5) as imported by all later dist tests.
 
 **Review Focus coverage.** 1 and 2: Task 9 (`visitors.spec.js`) plus Task 7's static fallback test. 3: Task 9 (`demo.spec.js`). 4: Task 9. 5: Task 4 (parse failure test and the manual failure demonstration). 6: Task 3 (clock moves backwards).
+
+---
+
+## Execution notes (as built)
+
+Tasks 1 to 11 were executed on the `astro` branch. The code above is the plan as written; where the build differs, the difference was found by a test or a real run and is listed here. Tasks 12 and 13 have not been run: they need Sai's approval for each push, tag and dashboard change.
+
+- **Task 3, `bucket.js`:** `refill()` restarts the refill clock when the system clock moves backwards (`if (t < last) last = t`). The plan's version passed its own clock-backwards test but would show "Try again in 3602s" after a one-hour jump. Test added.
+- **Task 4, `fetch-fonts.mjs`:** creates `src/styles/` itself (it did not exist until Task 5, so the first real run failed with ENOENT), and reports an unreachable Fontshare as "Could not reach Fontshare ... the build stops here" instead of "fetch failed".
+- **Task 5, `.gitignore`:** `/dist/`, not `dist/`. The unanchored rule also ignored `tests/dist/`.
+- **Task 6, `hero.test.js`:** the images test asserts exactly two images, so it cannot pass on an empty hero.
+- **Task 9, browser tests:** the demo spec turns smooth scrolling off for the test, uses Playwright's fake clock so the countdown values (2s, 1s, now) are exact, and mashes with `force` clicks. `playwright.config.js` serves `dist/` with `scripts/serve-dist.mjs` (new) instead of `npm run build && npm run preview`: `astro preview` leaves a detached child behind, and with `reuseExistingServer` a later run silently tested a stale build. `npm run test:e2e` now builds first. The email scan names the files it must cover (including `og.jpg` and both photos) instead of counting files.
+- **Task 10:** `assets.test.js` passes file paths to `sharp` (it rejects `URL` objects). Hero JPEG quality is 68: the plan's fallback of 72 was still 477 KB against the 450 KB budget.
+- **Task 11, quality gates:** Lighthouse was pinned to 13.5.0. Performance was 86 because of the hero photo's weight, not its markup, so phones (`max-width: 860px`, the stylesheet's own breakpoint) get `hero-phone.jpg`, an 800 x 1281 centre crop at the source's resolution (121 KB instead of 437 KB). It looks the same on a phone as the full frame; a downscaled 800 px version was visibly soft. Final scores, three runs: performance 97, accessibility 100, best practices 100, SEO 100. The design lint is 0 FAIL, 0 WARN; the inspector shows only the accepted `[few-pictures]` FAIL and the `[no-footage]` and `[pinned-over-picture]` WARNs.
+- **Final review, `global.css`:** the "Sai Manoj / Connect" stub is `visibility: hidden` whenever it is not shown. It was hidden with opacity and `pointer-events` only, so tabbing to the end of the page put focus on an invisible link. Test added.
+- **Task 13, rollback:** GitHub Pages claims the domain first, then Cloudflare DNS is pointed at GitHub, so no record points at GitHub Pages for a domain no repository claims.
+
+### Known follow-ups (minor, not fixed)
+
+- Some headings and labels live in the components rather than in `src/data/site.js` ("Experience", "Tech stack", the stub's "Connect", the demo's buttons and the diagram labels). The rendered page is still covered by the rule tests.
+- If JavaScript is on but the demo's script fails to load, the "needs JavaScript" note is hidden and the button stays disabled with no explanation.
+- There is no `404` page. Cloudflare Pages answers unknown paths with the home page (status 200) when a project has no `404.html`, so old Jekyll URLs will show the home page. Check on the preview in Task 12; adding a `src/pages/404.astro` is a small change.
+- `parseFontCss` accepts any `https:` font URL from Fontshare's CSS. Restricting it to `cdn.fontshare.com` would make a changed or tampered CSS fail the build.
