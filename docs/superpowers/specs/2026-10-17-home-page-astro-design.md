@@ -108,13 +108,15 @@ Astro, static output only (`output: 'static'`). No server code, no adapter, no d
     data/site.js               name, links, facts, roles, stack, about text (the only file Sai edits for content)
     scripts/limiter.js         the token bucket and the 429 countdown
     scripts/motion.js          scroll choreography, reveals, stub visibility
-    styles/tokens.css  base.css  sections.css
+    styles/global.css          the prototype stylesheet, ported unchanged (one file: it changes as a whole)
   public/
     fonts/                     General Sans woff2, fetched at build time and git-ignored (see section 5)
     favicon.svg  og.jpg  portrait.jpg  hero.jpg
   scripts/fetch-fonts.mjs      downloads the official, unmodified General Sans files before the build
   og/og-card.html              source of the share image (rendered once to public/og.jpg)
-  docs/superpowers/specs/      this document
+  design/prototype/            frozen snapshot of the approved prototype (reference only, not built)
+  tests/                       unit, built-HTML and browser tests
+  docs/superpowers/            this spec and the implementation plan
 ```
 
 Decisions:
@@ -151,7 +153,8 @@ Cloudflare Pages, connected to the GitHub repository (build command `npm run bui
 **Branches.**
 
 - `master` stays the Jekyll site until cutover. Before any change to it, the current commit is tagged
-  `jekyll-final`.
+  `jekyll-final`, and a `jekyll-rollback` branch is created at the same commit so GitHub Pages can be pointed back
+  at it quickly.
 - `astro` is where the work happens.
 - The Pages project's **production branch is `release`**, a branch that does not exist until cutover. This keeps
   every `astro` build a preview deployment.
@@ -166,12 +169,13 @@ one-time code). The preview address is not public. Sai reviews the site there on
    same Cloudflare account, Cloudflare updates the DNS records; the old records that point at GitHub Pages are
    replaced.
 3. Check HTTPS, the apex and `www` addresses, and the page itself.
-4. Merge `astro` into `master` and turn GitHub Pages off in the repository settings (otherwise GitHub would try to
-   build a Jekyll site that no longer exists). Delete `CNAME`.
+4. After a day of watching: turn GitHub Pages off in the repository settings (otherwise GitHub would try to build
+   a Jekyll site that no longer exists), merge `astro` into `master`, make `master` the Pages production branch and
+   delete `release`. The `jekyll-final` tag and a `jekyll-rollback` branch stay for good.
 
 **Rollback (minutes).** In Cloudflare, remove the custom domains from Pages and restore the GitHub Pages DNS records
-(the four GitHub `A` records for the apex and a `CNAME` for `www`); re-enable GitHub Pages from the `jekyll-final`
-tag. The Jekyll site is never deleted, only retired.
+(the four GitHub `A` records for the apex and a `CNAME` for `www`); re-enable GitHub Pages from the
+`jekyll-rollback` branch. The Jekyll site is never deleted, only retired.
 
 **Old addresses.** The only old page is the 2019 placeholder post, which is dropped. The apex `/` and `/index.html`
 continue to work.
