@@ -50,7 +50,8 @@ Sections, in order:
 
 1. **Hero card.** "Sai Manoj / Backend / Engineer". Facts: Senior software engineer, India, Java, Python, C#. One
    sentence: "Services on public cloud. Tools for AI agents." Portrait. A "Connect on LinkedIn" button and a GitHub
-   profile link. Behind it, one modern photo of a data-centre aisle in greyscale with the teal tint.
+   profile link. Behind it, one modern photo of a data-centre aisle in greyscale with the teal tint. The card
+   carries no photo credit; the credit is in the footer only.
 2. **Experience.** Four stacked folders. The tab names the company; the first line of the text names the project;
    the next line is the job title. There are no dates.
    - LinkedIn: Webhooks Platform, Senior Software Engineer. Holds the live ticket demo.
@@ -109,8 +110,10 @@ Astro, static output only (`output: 'static'`). No server code, no adapter, no d
     scripts/motion.js          scroll choreography, reveals, stub visibility
     styles/tokens.css  base.css  sections.css
   public/
-    fonts/                     self-hosted General Sans (woff2)
+    fonts/                     General Sans woff2, fetched at build time and git-ignored (see section 5)
     favicon.svg  og.jpg  portrait.jpg  hero.jpg
+  scripts/fetch-fonts.mjs      downloads the official, unmodified General Sans files before the build
+  og/og-card.html              source of the share image (rendered once to public/og.jpg)
   docs/superpowers/specs/      this document
 ```
 
@@ -120,13 +123,23 @@ Decisions:
   split into the files above. Scripts are loaded once on the page, deferred.
 - **Content in one data file.** Components take their text from `src/data/site.js`, so a change to a job
   description is one edit, and the rules in section 4 are easy to review in one place.
-- **Fonts self-hosted** from `public/fonts` with `font-display: swap`, so the page makes no third-party request.
-  General Sans comes from Fontshare; the licence terms for self-hosting must be confirmed before launch (open
-  question 1).
+- **Fonts self-hosted, not committed.** General Sans is licensed under the ITF Free Font License (Fontshare, version
+  2.0), which was checked on 2026-10-17. It allows free commercial use and says self-hosting on your own website
+  with `@font-face` is permitted, with no attribution required. Two limits apply: the font files may not be
+  modified (no subsetting or format conversion), and they may not be redistributed, including through publicly
+  accessible servers. This repository is public, so the font files are **not committed**. A prebuild step
+  (`scripts/fetch-fonts.mjs`) downloads the official WOFF2 files from Fontshare and writes them to `public/fonts`
+  (git-ignored). They are served unchanged from saimanoj.com with `font-display: swap`, so visitors make no
+  third-party font request. If the download fails, the build fails loudly. The licence text is re-read when the
+  plan is executed, in case the terms changed.
 - **Images.** Two photographs only: the hero aisle photo and the portrait. They are resized and served as JPEG with
   width and height attributes. The hero photo is CC BY-SA 4.0 (PiDatacenters, via Wikimedia Commons) and is credited
   in the footer; it is shown tinted in CSS and no altered file is distributed.
 - **Head and sharing.** Title, description, canonical URL, Open Graph and Twitter tags, a favicon, and a share image.
+  The share image is a name card with a small portrait: 1200 x 630, apricot ground, teal ink, "Sai Manoj" and
+  "Senior software engineer" set in General Sans, the small portrait beside the name. It is rendered once from
+  `og/og-card.html` to `public/og.jpg` and re-rendered only when the name or title changes. (Images made with the
+  font are permitted by the licence.)
 - **Accessibility.** Skip link, one `h1`, real headings and landmarks, visible focus, alt text, `aria-live` on the
   demo's ticket list with the countdown excluded from announcements, 4.5:1 text contrast, no horizontal scroll at
   390 px.
@@ -175,6 +188,9 @@ Before the preview is shown and again before cutover:
 - Reduced motion on, and JavaScript off: the page reads in full.
 - Lighthouse on mobile: performance, accessibility, best practices and SEO each at 95 or better, as a target.
 - Links verified: LinkedIn, GitHub, and the photo credit.
+- No font files are tracked by git (`git ls-files | grep -i woff` returns nothing), and the served font files match
+  the ones Fontshare provides.
+- The share image previews correctly (name card with the small portrait) in a link-preview check.
 
 ## 8. Not in scope
 
@@ -186,13 +202,18 @@ address or resume download (Sai's decision), and any server-side feature.
 | Risk | Mitigation |
 |---|---|
 | Cutover breaks the domain | Preview first, `jekyll-final` tag, a written rollback of two DNS steps |
-| Font licence does not allow self-hosting | Confirm before launch; fallback is Fontshare's CDN link or another open font |
+| Font files end up public in the repository | They are git-ignored and fetched at build time; the licence forbids redistributing them |
+| Fontshare download unavailable at build time | The build stops with a clear error; fallback is Fontshare's own CSS link, which the licence allows |
 | The CC BY-SA photo's share-alike terms | The credit is in the footer and the tint is applied in CSS only; swap for a CC0 photo if preferred |
 | Content drifts from the truth | All text lives in `site.js` and is checked against `full_experience.md` and section 4 |
 | Page too busy on small phones | Folders become non-sticky and the stub shrinks below 860 px, as in the prototype |
 
-## 10. Open questions
+## 10. Decisions settled in review
 
-1. Is self-hosting General Sans allowed by its licence? (Check the Fontshare terms when the font is downloaded.)
-2. Should the share image (`og.jpg`) be the portrait or a card-style image with the name?
-3. Keep the "Photo: PiDatacenters" credit on the hero card as well as in the footer, or footer only?
+- Private preview behind Cloudflare Access (no public preview link).
+- Fonts: self-hosting is allowed by the licence; the files are fetched at build time and kept out of the public
+  repository (section 5).
+- Share image: a small portrait with a name card.
+- Photo credit: in the footer only.
+
+No open questions remain.
