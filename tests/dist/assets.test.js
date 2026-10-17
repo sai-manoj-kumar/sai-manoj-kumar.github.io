@@ -30,3 +30,10 @@ test('cache and security headers are published', () => {
   assert.match(headers, /X-Content-Type-Options: nosniff/);
   assert.match(headers, /\/_astro\/\*/);
 });
+
+test('the phone crop of the hero is sharp but light', async () => {
+  const meta = await sharp(fileURLToPath(dist('images/hero-phone.jpg'))).metadata();
+  assert.equal(meta.width, 800);
+  assert.equal(meta.height, 1281);
+  assert.ok(statSync(dist('images/hero-phone.jpg')).size < 200_000, 'phone hero under 200 KB');
+});

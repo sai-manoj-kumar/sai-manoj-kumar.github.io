@@ -7,3 +7,4 @@ playwright-report/
 # General Sans is not redistributable: fetched at build time, never committed
 public/fonts/
 src/styles/fonts.generated.css
+.taste-skill/

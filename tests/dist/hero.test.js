@@ -36,3 +36,11 @@ test('both hero images have alt text and dimensions', () => {
 test('the stub points at the connect section', () => {
   assert.ok(doc.querySelector('a#stub[href="#connect"]'));
 });
+
+test('phones get a portrait crop of the hero photo, everyone else the full frame', () => {
+  const source = doc.querySelector('header.hero picture source');
+  assert.ok(source, 'a <source> inside a <picture>');
+  assert.equal(source.getAttribute('media'), '(max-width: 860px)');
+  assert.equal(source.getAttribute('srcset'), '/images/hero-phone.jpg');
+  assert.equal(doc.querySelector('header.hero picture img.room').getAttribute('src'), '/images/hero.jpg');
+});
