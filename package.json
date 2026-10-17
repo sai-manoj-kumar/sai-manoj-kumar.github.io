@@ -5,6 +5,9 @@
   "version": "1.0.0",
   "engines": { "node": ">=22" },
   "scripts": {
+    "fonts": "node scripts/fetch-fonts.mjs",
+    "predev": "npm run fonts",
+    "prebuild": "npm run fonts",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
