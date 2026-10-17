@@ -13,7 +13,7 @@
     "preview": "astro preview",
     "test": "node --test \"tests/unit/*.test.js\"",
     "test:dist": "node --test \"tests/dist/*.test.js\"",
-    "test:e2e": "playwright test"
+    "test:e2e": "npm run build && playwright test"
   },
   "dependencies": {
     "astro": "7.4.0"
