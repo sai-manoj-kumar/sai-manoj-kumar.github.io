@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sai Manoj</title>
+<meta name="description" content="Sai Manoj is a senior software engineer in India. Backend services on public cloud, and tools for AI coding agents.">
+<meta property="og:title" content="Sai Manoj">
+<meta property="og:description" content="Senior software engineer. Backend services on public cloud, and tools for AI coding agents.">
+<meta property="og:image" content="https://saimanoj.com/assets/portrait.jpg">
+<script>document.documentElement.classList.add('js');</script>
+<link rel="preconnect" href="https://api.fontshare.com">
+<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#work">Skip to experience</a>
+
+<!-- Hero: the card over a dim room -->
+<header class="hero" id="top">
+  <div class="stage">
+    <img class="room" src="assets/datacenter.jpg" width="1920" height="1281"
+         alt="A long aisle between white server racks in a data center in Amravati, India">
+  </div>
+
+  <div class="card" id="card">
+   <div class="card-inner" id="card-inner">
+    <h1 class="title rv" style="--d:0">
+      <span>Sai Manoj</span><span>Backend</span><span>Engineer</span>
+    </h1>
+    <div class="card-body">
+      <div class="facts">
+        <p class="rv" style="--d:1">Senior software engineer</p>
+        <p class="rv" style="--d:2">India</p>
+        <p class="rv" style="--d:3">Java, Python, C#</p>
+        <p class="sentence rv" style="--d:4">Services on public cloud. Tools for AI agents.</p>
+      </div>
+      <figure class="plate rv" style="--d:3">
+        <img src="assets/portrait.jpg" width="800" height="800" alt="Portrait of Sai Manoj">
+      </figure>
+    </div>
+    <div class="card-foot rv" style="--d:5">
+      <a class="btn" href="https://www.linkedin.com/in/sai-manoj-kumar">Connect on LinkedIn</a>
+      <a class="textlink" href="https://github.com/sai-manoj-kumar">GitHub</a>
+    </div>
+   </div>
+  </div>
+</header>
+
+<main>
+  <!-- Experience: stacked folders, one per role -->
+  <section class="work" id="work" aria-labelledby="work-h">
+    <h2 id="work-h" class="work-head">Experience</h2>
+
+    <div class="folders">
+      <article class="folder tone-light" style="--i:0" id="limiter">
+        <div class="tabs"><span class="tab lead">LinkedIn</span></div>
+        <div class="folder-body">
+          <div class="pic dispenser rv" id="dispenser">
+            <div class="bucket" aria-hidden="true">
+              <span class="chip"></span><span class="chip"></span><span class="chip"></span><span class="chip"></span><span class="chip"></span>
+            </div>
+            <p class="bucket-label" id="bucket-label">5 of 5 tokens left</p>
+            <button class="btn" type="button" id="take" disabled>Take a ticket</button>
+            <ol class="tickets" id="tickets" aria-live="polite"></ol>
+            <p class="fallback" id="fallback">This demo needs JavaScript. It lets you take five tickets, then answers 429 Too Many Requests until a new token arrives.</p>
+          </div>
+          <div class="text rv" style="--d:1">
+            <h3>Webhooks Platform</h3>
+            <p class="role">Senior Software Engineer</p>
+            <p>Sole owner and the DRI engineer for three webhook delivery services that carry about 100 million events a day. I also maintain the authentication middleware on the API Gateway, which handles about 1 billion requests a day.</p>
+            <p>Designed a new retry mechanism that cut failed deliveries by 30%, and moved webhook processing to a new framework that cut latency by 25%.</p>
+            <p>Built a monitoring dashboard and debugging tools for on-call, and shared GenAI skills and plugins that speed up root-cause analysis across teams.</p>
+            <p class="note">The demo is a token bucket, the idea behind rate limiting at a gateway: five tokens, and a new one every two seconds.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="folder tone-dark" style="--i:1">
+        <div class="tabs"><span class="tab lead">Microsoft</span></div>
+        <div class="folder-body">
+          <div class="pic panel paper stat rv">
+            <p class="panel-title">Memory use, before and after</p>
+            <div class="mem" role="img" aria-label="Memory use before and after, drawn to scale: 100 before, 70 after">
+              <p class="mem-row"><span>Before</span><i style="--w:100%"></i></p>
+              <p class="mem-row"><span>After</span><i style="--w:70%"></i></p>
+            </div>
+            <p class="panel-note">Drawn to scale: 30% lower.</p>
+          </div>
+          <div class="text rv" style="--d:1">
+            <h3>Defender</h3>
+            <p class="role">Software Engineer II</p>
+            <p>Led the integration of a partner VPN into Microsoft Defender, a mobile security app, and cut its memory use by 30% to meet product requirements.</p>
+            <p>Built telemetry and crash reporting for production monitoring, and an on-prem lab to validate anti-phishing detection. Wrote cross-platform test automation in Python and bash for weekly regression runs, and mentored five new hires.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="folder tone-light" style="--i:2">
+        <div class="tabs"><span class="tab lead">Microsoft</span></div>
+        <div class="folder-body">
+          <div class="pic panel ink rewrite rv">
+            <p class="panel-title">A header rewrite, illustrated</p>
+            <ol class="steps">
+              <li class="step" style="--k:0"><span>Backend sends</span><span>Location: http://backend-1.internal/cart</span></li>
+              <li class="step rule" style="--k:1"><span>Rule</span><span>Replace the backend host with the public host</span></li>
+              <li class="step" style="--k:2"><span>Client receives</span><span>Location: https://shop.example.com/cart</span></li>
+            </ol>
+            <p class="panel-note">Made-up host names.</p>
+          </div>
+          <div class="text rv" style="--d:1">
+            <h3>Application Gateway</h3>
+            <p class="role">Software Engineer II</p>
+            <p>Application Gateway is a web traffic load balancer. I led the Header Rewrite feature, which lets customers change header values as traffic is routed. I defined the public API contract, took it through design approval, and built the backend logic to run rewrites at scale on a busy gateway.</p>
+            <p>Took on-call rotations, wrote troubleshooting guides, and mentored four new teammates.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="folder tone-dark" style="--i:3">
+        <div class="tabs"><span class="tab lead">Microsoft</span></div>
+        <div class="folder-body">
+          <div class="pic panel paper trace rv">
+            <p class="panel-title">A traceroute, illustrated</p>
+            <ol class="hops">
+              <li class="hop" style="--k:0;--w:6%"><span>Local router</span><i></i><b>2 ms</b></li>
+              <li class="hop" style="--k:1;--w:29%"><span>Network edge</span><i></i><b>9 ms</b></li>
+              <li class="hop" style="--k:2;--w:58%"><span>Transit</span><i></i><b>18 ms</b></li>
+              <li class="hop" style="--k:3;--w:100%"><span>Destination</span><i></i><b>31 ms</b></li>
+            </ol>
+            <p class="panel-note">Made-up timings.</p>
+          </div>
+          <div class="text rv" style="--d:1">
+            <h3>Network Monitoring</h3>
+            <p class="role">Software Engineer</p>
+            <p>Wrote the agent for Service Connectivity Monitor in C and C++. It sends pings and traceroutes to check network connectivity and path health. I drove the agent's design and set up its unit and end-to-end tests.</p>
+            <p>Built the backend for ExpressRoute monitoring with microservices and MapReduce, to process large volumes of network path data, and did the relational data modeling.</p>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- Stack: giant word, filled bars -->
+  <section class="stack" id="stack" aria-labelledby="stack-h">
+   <div class="stack-wrap">
+    <div class="stack-col">
+      <h2 id="stack-h" class="giant rv">Tech stack</h2>
+      <div class="bars">
+        <details class="bar rv" style="--d:1" open>
+          <summary>Backend</summary>
+          <ul class="items">
+            <li><span>Java, Python, C#</span><span>The languages I work in</span></li>
+            <li><span>C and C++</span><span>A network monitoring agent at Microsoft</span></li>
+            <li><span>Kafka</span><span>The API Gateway and the webhooks platform at LinkedIn</span></li>
+            <li><span>Microservices, MapReduce</span><span>ExpressRoute monitoring at Microsoft</span></li>
+          </ul>
+        </details>
+        <details class="bar rv" style="--d:2" open>
+          <summary>Cloud</summary>
+          <ul class="items">
+            <li><span>Azure, AWS, Cloudflare</span><span>Where I deploy and run services</span></li>
+            <li><span>GitHub Actions</span><span>CI/CD pipelines I write and fix</span></li>
+            <li><span>Load balancing</span><span>Application Gateway at Microsoft</span></li>
+          </ul>
+        </details>
+        <details class="bar rv" style="--d:3" open>
+          <summary>Data</summary>
+          <ul class="items">
+            <li><span>PostgreSQL</span><span>Relational databases and data modeling</span></li>
+            <li><span>Redis</span><span>In-memory data store</span></li>
+            <li><span>DynamoDB</span><span>NoSQL database</span></li>
+          </ul>
+        </details>
+        <details class="bar rv" style="--d:4" open>
+          <summary>AI agent tooling</summary>
+          <ul class="items">
+            <li><span>GenAI skills and plugins</span><span>Root-cause analysis and alert correlation for webhook workflows</span></li>
+          </ul>
+        </details>
+      </div>
+    </div>
+   </div>
+  </section>
+
+  <!-- About: the letter -->
+  <section class="about" id="about" aria-label="About Sai Manoj">
+    <div class="sheet rv">
+      <img class="mini" src="assets/portrait.jpg" width="88" height="88" alt="Sai Manoj">
+      <p>I'm a senior software engineer with about nine years of backend experience, most of it on services that run on public cloud and handle a lot of traffic.</p>
+      <p>I've worked on a web traffic load balancer, network monitoring and a webhooks platform. Along the way I've mentored new hires and interviewed candidates.</p>
+      <p>These days I'm building GenAI skills and plugins that help engineers debug faster.</p>
+      <p>If you're hiring, or building something and want another engineer to talk to, <mark><a href="https://www.linkedin.com/in/sai-manoj-kumar">say hello on LinkedIn</a></mark>.</p>
+      <p class="sign"><span class="name">Sai Manoj</span><span class="role">Senior software engineer</span></p>
+      <div class="scallops" aria-hidden="true"></div>
+    </div>
+    <div class="tear rv" style="--d:1">
+      <span class="dots" aria-hidden="true"></span>
+      <a class="btn on-light" href="https://www.linkedin.com/in/sai-manoj-kumar">Say hello on LinkedIn</a>
+    </div>
+  </section>
+
+  <!-- Connect: the coupon -->
+  <section class="connect" id="connect" aria-labelledby="connect-h">
+    <div class="coupon rv">
+      <span class="notch top" aria-hidden="true"></span>
+      <span class="notch bottom" aria-hidden="true"></span>
+      <div class="coupon-left">
+        <h2 id="connect-h" class="coupon-head">Connect with me</h2>
+        <p>Hiring, building something, or just curious? A message is the easiest way in.</p>
+      </div>
+      <div class="coupon-right">
+        <a class="bar-link primary" href="https://www.linkedin.com/in/sai-manoj-kumar">
+          <svg width="22" height="22" viewBox="0 0 19 18" fill="currentColor" aria-hidden="true"><path d="M3.94 2A2 2 0 1 1 2 0a2 2 0 0 1 1.94 2zM4 5.48H0V18h4zm6.32 0H6.34V18h3.94v-6.57c0-3.66 4.77-4 4.77 0V18H19v-7.93c0-6.17-7.06-5.94-8.72-2.91z"/></svg>
+          Message me on LinkedIn
+        </a>
+        <a class="bar-link" href="https://github.com/sai-manoj-kumar">
+          <svg width="24" height="24" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          Find me on GitHub
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Footer -->
+<footer class="back">
+  <div class="back-row">
+    <p>© 2026 Sai Manoj</p>
+    <p><a href="https://www.linkedin.com/in/sai-manoj-kumar">linkedin.com/in/sai-manoj-kumar</a></p>
+    <p><a href="https://github.com/sai-manoj-kumar">github.com/sai-manoj-kumar</a></p>
+  </div>
+  <p class="credits">Photo: <a href="https://commons.wikimedia.org/wiki/File:Racks_Amravati_Data_Center.jpg">“Racks Amravati Data Center”</a> by PiDatacenters, <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>, via Wikimedia Commons. Shown in greyscale and tinted.</p>
+</footer>
+
+<!-- The stub: the hero card, filed -->
+<a class="stub" id="stub" href="#connect" aria-label="Sai Manoj: jump to connect">
+  <span class="stub-name">Sai Manoj</span>
+  <span class="stub-act">Connect</span>
+</a>
+
+<script src="app.js"></script>
+</body>
+</html>
