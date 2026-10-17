@@ -124,10 +124,11 @@ html.anim .card {
   position: fixed; left: var(--m); bottom: var(--m); z-index: 30;
   display: none; text-decoration: none;
   opacity: 0; pointer-events: none; transform: translateY(14px);
-  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+  visibility: hidden; /* while it is not shown it is also out of the tab order and the accessibility tree */
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease), visibility 0s linear 0.3s;
 }
 html.anim .stub { display: flex; }
-.stub.on { opacity: 1; pointer-events: auto; transform: none; }
+.stub.on { opacity: 1; pointer-events: auto; transform: none; visibility: visible; transition-delay: 0s; }
 .stub-name, .stub-act { padding: 14px 18px; font-weight: 700; line-height: 1; }
 .stub-name { background: var(--field); color: var(--field-ink); }
 .stub-act { background: var(--bg); color: var(--ink); font-weight: 500; }

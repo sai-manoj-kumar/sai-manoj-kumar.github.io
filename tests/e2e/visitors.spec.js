@@ -38,3 +38,26 @@ test.describe('A 320 px phone (Review Focus 4)', () => {
     expect(overflow).toBeLessThanOrEqual(0);
   });
 });
+
+test.describe('Keyboard', () => {
+  test('tabbing through the page never lands on an invisible element', async ({ page }) => {
+    await page.goto('/');
+    await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
+    const landed = [];
+    for (let i = 0; i < 40; i += 1) {
+      await page.keyboard.press('Tab');
+      landed.push(
+        await page.evaluate(() => {
+          const el = document.activeElement;
+          const style = getComputedStyle(el);
+          const box = el.getBoundingClientRect();
+          const name = `${el.tagName.toLowerCase()}${el.id ? `#${el.id}` : ''}`;
+          const invisible = style.visibility === 'hidden' || Number(style.opacity) === 0 || box.width === 0 || box.height === 0;
+          return { name, invisible };
+        }),
+      );
+    }
+    expect(landed.filter((e) => e.invisible).map((e) => e.name)).toEqual([]);
+    expect(landed.map((e) => e.name)).toContain('button#take'); // the walk really did reach the demo
+  });
+});
