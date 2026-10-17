@@ -3,7 +3,7 @@ import '../styles/fonts.generated.css';
 import '../styles/global.css';
 import { site } from '../data/site.js';
 
-const { title = site.title, description = site.description } = Astro.props;
+const { title = site.title, description = site.description, notFound = false } = Astro.props;
 const canonical = new URL('/', site.url).href;
 const ogImage = new URL('/og.jpg', site.url).href;
 ---
@@ -14,11 +14,11 @@ const ogImage = new URL('/og.jpg', site.url).href;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    {notFound ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={site.shareDescription} />
-    <meta property="og:url" content={canonical} />
+    {!notFound && <meta property="og:url" content={canonical} />}
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -33,7 +33,7 @@ const ogImage = new URL('/og.jpg', site.url).href;
     <script is:inline>document.documentElement.classList.add('js');</script>
   </head>
   <body>
-    <a class="skip" href="#work">Skip to experience</a>
+    {!notFound && <a class="skip" href="#work">Skip to experience</a>}
     <slot />
   </body>
 </html>

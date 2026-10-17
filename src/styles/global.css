@@ -346,3 +346,7 @@ html.js .fallback { display: none; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* 404 --------------------------------------------------------------- */
+.lost { min-height: 100svh; max-width: 40rem; margin-inline: auto; padding: var(--m); display: grid; align-content: center; justify-items: start; gap: 1.25rem; }
+.lost h1 { font-size: var(--step-head); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; }
