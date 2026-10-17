@@ -39,7 +39,7 @@ test('no email, resume or repository links', () => {
 test('no email address in any file the site publishes', () => {
   const dist = new URL('../../dist/', import.meta.url);
   const files = readdirSync(dist, { recursive: true }).filter((f) => !f.endsWith('.woff2') && /\.[a-z0-9]+$|_headers$/i.test(f));
-  for (const required of ['index.html', 'robots.txt', 'images/hero.jpg', 'images/portrait.jpg']) {
+  for (const required of ['index.html', 'robots.txt', 'og.jpg', 'images/hero.jpg', 'images/portrait.jpg']) {
     assert.ok(files.includes(required), `${required} must be part of the scan (found ${files.length} files)`);
   }
   for (const f of files) {
