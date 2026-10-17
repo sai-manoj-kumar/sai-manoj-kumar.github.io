@@ -1,0 +1,16 @@
+---
+const { role, index } = Astro.props;
+const id = role.visual === 'ticketDemo' ? 'limiter' : undefined;
+---
+<article class={`folder tone-${role.tone}`} style={`--i:${index}`} id={id}>
+  <div class="tabs"><span class="tab lead">{role.company}</span></div>
+  <div class="folder-body">
+    <slot />
+    <div class="text rv" style="--d:1">
+      <h3>{role.project}</h3>
+      <p class="role">{role.title}</p>
+      {role.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+      {role.note && <p class="note">{role.note}</p>}
+    </div>
+  </div>
+</article>

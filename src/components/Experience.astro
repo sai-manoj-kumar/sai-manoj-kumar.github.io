@@ -1,0 +1,23 @@
+---
+import { site } from '../data/site.js';
+import Folder from './Folder.astro';
+import TicketDemo from './diagrams/TicketDemo.astro';
+import MemoryBars from './diagrams/MemoryBars.astro';
+import HeaderRewrite from './diagrams/HeaderRewrite.astro';
+import Traceroute from './diagrams/Traceroute.astro';
+
+const visuals = { ticketDemo: TicketDemo, memory: MemoryBars, rewrite: HeaderRewrite, trace: Traceroute };
+---
+<section class="work" id="work" aria-labelledby="work-h">
+  <h2 id="work-h" class="work-head">Experience</h2>
+  <div class="folders">
+    {site.experience.map((role, index) => {
+      const Visual = visuals[role.visual];
+      return (
+        <Folder role={role} index={index}>
+          <Visual />
+        </Folder>
+      );
+    })}
+  </div>
+</section>

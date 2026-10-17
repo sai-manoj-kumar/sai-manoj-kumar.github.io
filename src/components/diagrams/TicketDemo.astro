@@ -1,0 +1,12 @@
+<div class="pic dispenser rv" id="dispenser">
+  <div class="bucket" aria-hidden="true">
+    <span class="chip"></span><span class="chip"></span><span class="chip"></span><span class="chip"></span><span class="chip"></span>
+  </div>
+  <p class="bucket-label" id="bucket-label">5 of 5 tokens left</p>
+  <button class="btn" type="button" id="take" disabled>Take a ticket</button>
+  <ol class="tickets" id="tickets" aria-live="polite"></ol>
+  <p class="fallback" id="fallback">This demo needs JavaScript. It lets you take five tickets, then answers 429 Too Many Requests until a new token arrives.</p>
+</div>
+<script>
+  import '../../scripts/limiter.js';
+</script>
