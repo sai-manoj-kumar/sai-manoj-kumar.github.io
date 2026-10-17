@@ -1,0 +1,22 @@
+---
+import { site } from '../data/site.js';
+
+const { about, links, name } = site;
+const [first, ...rest] = about.paragraphs;
+---
+<section class="about" id="about" aria-label={`About ${name}`}>
+  <div class="sheet rv">
+    <img class="mini" src="/images/portrait.jpg" width="88" height="88" alt={name} loading="lazy" />
+    <p>{first}</p>
+    {rest.map((paragraph) => <p>{paragraph}</p>)}
+    <p>
+      {about.closing.before}<mark><a href={links.linkedin}>{about.closing.linkText}</a></mark>{about.closing.after}
+    </p>
+    <p class="sign"><span class="name">{name}</span><span class="role">{about.signRole}</span></p>
+    <div class="scallops" aria-hidden="true"></div>
+  </div>
+  <div class="tear rv" style="--d:1">
+    <span class="dots" aria-hidden="true"></span>
+    <a class="btn on-light" href={links.linkedin}>{about.tearCta}</a>
+  </div>
+</section>

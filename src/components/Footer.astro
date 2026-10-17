@@ -1,0 +1,16 @@
+---
+import { site } from '../data/site.js';
+
+const { footer, links, name, photoCredit: c } = site;
+const profile = (url) => url.replace('https://www.', '').replace('https://', '');
+---
+<footer class="back">
+  <div class="back-row">
+    <p>© {footer.year} {name}</p>
+    <p><a href={links.linkedin}>{profile(links.linkedin)}</a></p>
+    <p><a href={links.github}>{profile(links.github)}</a></p>
+  </div>
+  <p class="credits">
+    Photo: <a href={c.titleUrl}>“{c.title}”</a> by {c.author}, <a href={c.licenseUrl}>{c.license}</a>, via {c.source}. {c.note}
+  </p>
+</footer>
