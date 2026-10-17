@@ -2223,7 +2223,7 @@ git switch astro
 
 ## Execution notes (as built)
 
-Tasks 1 to 11 were executed on the `astro` branch. The code above is the plan as written; where the build differs, the difference was found by a test or a real run and is listed here. Tasks 12 and 13 have not been run: they need Sai's approval for each push, tag and dashboard change.
+Tasks 1 to 11 were executed on the `astro` branch. The code above is the plan as written; where the build differs, the difference was found by a test or a real run and is listed here. Task 12 has been run as far as the private preview (its bullets are below). Task 13 has not: it needs Sai's approval for each push, tag and dashboard change.
 
 - **Task 3, `bucket.js`:** `refill()` restarts the refill clock when the system clock moves backwards (`if (t < last) last = t`). The plan's version passed its own clock-backwards test but would show "Try again in 3602s" after a one-hour jump. Test added.
 - **Task 4, `fetch-fonts.mjs`:** creates `src/styles/` itself (it did not exist until Task 5, so the first real run failed with ENOENT), and reports an unreachable Fontshare as "Could not reach Fontshare ... the build stops here" instead of "fetch failed".
@@ -2234,6 +2234,8 @@ Tasks 1 to 11 were executed on the `astro` branch. The code above is the plan as
 - **Task 11, quality gates:** Lighthouse was pinned to 13.5.0. Performance was 86 because of the hero photo's weight, not its markup, so phones (`max-width: 860px`, the stylesheet's own breakpoint) get `hero-phone.jpg`, an 800 x 1281 centre crop at the source's resolution (121 KB instead of 437 KB). It looks the same on a phone as the full frame; a downscaled 800 px version was visibly soft. Final scores, three runs: performance 97, accessibility 100, best practices 100, SEO 100. The design lint is 0 FAIL, 0 WARN; the inspector shows only the accepted `[few-pictures]` FAIL and the `[no-footage]` and `[pinned-over-picture]` WARNs.
 - **Final review, `global.css`:** the "Sai Manoj / Connect" stub is `visibility: hidden` whenever it is not shown. It was hidden with opacity and `pointer-events` only, so tabbing to the end of the page put focus on an invisible link. Test added.
 - **Task 13, rollback:** GitHub Pages claims the domain first, then Cloudflare DNS is pointed at GitHub, so no record points at GitHub Pages for a domain no repository claims.
+- **Task 12, pushes:** the clone's `origin` was an HTTPS URL with no credentials in the shell, so it now uses the SSH URL (the account `gh` already uses). The placeholder `release` branch (commit a45720b, one `package.json` that builds a "Not yet" page) was made with `git commit-tree`, not `git switch --orphan`, which empties the working tree. It is an unrelated history, so Task 13 needs a force-push of `astro` to `release`, or a merge with `--allow-unrelated-histories`.
+- **Task 12, Pages and Access:** the project is `saimanoj-site`, made in the dashboard with the Astro preset (`npm run build`, `dist`) and `NODE_VERSION` 24. The wizard only offers existing branches, so `release` had to exist first. "Restrict previews" (Settings, General) creates a Cloudflare Access application for `*.saimanoj-site.pages.dev` whose default policy already allows one email, Sai's own, so the policy needed no edit. That covers previews only: the production address `saimanoj-site.pages.dev` is public and shows the placeholder until Task 13.
 
 ### Known follow-ups (minor, not fixed)
 
