@@ -2185,13 +2185,17 @@ Leave `jekyll-final`, `jekyll-rollback` and GitHub Pages as they are for 24 hour
 
 - [ ] **Step 5: APPROVAL: retire the Jekyll site**
 
-In the GitHub repository settings, Pages, unpublish the site (otherwise GitHub tries to build Jekyll from `master` after the merge). Then:
+Stop GitHub building Jekyll from `master` after the merge. GitHub refuses to unpublish Pages for a user-site repository such as `sai-manoj-kumar.github.io` (the API answers 422 "Deactivating GitHub pages for this repository is not allowed"), so point Pages at the frozen Jekyll branch instead, in Settings, Pages, Branch, or with:
+```bash
+gh api -X PUT repos/sai-manoj-kumar/sai-manoj-kumar.github.io/pages -f 'source[branch]=jekyll-rollback' -f 'source[path]=/'
+```
+Then:
 ```bash
 git switch master
 git merge --ff-only astro
 git push origin master
 ```
-In the Pages project, Settings, Builds, set the production branch to `master`, redeploy, confirm https://saimanoj.com still serves the site, then delete the `release` branch:
+In the Pages project, Settings, Builds, set the production branch to `master`. That does not rebuild anything by itself: in Deployments, use Retry deployment on the `master` build, which comes out labelled Production. Confirm https://saimanoj.com still serves the site, then delete the `release` branch:
 ```bash
 git push origin --delete release
 git switch astro
@@ -2200,7 +2204,7 @@ git switch astro
 
 - [ ] **Rollback (any time before step 5; and after it, via `jekyll-rollback`)**
 
-1. GitHub repository settings, Pages: source branch `jekyll-rollback`, folder `/ (root)`, custom domain `saimanoj.com`. Do this first, so the domain is claimed in the repository before any DNS record points at GitHub (a record that points at GitHub Pages for a domain no repository claims can be taken over by someone else's Pages site). GitHub will warn that DNS is not yet configured; that is expected.
+1. GitHub repository settings, Pages: source branch `jekyll-rollback`, folder `/ (root)`, custom domain `saimanoj.com`. Do this first, so the domain is claimed in the repository before any DNS record points at GitHub (a record that points at GitHub Pages for a domain no repository claims can be taken over by someone else's Pages site). GitHub will warn that DNS is not yet configured; that is expected. After Step 5 the source is already `jekyll-rollback` with the custom domain set, so this step only needs checking.
 2. Cloudflare, Pages project, Custom domains: remove `saimanoj.com` and `www.saimanoj.com`.
 3. Cloudflare DNS for saimanoj.com, grey cloud (DNS only): add four `A` records for the apex to `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`, and a `CNAME` for `www` to `sai-manoj-kumar.github.io`.
 4. GitHub repository settings, Pages: enforce HTTPS once the certificate is ready, then `curl -sI https://saimanoj.com`: the response is the old Jekyll site (`server: GitHub.com`).
@@ -2223,7 +2227,7 @@ git switch astro
 
 ## Execution notes (as built)
 
-Tasks 1 to 11 were executed on the `astro` branch. The code above is the plan as written; where the build differs, the difference was found by a test or a real run and is listed here. Task 12 has been run as far as the private preview (its bullets are below). Task 13 has not: it needs Sai's approval for each push, tag and dashboard change.
+Tasks 1 to 11 were executed on the `astro` branch. The code above is the plan as written; where the build differs, the difference was found by a test or a real run and is listed here. Task 12 has been run as far as the private preview (its bullets are below). Task 13 was run from 2026-10-18 to 2026-10-20, each push, DNS change and dashboard change on Sai's explicit yes (its bullets are below).
 
 - **Task 3, `bucket.js`:** `refill()` restarts the refill clock when the system clock moves backwards (`if (t < last) last = t`). The plan's version passed its own clock-backwards test but would show "Try again in 3602s" after a one-hour jump. Test added.
 - **Task 4, `fetch-fonts.mjs`:** creates `src/styles/` itself (it did not exist until Task 5, so the first real run failed with ENOENT), and reports an unreachable Fontshare as "Could not reach Fontshare ... the build stops here" instead of "fetch failed".
@@ -2237,6 +2241,8 @@ Tasks 1 to 11 were executed on the `astro` branch. The code above is the plan as
 - **Task 12, pushes:** the clone's `origin` was an HTTPS URL with no credentials in the shell, so it now uses the SSH URL (the account `gh` already uses). The placeholder `release` branch (commit a45720b, one `package.json` that builds a "Not yet" page) was made with `git commit-tree`, not `git switch --orphan`, which empties the working tree. It is an unrelated history, so Task 13 needs a force-push of `astro` to `release`, or a merge with `--allow-unrelated-histories`.
 - **Task 12, Pages and Access:** the project is `saimanoj-site`, made in the dashboard with the Astro preset (`npm run build`, `dist`) and `NODE_VERSION` 24. The wizard only offers existing branches, so `release` had to exist first. "Restrict previews" (Settings, General) creates a Cloudflare Access application for `*.saimanoj-site.pages.dev` whose default policy already allows one email, Sai's own, so the policy needed no edit. That covers previews only: the production address `saimanoj-site.pages.dev` is public and shows the placeholder until Task 13.
 - **Task 12, 404 page (added after the preview review, not in the plan):** with no `404.html`, Pages answers every unknown path with the project's home page and status 200. Checked on the placeholder production address, which answered `/nope-not-a-page` and an old-style Jekyll path with the placeholder page and 200. `src/pages/404.astro` (heading, one line, a button home) fixes that: `Base.astro` takes a `notFound` flag that adds `noindex` and drops the canonical link, `og:url` and the "Skip to experience" link (its `#work` target is not on that page). Tests: `tests/dist/not-found.test.js`, `tests/e2e/not-found.spec.js`, and `404.html` is now in the email scan's required list. This also closes the first of the follow-ups below.
+- **Task 13, cutover (2026-10-18, about 02:13 IST):** `astro` replaced the placeholder `release` with `git push --force-with-lease=release:a45720b origin astro:release`, which only overwrites that exact placeholder commit. The Cloudflare dashboard will not add the apex while the old `A` records exist, so the records were removed first and the domain was down for about two minutes before `saimanoj.com` and `www` were added. The auto-mode safety check blocked deleting the DNS records, so Sai deleted them by hand. The apex answered 522 for about a minute after activation, then 200. A home router that asked for the name during the gap kept the empty answer for about 26 minutes (the zone's negative-cache time is 1800 s), so that one device showed `DNS_PROBE_FINISHED_NXDOMAIN` while everything else already worked. Cloudflare's Rocket Loader is on for the zone: it rewrites the inline script tag on the live page, so the live HTML is not byte-identical to `dist/`; the site was checked with it on and Lighthouse is 99, 100, 100, 100.
+- **Task 13, retirement (2026-10-20):** unpublishing Pages was refused (see Step 5), so Pages now publishes `jekyll-rollback`. `master` was fast-forwarded to `astro` (2456288) and pushed, the Cloudflare production branch was set to `master`, the `master` build was retried and is the Production deployment, and `release` was deleted on `origin`. Older `release` deployments remain in Cloudflare's list but cannot be retried. `jekyll-final` (tag) and `jekyll-rollback` (branch) stay at 61fb41d.
 
 ### Known follow-ups (minor, not fixed)
 
