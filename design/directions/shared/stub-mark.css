@@ -1,0 +1,8 @@
+/* Stub engine B styles (see stub-mark.js). Needs --bg --ink --accent --accent-ink and a --m margin. */
+.stub { left: 0; top: 0; align-items: stretch; will-change: transform; transform: translate(var(--tx, var(--m)), var(--ty, var(--m))); transition: opacity 0.25s ease, visibility 0s; }
+.stub-name { padding: 14px 0; padding-inline: calc(var(--q, 0) * 18px); background: color-mix(in srgb, var(--ink) calc(var(--q, 0) * 100%), transparent); color: color-mix(in srgb, var(--bg) calc(var(--q, 0) * 100%), var(--ink)); }
+.stub-act { overflow: hidden; max-width: calc(var(--q, 0) * 120px); opacity: var(--q, 0); padding: 14px calc(var(--q, 0) * 18px); white-space: nowrap; }
+html:not(.anim) .stub { position: absolute; transform: translate(var(--m), var(--m)); }
+html:not(.anim) .stub-name { padding: 14px 0; background: none; color: var(--ink); }
+html:not(.anim) .stub-act { display: none; }
+.stub.off { opacity: 0; visibility: hidden; pointer-events: none; }

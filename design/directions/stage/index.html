@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sai Manoj: split stage</title>
+<meta name="color-scheme" content="light dark">
+<script>document.documentElement.classList.add('js');try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+<style>
+@font-face{font-family:'General Sans';src:url('/fonts/general-sans-400.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'General Sans';src:url('/fonts/general-sans-500.woff2') format('woff2');font-weight:500;font-display:swap}
+@font-face{font-family:'General Sans';src:url('/fonts/general-sans-700.woff2') format('woff2');font-weight:700;font-display:swap}
+</style>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="/shared/base.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="page-stage">
+<a class="skip" href="#work">Skip to experience</a>
+
+<h1 class="name" id="name">sai manoj</h1>
+<a class="stub" id="stub" href="#connect" aria-label="Sai Manoj: jump to connect" tabindex="-1"><span class="stub-name">Sai Manoj</span><span class="stub-act">Connect</span></a>
+<div class="split" id="top">
+  <aside class="stage" aria-label="Live demo and role diagrams">
+    <img class="room" src="/images/hero.jpg" width="1920" height="1281" alt="A long aisle between white server racks in a data center in Amravati, India" fetchpriority="high">
+    <div class="slides" id="slides">
+      <div class="slide on" data-slide="demo"><div class="dispenser" id="dispenser" data-ui>
+  <div class="bucket" aria-hidden="true"><span class="chip"></span><span class="chip"></span><span class="chip"></span><span class="chip"></span><span class="chip"></span></div>
+  <p class="bucket-label" id="bucket-label">5 of 5 tokens left</p>
+  <button class="btn" type="button" id="take" disabled>Take a ticket</button>
+  <ol class="tickets" id="tickets" aria-live="polite"></ol>
+  <p class="fallback" id="fallback">This demo needs JavaScript. It lets you take five tickets, then answers 429 Too Many Requests until a new token arrives.</p>
+</div><p class="demo-cap">The demo is a token bucket, the idea behind rate limiting at a gateway: five tokens, and a new one every two seconds.</p></div>
+      <div class="slide" data-slide="memory"><div class="viz" role="img" aria-label="Memory use before and after, drawn to scale: 100 before, 70 after">
+  <p class="viz-title">Memory use, before and after</p>
+  <p class="bar-row"><span>Before</span><i style="--w:100%"></i></p>
+  <p class="bar-row"><span>After</span><i style="--w:70%"></i></p>
+  <p class="viz-note">Drawn to scale: 30% lower.</p></div><p class="demo-cap">Defender, Microsoft</p></div>
+      <div class="slide" data-slide="rewrite"><div class="viz">
+  <p class="viz-title">A header rewrite, illustrated</p>
+  <ol class="steps">
+    <li><span>Backend sends</span><span>Location: http://backend-1.internal/cart</span></li>
+    <li class="rule"><span>Rule</span><span>Replace the backend host with the public host</span></li>
+    <li><span>Client receives</span><span>Location: https://shop.example.com/cart</span></li>
+  </ol></div><p class="demo-cap">Application Gateway, Microsoft</p></div>
+      <div class="slide" data-slide="trace"><div class="viz">
+  <p class="viz-title">A traceroute, illustrated</p>
+  <ol class="hops">
+    <li style="--w:6%"><span>Local router</span><i></i><b>2 ms</b></li>
+    <li style="--w:29%"><span>Network edge</span><i></i><b>9 ms</b></li>
+    <li style="--w:58%"><span>Transit</span><i></i><b>18 ms</b></li>
+    <li style="--w:100%"><span>Destination</span><i></i><b>31 ms</b></li>
+  </ol></div><p class="demo-cap">Network Monitoring, Microsoft</p></div>
+    </div>
+  </aside>
+  <div class="reader">
+    <div class="topbar"><nav aria-label="Sections"><a href="#work">Experience</a><a href="#stack">Tech stack</a><a href="#about">About</a><a href="#connect">Connect</a></nav><fieldset class="theme"><legend>Theme</legend>
+  <label><input type="radio" name="theme" value="system" checked><span>System</span></label>
+  <label><input type="radio" name="theme" value="light"><span>Light</span></label>
+  <label><input type="radio" name="theme" value="dark"><span>Dark</span></label>
+</fieldset></div>
+    <section class="intro">
+      <p class="sentence">Services on public cloud. Tools for AI agents.</p>
+      <p class="facts">Senior software engineer · India · Java, Python, C#</p>
+      <p><a class="btn" href="https://www.linkedin.com/in/sai-manoj-kumar">Connect on LinkedIn</a> <a class="textlink" href="https://github.com/sai-manoj-kumar">GitHub</a></p>
+    </section>
+    <section class="work" id="work" aria-labelledby="work-h">
+      <h2 id="work-h">Experience</h2>
+      <article class="role" data-slide="demo"><h3>Webhooks Platform</h3><p class="who">LinkedIn, Senior Software Engineer</p><p>Sole owner and the DRI engineer for three webhook delivery services that carry about 100 million events a day. I also maintain the authentication middleware on the API Gateway, which handles about 1 billion requests a day.</p><p>Designed a new retry mechanism that cut failed deliveries by 30%, and moved webhook processing to a new framework that cut latency by 25%.</p><p>Built a monitoring dashboard and debugging tools for on-call, and shared GenAI skills and plugins that speed up root-cause analysis across teams.</p><p class="note">The demo is a token bucket, the idea behind rate limiting at a gateway: five tokens, and a new one every two seconds. The working demo is the panel on the left.</p></article><article class="role" data-slide="memory"><h3>Defender</h3><p class="who">Microsoft, Software Engineer II</p><p>Led the integration of a partner VPN into Microsoft Defender, a mobile security app, and cut its memory use by 30% on end-user mobile devices.</p><p>Built telemetry and crash reporting for production monitoring, and an on-prem lab to validate anti-phishing detection. Wrote cross-platform test automation in Python and bash for weekly regression runs, and mentored junior engineers.</p><div class="viz" role="img" aria-label="Memory use before and after, drawn to scale: 100 before, 70 after">
+  <p class="viz-title">Memory use, before and after</p>
+  <p class="bar-row"><span>Before</span><i style="--w:100%"></i></p>
+  <p class="bar-row"><span>After</span><i style="--w:70%"></i></p>
+  <p class="viz-note">Drawn to scale: 30% lower.</p></div></article><article class="role" data-slide="rewrite"><h3>Application Gateway</h3><p class="who">Microsoft, Software Engineer II</p><p>Application Gateway is a web traffic load balancer. I led the Header Rewrite feature, which lets customers change header values as traffic is routed. I defined the public API contract, took it through design approval, and built the backend logic to run rewrites at scale on a busy gateway.</p><p>Took on-call rotations, wrote troubleshooting guides, and mentored four new teammates.</p><div class="viz">
+  <p class="viz-title">A header rewrite, illustrated</p>
+  <ol class="steps">
+    <li><span>Backend sends</span><span>Location: http://backend-1.internal/cart</span></li>
+    <li class="rule"><span>Rule</span><span>Replace the backend host with the public host</span></li>
+    <li><span>Client receives</span><span>Location: https://shop.example.com/cart</span></li>
+  </ol></div></article><article class="role" data-slide="trace"><h3>Network Monitoring</h3><p class="who">Microsoft, Software Engineer</p><p>Wrote the agent for Service Connectivity Monitor in C and C++. It sends pings and traceroutes to check network connectivity and path health. I drove the agent's design and set up its unit and end-to-end tests.</p><p>Built the backend for ExpressRoute monitoring with microservices and MapReduce, to process large volumes of network path data, and did the relational data modeling.</p><div class="viz">
+  <p class="viz-title">A traceroute, illustrated</p>
+  <ol class="hops">
+    <li style="--w:6%"><span>Local router</span><i></i><b>2 ms</b></li>
+    <li style="--w:29%"><span>Network edge</span><i></i><b>9 ms</b></li>
+    <li style="--w:58%"><span>Transit</span><i></i><b>18 ms</b></li>
+    <li style="--w:100%"><span>Destination</span><i></i><b>31 ms</b></li>
+  </ol></div></article>
+    </section>
+    <section class="stack" id="stack" aria-labelledby="stack-h">
+      <h2 id="stack-h">Tech stack</h2>
+      <div class="group"><p class="gname">Backend</p><ul><li><span class="item">Java, Python, C#</span><span class="note">The languages I work in</span></li><li><span class="item">C and C++</span><span class="note">A network monitoring agent at Microsoft</span></li><li><span class="item">Kafka</span><span class="note">The API Gateway and the webhooks platform at LinkedIn</span></li><li><span class="item">Microservices, MapReduce</span><span class="note">ExpressRoute monitoring at Microsoft</span></li></ul></div><div class="group"><p class="gname">Cloud</p><ul><li><span class="item">Azure, AWS, Cloudflare</span><span class="note">Where I deploy and run services</span></li><li><span class="item">GitHub Actions</span><span class="note">CI/CD pipelines I write and fix</span></li><li><span class="item">Load balancing</span><span class="note">Application Gateway at Microsoft</span></li></ul></div><div class="group"><p class="gname">Data</p><ul><li><span class="item">PostgreSQL</span><span class="note">Relational databases and data modeling</span></li><li><span class="item">Redis</span><span class="note">In-memory data store</span></li><li><span class="item">DynamoDB</span><span class="note">NoSQL database</span></li></ul></div><div class="group"><p class="gname">AI agent tooling</p><ul><li><span class="item">GenAI skills and plugins</span><span class="note">Root-cause analysis and alert correlation for webhook workflows</span></li></ul></div>
+    </section>
+    <section class="about" id="about" aria-label="About Sai Manoj">
+      <img class="mini" src="/images/portrait.jpg" width="88" height="88" alt="Sai Manoj" loading="lazy">
+      <p>I'm a senior software engineer with about nine years of backend experience, most of it on services that run on public cloud and handle a lot of traffic.</p><p>I've worked on a web traffic load balancer, network monitoring and a webhooks platform. Along the way I've mentored new hires and interviewed candidates.</p><p>These days I'm building GenAI skills and plugins that help engineers debug faster.</p><p>If you're hiring, or building something and want another engineer to talk to, <mark><a href="https://www.linkedin.com/in/sai-manoj-kumar">say hello on LinkedIn</a></mark>.</p>
+      <p class="sign"><em>Sai Manoj</em><span>Senior software engineer</span></p>
+    </section>
+    <section class="connect" id="connect" aria-labelledby="connect-h">
+      <h2 id="connect-h">Connect with me</h2><p>Hiring, building something, or just curious? A message is the easiest way in.</p>
+      <p class="links"><a class="btn" href="https://www.linkedin.com/in/sai-manoj-kumar">Message me on LinkedIn</a> <a class="textlink" href="https://github.com/sai-manoj-kumar">Collaborate on GitHub</a></p>
+    </section>
+    <footer class="end"><p>© 2026 Sai Manoj · <a href="https://www.linkedin.com/in/sai-manoj-kumar">linkedin.com/in/sai-manoj-kumar</a> · <a href="https://github.com/sai-manoj-kumar">github.com/sai-manoj-kumar</a></p><p class="credits">Photo: <a href="https://commons.wikimedia.org/wiki/File:Racks_Amravati_Data_Center.jpg">“Racks Amravati Data Center”</a> by PiDatacenters, <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>, via Wikimedia Commons. Shown in greyscale and tinted.</p></footer>
+  </div>
+</div>
+<script type="module" src="/shared/theme.js"></script>
+<script type="module" src="/src/scripts/limiter.js"></script>
+<script type="module" src="stub.js"></script>
+</body></html>
