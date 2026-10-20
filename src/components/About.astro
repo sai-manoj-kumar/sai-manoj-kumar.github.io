@@ -7,7 +7,7 @@ const { about, links, name } = site;
   <img class="mini" src="/images/portrait.jpg" width="88" height="88" alt={name} loading="lazy" />
   {about.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
   <p>
-    {about.closing.before}<mark><a href={links.linkedin}>{about.closing.linkText}</a></mark>{about.closing.after}
+    {about.closing.before}<mark><a href={links.linkedin} data-track="linkedin:about">{about.closing.linkText}</a></mark>{about.closing.after}
   </p>
   <p class="sign"><em>{name}</em><span>{about.signRole}</span></p>
 </section>

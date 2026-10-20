@@ -8,3 +8,4 @@ playwright-report/
 public/fonts/
 src/styles/fonts.generated.css
 .taste-skill/
+.wrangler/
