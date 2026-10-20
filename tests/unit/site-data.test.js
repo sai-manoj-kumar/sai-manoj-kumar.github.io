@@ -20,7 +20,6 @@ test('experience has four roles with the company and project in the same fields'
     assert.ok(['LinkedIn', 'Microsoft'].includes(role.company), `company: ${role.company}`);
     assert.ok(role.project && role.title, 'project and title present');
     assert.ok(role.paragraphs.length > 0, 'has paragraphs');
-    assert.ok(['light', 'dark'].includes(role.tone), `tone: ${role.tone}`);
     assert.ok(['ticketDemo', 'memory', 'rewrite', 'trace'].includes(role.visual), `visual: ${role.visual}`);
   }
   assert.deepEqual(
@@ -73,4 +72,10 @@ test('stack has four groups and the right tools', () => {
   for (const tool of ['Azure', 'AWS', 'Cloudflare', 'PostgreSQL', 'Redis', 'DynamoDB', 'GitHub Actions', 'Kafka']) {
     assert.match(stackText, new RegExp(tool), `${tool} listed`);
   }
+});
+
+test('roles carry no leftover layout fields', () => {
+  for (const role of site.experience) assert.equal('tone' in role, false, `tone on ${role.project}`);
+  assert.equal('titleWords' in site.hero, false);
+  assert.equal('tearCta' in site.about, false);
 });

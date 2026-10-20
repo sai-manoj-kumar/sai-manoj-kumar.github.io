@@ -10,7 +10,6 @@ export const site = {
     github: 'https://github.com/sai-manoj-kumar',
   },
   hero: {
-    titleWords: ['Sai Manoj', 'Backend', 'Engineer'],
     facts: ['Senior software engineer', 'India', 'Java, Python, C#'],
     sentence: 'Services on public cloud. Tools for AI agents.',
     cta: 'Connect on LinkedIn',
@@ -23,7 +22,6 @@ export const site = {
       company: 'LinkedIn',
       project: 'Webhooks Platform',
       title: 'Senior Software Engineer',
-      tone: 'light',
       visual: 'ticketDemo',
       paragraphs: [
         'Sole owner and the DRI engineer for three webhook delivery services that carry about 100 million events a day. I also maintain the authentication middleware on the API Gateway, which handles about 1 billion requests a day.',
@@ -36,7 +34,6 @@ export const site = {
       company: 'Microsoft',
       project: 'Defender',
       title: 'Software Engineer II',
-      tone: 'dark',
       visual: 'memory',
       paragraphs: [
         'Led the integration of a partner VPN into Microsoft Defender, a mobile security app, and cut its memory use by 30% on end-user mobile devices.',
@@ -47,7 +44,6 @@ export const site = {
       company: 'Microsoft',
       project: 'Application Gateway',
       title: 'Software Engineer II',
-      tone: 'light',
       visual: 'rewrite',
       paragraphs: [
         'Application Gateway is a web traffic load balancer. I led the Header Rewrite feature, which lets customers change header values as traffic is routed. I defined the public API contract, took it through design approval, and built the backend logic to run rewrites at scale on a busy gateway.',
@@ -58,7 +54,6 @@ export const site = {
       company: 'Microsoft',
       project: 'Network Monitoring',
       title: 'Software Engineer',
-      tone: 'dark',
       visual: 'trace',
       paragraphs: [
         "Wrote the agent for Service Connectivity Monitor in C and C++. It sends pings and traceroutes to check network connectivity and path health. I drove the agent's design and set up its unit and end-to-end tests.",
@@ -109,7 +104,6 @@ export const site = {
       after: '.',
     },
     signRole: 'Senior software engineer',
-    tearCta: 'Say hello on LinkedIn',
   },
   connect: {
     heading: 'Connect with me',
@@ -125,6 +119,6 @@ export const site = {
     license: 'CC BY-SA 4.0',
     licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0',
     source: 'Wikimedia Commons',
-    note: 'Shown in greyscale and tinted.',
+    note: 'Cropped, and shown in greyscale and darkened.',
   },
 };
