@@ -38,3 +38,16 @@ test('the phone crop of the hero is sharp but light', async () => {
   assert.equal(meta.height, 1281);
   assert.ok(statSync(dist('images/hero-phone.jpg')).size < 200_000, 'phone hero under 200 KB');
 });
+
+test('the favicon follows the colour scheme', () => {
+  const svg = readFileSync(dist('favicon.svg'), 'utf8');
+  assert.match(svg, /prefers-color-scheme:\s*dark/);
+  assert.doesNotMatch(svg, /#0c3a40|#f1d2b6/i, 'no colours from the old apricot and teal palette');
+});
+
+test('the share image uses the dark palette, not the old apricot ground', async () => {
+  const { data } = await sharp(fileURLToPath(dist('og.jpg'))).resize(1, 1).raw().toBuffer({ resolveWithObject: true });
+  // the average colour of a mostly tobacco-brown card is dark and warm; the old apricot card was light
+  const [r, g, b] = data;
+  assert.ok(r + g + b < 3 * 128, `average colour ${r},${g},${b} should be dark`);
+});

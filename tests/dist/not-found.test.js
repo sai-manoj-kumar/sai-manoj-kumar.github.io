@@ -38,3 +38,7 @@ test('it is a landmarked page', () => {
   assert.equal(doc.querySelectorAll('main').length, 1);
   assert.equal(doc.documentElement.getAttribute('lang'), 'en');
 });
+
+test('it uses the new design tokens, not a hard-coded palette', () => {
+  assert.doesNotMatch(html, /#f1d2b6|#0c3a40/i);
+});
