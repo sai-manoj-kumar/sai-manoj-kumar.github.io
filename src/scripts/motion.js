@@ -36,7 +36,14 @@ function entrances() {
     },
     { rootMargin: '0px 0px -8% 0px', threshold: 0.12 },
   );
-  targets.forEach((el) => observer.observe(el));
+  /* Firefox and Safari would play a fade-out when .rv is first applied, so transitions only switch on
+     (rv-ready) after the hidden state has been styled, and only then do we start watching. */
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      targets.forEach((el) => el.classList.add('rv-ready'));
+      targets.forEach((el) => observer.observe(el));
+    });
+  });
 }
 
 /* The name runs along the bottom of the first screen; scrolling shrinks it into the stub at the bottom right.

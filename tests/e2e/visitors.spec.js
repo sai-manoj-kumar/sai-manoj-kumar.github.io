@@ -41,12 +41,14 @@ test.describe('A 320 px phone (Review Focus 4)', () => {
 });
 
 test.describe('Keyboard', () => {
-  test('tabbing through the page never lands on an invisible element', async ({ page }) => {
+  test('tabbing through the page never lands on an invisible element', async ({ page, browserName }) => {
+    // Safari's default skips links and buttons on Tab; Option+Tab is its "every control" walk.
+    const tab = browserName === 'webkit' ? 'Alt+Tab' : 'Tab';
     await page.goto('/');
     await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
     const landed = [];
     for (let i = 0; i < 40; i += 1) {
-      await page.keyboard.press('Tab');
+      await page.keyboard.press(tab);
       // A person needs far longer than a frame between key presses; let scroll-driven updates land first.
       await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
       landed.push(

@@ -196,7 +196,8 @@ html.js .fallback { display: none; }
 @keyframes ticket-in { from { transform: translateY(-8px); opacity: 0; } to { transform: none; opacity: 1; } }
 
 /* Entrances: set up by motion.js, only when motion is allowed -------------- */
-html.anim .rv { opacity: 0; transform: translateY(24px); transition: opacity 0.7s var(--ease) calc(var(--d, 0) * 80ms), transform 0.7s var(--ease) calc(var(--d, 0) * 80ms); }
+html.anim .rv { opacity: 0; transform: translateY(24px); }
+html.anim .rv.rv-ready { transition: opacity 0.7s var(--ease) calc(var(--d, 0) * 80ms), transform 0.7s var(--ease) calc(var(--d, 0) * 80ms); }
 html.anim .rv.in { opacity: 1; transform: none; }
 
 /* The 404 page ------------------------------------------------------- */

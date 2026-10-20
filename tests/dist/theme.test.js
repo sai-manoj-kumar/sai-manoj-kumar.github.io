@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { parseHTML } from 'linkedom';
 import { doc, html } from './helpers.js';
 
 const astro = new URL('../../dist/_astro/', import.meta.url);
-const allCss = [html, ...readdirSync(astro).filter((f) => f.endsWith('.css')).map((f) => readFileSync(new URL(f, astro), 'utf8'))].join('\n');
+const allCss = [html, ...(existsSync(astro) ? readdirSync(astro) : []).filter((f) => f.endsWith('.css')).map((f) => readFileSync(new URL(f, astro), 'utf8'))].join('\n');
 const headScript = () => [...doc.querySelectorAll('head script')].map((s) => s.textContent).find((t) => t.includes('localStorage')) ?? '';
 
 test('the switch is a fieldset of three radios, System first and checked', () => {

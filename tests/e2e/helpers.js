@@ -1,7 +1,8 @@
 /* Scroll the way a person does: with the mouse wheel. window.scrollTo() ignores `overflow: hidden`
    on <body>, which once hid a page-wide scroll bug, so layout tests must use this. */
 export async function wheelToY(page, targetY) {
-  await page.mouse.move(900, 450);
+  const { width, height } = page.viewportSize();
+  await page.mouse.move(width / 2, height / 2);
   for (let i = 0; i < 80; i += 1) {
     const y = await page.evaluate(() => window.scrollY);
     const delta = targetY - y;
