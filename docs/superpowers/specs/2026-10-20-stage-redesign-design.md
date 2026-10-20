@@ -112,7 +112,7 @@ Rules:
   link. Balanced line breaks (`text-wrap: balance`).
 - **Experience** (`h2`): four roles, each an `article` with `data-slide`, an `h3` (project name, `clamp(2rem, 1.2rem +
   2.4vw, 3.5rem)`), a muted line "Company, Title", the paragraphs, then either the inline diagram or, for the LinkedIn
-  role, the demo note with "The working demo is the panel on the left."
+  role, the demo note with "The working demo is the panel pinned on the left."
 - **Tech stack** (`h2`): four plain groups (group name in the muted ink, then rows with the item at left and its note at
   right). These are no longer `details` elements.
 - **About:** a 44px circular portrait, the paragraphs, the closing paragraph with the LinkedIn link marked up as a
@@ -286,7 +286,7 @@ These are known gaps to close in the build, not decisions:
 7. Cross-browser: only Chrome has been tested. `100svh` and `position: sticky` need Safari 15.4 or newer.
 8. Lighthouse has not been measured on the new design.
 9. The role titles, the name and the intro lines use more font sizes than the skill's target of about five.
-10. The LinkedIn role's note says "The working demo is the panel on the left." That is wrong on phones, where the demo
+10. The LinkedIn role's note says "The working demo is the panel pinned on the left." That is wrong on phones, where the demo
     block sits above the content. Word it so it is true in both layouts (for example, one version per layout, shown
     by breakpoint).
 

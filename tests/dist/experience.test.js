@@ -44,6 +44,6 @@ test('the made-up notes are gone, and the demo sentence says two seconds', () =>
 
 test('the demo note has a wording for each layout', () => {
   const note = doc.querySelector('#limiter .note');
-  assert.match(note.querySelector('.only-wide').textContent, /panel on the left/);
-  assert.match(note.querySelector('.only-narrow').textContent, /top of the page/);
+  assert.match(note.querySelector('.only-wide').textContent, /panel pinned on the left/);
+  assert.match(note.querySelector('.only-narrow').textContent, /panel at the top of the page/);
 });
