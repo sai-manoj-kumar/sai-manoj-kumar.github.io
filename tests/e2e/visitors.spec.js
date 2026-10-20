@@ -11,6 +11,7 @@ test.describe('JavaScript off (Review Focus 1)', () => {
     await expect(page.locator('.role').first()).toBeVisible();
     expect(await page.locator('.role').first().evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
     await expect(page.locator('#stack .group')).toHaveCount(4);
+    expect(await page.locator('.role .viz:visible').count()).toBe(3);
   });
 });
 
