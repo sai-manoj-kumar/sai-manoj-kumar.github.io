@@ -8,9 +8,9 @@ test.describe('JavaScript off (Review Focus 1)', () => {
     await expect(page.locator('h1')).toBeVisible();
     await expect(page.locator('#fallback')).toBeVisible();
     await expect(page.locator('#take')).toBeDisabled();
-    await expect(page.locator('.folder .text').first()).toBeVisible();
-    expect(await page.locator('.folder .text').first().evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
-    await expect(page.locator('#stack details[open]')).toHaveCount(4);
+    await expect(page.locator('.role').first()).toBeVisible();
+    expect(await page.locator('.role').first().evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
+    await expect(page.locator('#stack .group')).toHaveCount(4);
   });
 });
 
@@ -20,7 +20,7 @@ test.describe('Reduced motion (Review Focus 2)', () => {
   test('every section is visible and nothing animates in', async ({ page }) => {
     await page.goto('/');
     expect(await page.evaluate(() => document.documentElement.classList.contains('anim'))).toBe(false);
-    for (const selector of ['.folder .text', '#stack .bar', '#about .sheet', '#connect .coupon']) {
+    for (const selector of ['.role', '#stack .group', '#about', '#connect']) {
       const el = page.locator(selector).first();
       await expect(el).toBeVisible();
       expect(await el.evaluate((e) => getComputedStyle(e).opacity)).toBe('1');
