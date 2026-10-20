@@ -1,0 +1,29 @@
+---
+import { site } from '../data/site.js';
+import { slideName } from '../data/slides.js';
+import TicketDemo from './diagrams/TicketDemo.astro';
+import MemoryBars from './diagrams/MemoryBars.astro';
+import HeaderRewrite from './diagrams/HeaderRewrite.astro';
+import Traceroute from './diagrams/Traceroute.astro';
+
+const visuals = { demo: TicketDemo, memory: MemoryBars, rewrite: HeaderRewrite, trace: Traceroute };
+const { hero, experience } = site;
+---
+<aside class="stage" aria-label="Live demo and role diagrams">
+  <picture>
+    <source media="(max-width: 860px)" srcset="/images/hero-phone.jpg" width="800" height="1281" />
+    <img class="room" src="/images/hero-stage.jpg" width="1100" height="1281" alt={hero.photoAlt} fetchpriority="high" />
+  </picture>
+  <div class="slides" id="slides">
+    {experience.map((role) => {
+      const name = slideName(role.visual);
+      const Visual = visuals[name];
+      return (
+        <div class={`slide${name === 'demo' ? ' on' : ''}`} data-slide={name}>
+          <Visual />
+          <p class="stage-cap">{name === 'demo' ? role.note : `${role.project}, ${role.company}`}</p>
+        </div>
+      );
+    })}
+  </div>
+</aside>

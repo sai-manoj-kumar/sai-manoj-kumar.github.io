@@ -2,26 +2,30 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { doc } from './helpers.js';
 
-test('tech stack: four bars, all open by default', () => {
-  const bars = [...doc.querySelectorAll('#stack details.bar')];
-  assert.equal(bars.length, 4);
-  assert.ok(bars.every((b) => b.hasAttribute('open')), 'every bar is open');
-  assert.deepEqual(bars.map((b) => b.querySelector('summary').textContent.trim()), [
+test('tech stack: four groups, plain lists', () => {
+  const groups = [...doc.querySelectorAll('#stack .group')];
+  assert.equal(groups.length, 4);
+  assert.deepEqual(groups.map((g) => g.querySelector('.gname').textContent.trim()), [
     'Backend', 'Cloud', 'Data', 'AI agent tooling',
   ]);
   assert.equal(doc.querySelector('#stack h2').textContent.trim(), 'Tech stack');
+  assert.equal(doc.querySelectorAll('#stack details').length, 0, 'no collapsible bars any more');
 });
 
 test('about: nine years of backend and one LinkedIn link in the letter', () => {
   const about = doc.getElementById('about');
   assert.match(about.textContent, /about nine years of backend experience/);
-  const letterLinks = [...about.querySelectorAll('.sheet a')].map((a) => a.getAttribute('href'));
-  assert.deepEqual(letterLinks, ['https://www.linkedin.com/in/sai-manoj-kumar']);
+  const links = [...about.querySelectorAll('a')].map((a) => a.getAttribute('href'));
+  assert.deepEqual(links, ['https://www.linkedin.com/in/sai-manoj-kumar']);
 });
 
-test('connect: LinkedIn and GitHub profile only', () => {
-  const hrefs = [...doc.querySelectorAll('#connect a')].map((a) => a.getAttribute('href'));
-  assert.deepEqual(hrefs, ['https://www.linkedin.com/in/sai-manoj-kumar', 'https://github.com/sai-manoj-kumar']);
+test('connect: LinkedIn and GitHub profile only, and the GitHub label invites collaboration', () => {
+  const links = [...doc.querySelectorAll('#connect a')];
+  assert.deepEqual(links.map((a) => a.getAttribute('href')), [
+    'https://www.linkedin.com/in/sai-manoj-kumar',
+    'https://github.com/sai-manoj-kumar',
+  ]);
+  assert.equal(links[1].textContent.trim(), 'Collaborate on GitHub');
 });
 
 test('footer: copyright, profile links and the photo credit', () => {

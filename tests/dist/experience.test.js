@@ -2,29 +2,25 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { doc, html } from './helpers.js';
 
-const folders = () => [...doc.querySelectorAll('article.folder')];
+const roles = () => [...doc.querySelectorAll('article.role')];
 
-test('four folders; the tab is always the company, then project, then title', () => {
-  assert.equal(folders().length, 4);
-  assert.deepEqual(folders().map((f) => f.querySelector('.tab').textContent.trim()), [
-    'LinkedIn', 'Microsoft', 'Microsoft', 'Microsoft',
-  ]);
-  assert.deepEqual(folders().map((f) => f.querySelector('.text h3').textContent.trim()), [
+test('four roles in order: project, then company and title', () => {
+  assert.equal(roles().length, 4);
+  assert.deepEqual(roles().map((r) => r.querySelector('h3').textContent.trim()), [
     'Webhooks Platform', 'Defender', 'Application Gateway', 'Network Monitoring',
   ]);
-  assert.deepEqual(folders().map((f) => f.querySelector('.text p.role').textContent.trim()), [
-    'Senior Software Engineer', 'Software Engineer II', 'Software Engineer II', 'Software Engineer',
+  assert.deepEqual(roles().map((r) => r.querySelector('p.who').textContent.trim()), [
+    'LinkedIn, Senior Software Engineer',
+    'Microsoft, Software Engineer II',
+    'Microsoft, Software Engineer II',
+    'Microsoft, Software Engineer',
   ]);
-  for (const f of folders()) {
-    assert.equal(f.querySelector('.text h3').nextElementSibling.className, 'role', 'title follows project');
-  }
+  for (const r of roles()) assert.equal(r.querySelector('h3').nextElementSibling.className, 'who', 'title follows project');
 });
 
-test('folders alternate light and dark', () => {
-  assert.deepEqual(
-    folders().map((f) => (f.classList.contains('tone-light') ? 'light' : 'dark')),
-    ['light', 'dark', 'light', 'dark'],
-  );
+test('each role names the slide it is shown with, and only the demo role is #limiter', () => {
+  assert.deepEqual(roles().map((r) => r.getAttribute('data-slide')), ['demo', 'memory', 'rewrite', 'trace']);
+  assert.deepEqual(roles().map((r) => r.id), ['limiter', '', '', '']);
 });
 
 test('the demo has a plain fallback when JavaScript is off', () => {
@@ -41,6 +37,13 @@ test('illustrations are labelled as illustrations', () => {
   assert.match(html, /Drawn to scale: 30% lower\./);
 });
 
-test('the demo note says two seconds', () => {
+test('the made-up notes are gone, and the demo sentence says two seconds', () => {
+  assert.doesNotMatch(html, /Made-up/);
   assert.match(doc.querySelector('#limiter .note').textContent, /a new one every two seconds/);
+});
+
+test('the demo note has a wording for each layout', () => {
+  const note = doc.querySelector('#limiter .note');
+  assert.match(note.querySelector('.only-wide').textContent, /panel on the left/);
+  assert.match(note.querySelector('.only-narrow').textContent, /top of the page/);
 });

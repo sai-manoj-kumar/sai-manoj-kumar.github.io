@@ -2,21 +2,15 @@
 import { site } from '../data/site.js';
 ---
 <section class="stack" id="stack" aria-labelledby="stack-h">
-  <div class="stack-wrap">
-    <div class="stack-col">
-      <h2 id="stack-h" class="giant rv">Tech stack</h2>
-      <div class="bars">
-        {site.stack.map((group, i) => (
-          <details class="bar rv" style={`--d:${i + 1}`} open>
-            <summary>{group.title}</summary>
-            <ul class="items">
-              {group.items.map(([name, note]) => (
-                <li><span>{name}</span><span>{note}</span></li>
-              ))}
-            </ul>
-          </details>
+  <h2 id="stack-h">Tech stack</h2>
+  {site.stack.map((group) => (
+    <div class="group">
+      <h3 class="gname">{group.title}</h3>
+      <ul>
+        {group.items.map(([name, note]) => (
+          <li><span class="item">{name}</span><span class="note">{note}</span></li>
         ))}
-      </div>
+      </ul>
     </div>
-  </div>
+  ))}
 </section>

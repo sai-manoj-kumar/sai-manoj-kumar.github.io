@@ -1,24 +1,31 @@
 ---
 import Base from '../layouts/Base.astro';
-import Hero from '../components/Hero.astro';
+import Stub from '../components/Stub.astro';
+import Stage from '../components/Stage.astro';
+import TopBar from '../components/TopBar.astro';
+import Name from '../components/Name.astro';
+import Intro from '../components/Intro.astro';
 import Experience from '../components/Experience.astro';
 import TechStack from '../components/TechStack.astro';
 import About from '../components/About.astro';
 import Connect from '../components/Connect.astro';
 import Footer from '../components/Footer.astro';
-import Stub from '../components/Stub.astro';
 ---
 <Base>
-  <Hero />
-  <main>
-    <Experience />
-    <TechStack />
-    <About />
-    <Connect />
-  </main>
-  <Footer />
   <Stub />
-  <script>
-    import '../scripts/motion.js';
-  </script>
+  <div class="split" id="top">
+    <Stage />
+    <div class="reader">
+      <TopBar />
+      <main>
+        <Name />
+        <Intro />
+        <Experience />
+        <TechStack />
+        <About />
+        <Connect />
+      </main>
+      <Footer />
+    </div>
+  </div>
 </Base>

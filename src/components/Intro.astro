@@ -1,0 +1,13 @@
+---
+import { site } from '../data/site.js';
+
+const { hero, links } = site;
+---
+<section class="intro" aria-label="Introduction">
+  <p class="sentence">{hero.sentence}</p>
+  <p class="facts">{hero.facts.join(' · ')}</p>
+  <p class="actions">
+    <a class="btn" href={links.linkedin}>{hero.cta}</a>
+    <a class="textlink" href={links.github}>{hero.githubLabel}</a>
+  </p>
+</section>

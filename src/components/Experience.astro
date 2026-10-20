@@ -1,23 +1,32 @@
 ---
 import { site } from '../data/site.js';
-import Folder from './Folder.astro';
-import TicketDemo from './diagrams/TicketDemo.astro';
+import { slideName } from '../data/slides.js';
 import MemoryBars from './diagrams/MemoryBars.astro';
 import HeaderRewrite from './diagrams/HeaderRewrite.astro';
 import Traceroute from './diagrams/Traceroute.astro';
 
-const visuals = { ticketDemo: TicketDemo, memory: MemoryBars, rewrite: HeaderRewrite, trace: Traceroute };
+const inline = { memory: MemoryBars, rewrite: HeaderRewrite, trace: Traceroute };
 ---
 <section class="work" id="work" aria-labelledby="work-h">
-  <h2 id="work-h" class="work-head">Experience</h2>
-  <div class="folders">
-    {site.experience.map((role, index) => {
-      const Visual = visuals[role.visual];
-      return (
-        <Folder role={role} index={index}>
+  <h2 id="work-h">Experience</h2>
+  {site.experience.map((role) => {
+    const name = slideName(role.visual);
+    const Visual = inline[name];
+    return (
+      <article class="role" data-slide={name} id={name === 'demo' ? 'limiter' : undefined}>
+        <h3>{role.project}</h3>
+        <p class="who">{role.company}, {role.title}</p>
+        {role.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+        {name === 'demo' ? (
+          <p class="note">
+            {role.note}{' '}
+            <span class="only-wide">The working demo is the panel on the left.</span>
+            <span class="only-narrow">The working demo is at the top of the page.</span>
+          </p>
+        ) : (
           <Visual />
-        </Folder>
-      );
-    })}
-  </div>
+        )}
+      </article>
+    );
+  })}
 </section>

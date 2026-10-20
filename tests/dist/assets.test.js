@@ -13,10 +13,11 @@ test('the share image is a 1200 x 630 card', async () => {
   assert.ok(statSync(dist('og.jpg')).size < 250_000, 'share image stays small');
 });
 
-test('the hero photo is web-sized', async () => {
-  const meta = await sharp(fileURLToPath(dist('images/hero.jpg'))).metadata();
-  assert.equal(meta.width, 1920);
-  assert.ok(statSync(dist('images/hero.jpg')).size < 450_000, 'hero under 450 KB');
+test('the stage photo is a web-sized crop', async () => {
+  const meta = await sharp(fileURLToPath(dist('images/hero-stage.jpg'))).metadata();
+  assert.equal(meta.width, 1100);
+  assert.equal(meta.height, 1281);
+  assert.ok(statSync(dist('images/hero-stage.jpg')).size < 450_000, 'stage photo under 450 KB');
 });
 
 test('favicons exist', () => {
