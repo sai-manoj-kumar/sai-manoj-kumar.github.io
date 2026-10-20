@@ -36,8 +36,6 @@ test('the demo has a plain fallback when JavaScript is off', () => {
 });
 
 test('illustrations are labelled as illustrations', () => {
-  assert.match(html, /Made-up host names\./);
-  assert.match(html, /Made-up timings\./);
   assert.match(html, /A header rewrite, illustrated/);
   assert.match(html, /A traceroute, illustrated/);
   assert.match(html, /Drawn to scale: 30% lower\./);

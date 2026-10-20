@@ -39,8 +39,8 @@ export const site = {
       tone: 'dark',
       visual: 'memory',
       paragraphs: [
-        'Led the integration of a partner VPN into Microsoft Defender, a mobile security app, and cut its memory use by 30% to meet product requirements.',
-        'Built telemetry and crash reporting for production monitoring, and an on-prem lab to validate anti-phishing detection. Wrote cross-platform test automation in Python and bash for weekly regression runs, and mentored five new hires.',
+        'Led the integration of a partner VPN into Microsoft Defender, a mobile security app, and cut its memory use by 30% on end-user mobile devices.',
+        'Built telemetry and crash reporting for production monitoring, and an on-prem lab to validate anti-phishing detection. Wrote cross-platform test automation in Python and bash for weekly regression runs, and mentored junior engineers.',
       ],
     },
     {
@@ -115,7 +115,7 @@ export const site = {
     heading: 'Connect with me',
     text: 'Hiring, building something, or just curious? A message is the easiest way in.',
     linkedinLabel: 'Message me on LinkedIn',
-    githubLabel: 'Find me on GitHub',
+    githubLabel: 'Collaborate on GitHub',
   },
   footer: { year: 2026 },
   photoCredit: {
