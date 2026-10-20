@@ -1,0 +1,8 @@
+name = "saimanoj-site"
+pages_build_output_dir = "dist"
+compatibility_date = "2025-09-01"
+
+# Anonymous event counts written by functions/e.js; query them with scripts/stats.sh.
+[[analytics_engine_datasets]]
+binding = "EVENTS"
+dataset = "saimanoj_site_events"
