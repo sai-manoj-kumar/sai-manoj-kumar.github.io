@@ -1,82 +1,89 @@
-/* Motion: entrances and the hero card shrinking into a stub.
-   Everything here is an enhancement; without it the page reads in full. */
+/* Motion: the name shrinks into the stub, and the parts of each section rise in once.
+   Everything here is an enhancement: without JavaScript, or with reduced motion, the page reads in full,
+   the name stays where it is and the stub is never shown. */
 const root = document.documentElement;
 const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
-function lerp(a, b, t) { return a + (b - a) * t; }
-function ease(t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const ease = (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
 
-function start() {
-  root.classList.add('anim');
-
-  /* Entrances: heading, text, picture, staggered by the --d on each part. */
-  const targets = document.querySelectorAll('.rv');
-  if ('IntersectionObserver' in window) {
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
-        });
-      },
-      { rootMargin: '0px 0px -8% 0px', threshold: 0.12 },
-    );
-    targets.forEach((t) => io.observe(t));
-  } else {
-    targets.forEach((t) => t.classList.add('in'));
+/* Entrances: each part rises 24px and fades in once, a beat after its neighbour. */
+function entrances() {
+  const groups = [['.work', '.role'], ['.stack', '.group'], ['.about', ':scope > *'], ['.connect', ':scope > *']];
+  const targets = [];
+  for (const [parentSelector, childSelector] of groups) {
+    const parent = document.querySelector(parentSelector);
+    if (!parent) continue;
+    parent.querySelectorAll(childSelector).forEach((el, i) => {
+      el.classList.add('rv');
+      el.style.setProperty('--d', String(Math.min(i, 4)));
+      targets.push(el);
+    });
   }
+  if (!('IntersectionObserver' in window)) {
+    targets.forEach((el) => el.classList.add('in'));
+    return;
+  }
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          observer.unobserve(e.target);
+        }
+      });
+    },
+    { rootMargin: '0px 0px -8% 0px', threshold: 0.12 },
+  );
+  targets.forEach((el) => observer.observe(el));
+}
 
-  /* Pinned story: the hero card shrinks to a stub and stays. */
-  const hero = document.getElementById('top');
-  const card = document.getElementById('card');
-  const inner = document.getElementById('card-inner');
+/* The name runs along the bottom of the first screen; scrolling shrinks it into the stub at the bottom right.
+   The name gets its own `.is-fixed` class so html.anim (the entrances) is never toggled while measuring. */
+function nameToStub() {
+  const name = document.getElementById('name');
   const stub = document.getElementById('stub');
-  const room = document.querySelector('.room');
-  if (!hero || !card || !inner || !stub) return;
+  if (!name || !stub) return;
 
-  let vw, vh, cw, ch, m, s1, x0, y0, x1, y1;
-  let ticking = false;
+  let x0, y0, x1, y1, s1, vh;
   let hideStub = false;
-
-  function update() {
-    ticking = false;
-    const y = window.scrollY || window.pageYOffset;
-    const p = clamp(y / (vh * 0.75), 0, 1);
-    const e = ease(p);
-
-    card.style.setProperty('--tx', lerp(x0, x1, e).toFixed(1) + 'px');
-    card.style.setProperty('--ty', lerp(y0, y1, e).toFixed(1) + 'px');
-    card.style.setProperty('--ts', lerp(1, s1, e).toFixed(4));
-    inner.style.setProperty('--c', (1 - clamp((p - 0.15) / 0.35, 0, 1)).toFixed(3));
-    card.style.opacity = p > 0.9 ? String(clamp(1 - (p - 0.9) / 0.1, 0, 1)) : '';
-    card.style.visibility = p >= 1 ? 'hidden' : '';
-    stub.classList.toggle('on', p >= 0.98 && !hideStub);
-
-    if (room) {
-      const span = Math.max(1, hero.offsetHeight - vh);
-      room.style.setProperty('--room-s', (1 + 0.1 * clamp(y / span, 0, 1)).toFixed(4));
-    }
-  }
+  let ticking = false;
 
   function measure() {
-    vw = window.innerWidth; vh = window.innerHeight;
-    cw = card.offsetWidth; ch = card.offsetHeight;
-    m = clamp(vw * 0.025, 16, 32);
-    const stubW = vw < 860 ? 150 : 210;
-    s1 = stubW / cw;
-    x0 = (vw - cw) / 2; y0 = (vh - ch) / 2;
-    x1 = m; y1 = vh - m - ch * s1;
+    name.classList.remove('is-fixed');
+    name.style.removeProperty('--ts');
+    const rect = name.getBoundingClientRect();
+    const vw = window.innerWidth;
+    vh = window.innerHeight;
+    name.classList.add('is-fixed');
+    const margin = clamp(vw * 0.022, 16, 32);
+    const stubWidth = vw < 860 ? 140 : 200;
+    s1 = stubWidth / rect.width;
+    x0 = rect.left;
+    y0 = rect.top;
+    x1 = vw - margin - stubWidth;
+    y1 = vh - margin - rect.height * s1 - 14;
     update();
   }
 
-  function onScroll() {
-    if (!ticking) { ticking = true; window.requestAnimationFrame(update); }
+  function update() {
+    ticking = false;
+    const p = clamp(window.scrollY / (vh * 0.6), 0, 1);
+    const e = ease(p);
+    name.style.setProperty('--tx', lerp(x0, x1, e).toFixed(1) + 'px');
+    name.style.setProperty('--ty', lerp(y0, y1, e).toFixed(1) + 'px');
+    name.style.setProperty('--ts', lerp(1, s1, e).toFixed(4));
+    name.style.visibility = p >= 1 ? 'hidden' : '';
+    const showStub = p >= 0.98 && !hideStub;
+    stub.classList.toggle('on', showStub);
+    stub.inert = !showStub; // visibility waits 0.25s to hide, so keep a fast Tab off a vanishing stub
   }
 
   /* The stub points at Connect, so it steps aside while Connect or the footer is on screen. */
   if ('IntersectionObserver' in window) {
     const seen = {};
-    const so = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => { seen[e.target.id || e.target.tagName] = e.isIntersecting; });
         hideStub = !!(seen.connect || seen.FOOTER);
@@ -86,21 +93,23 @@ function start() {
     );
     const connect = document.getElementById('connect');
     const footer = document.querySelector('footer');
-    if (connect) so.observe(connect);
-    if (footer) so.observe(footer);
+    if (connect) observer.observe(connect);
+    if (footer) observer.observe(footer);
   }
 
-  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      ticking = true;
+      window.requestAnimationFrame(update);
+    }
+  }, { passive: true });
   window.addEventListener('resize', measure);
   window.addEventListener('load', measure);
   measure();
-
-  /* Hero parts rise in once, a beat after load. */
-  window.requestAnimationFrame(() => {
-    window.requestAnimationFrame(() => {
-      document.querySelectorAll('.card .rv').forEach((n) => n.classList.add('in'));
-    });
-  });
 }
 
-if (!reduce) start();
+if (!reduce) {
+  root.classList.add('anim');
+  entrances();
+  nameToStub();
+}

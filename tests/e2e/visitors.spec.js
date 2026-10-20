@@ -47,6 +47,8 @@ test.describe('Keyboard', () => {
     const landed = [];
     for (let i = 0; i < 40; i += 1) {
       await page.keyboard.press('Tab');
+      // A person needs far longer than a frame between key presses; let scroll-driven updates land first.
+      await page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done))));
       landed.push(
         await page.evaluate(() => {
           const el = document.activeElement;
