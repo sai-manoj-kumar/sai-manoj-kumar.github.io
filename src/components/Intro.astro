@@ -1,5 +1,6 @@
 ---
 import { site } from '../data/site.js';
+import Icon from './Icon.astro';
 
 const { hero, links } = site;
 ---
@@ -7,7 +8,7 @@ const { hero, links } = site;
   <p class="sentence">{hero.sentence}</p>
   <p class="facts">{hero.facts.join(' · ')}</p>
   <p class="actions">
-    <a class="btn" href={links.linkedin} data-track="linkedin:hero">{hero.cta}</a>
-    <a class="textlink" href={links.github} data-track="github:hero">{hero.githubLabel}</a>
+    <a class="btn" href={links.linkedin} data-track="linkedin:hero"><Icon name="linkedin" />{hero.cta}</a>
+    <a class="textlink" href={links.github} data-track="github:hero"><Icon name="github" />{hero.githubLabel}</a>
   </p>
 </section>

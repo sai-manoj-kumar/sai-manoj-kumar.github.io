@@ -1,5 +1,6 @@
 ---
 import { site } from '../data/site.js';
+import Icon from './Icon.astro';
 
 const { connect, links } = site;
 ---
@@ -7,7 +8,7 @@ const { connect, links } = site;
   <h2 id="connect-h">{connect.heading}</h2>
   <p>{connect.text}</p>
   <p class="links">
-    <a class="btn" href={links.linkedin} data-track="linkedin:connect">{connect.linkedinLabel}</a>
-    <a class="textlink" href={links.github} data-track="github:connect">{connect.githubLabel}</a>
+    <a class="btn" href={links.linkedin} data-track="linkedin:connect"><Icon name="linkedin" />{connect.linkedinLabel}</a>
+    <a class="textlink" href={links.github} data-track="github:connect"><Icon name="github" />{connect.githubLabel}</a>
   </p>
 </section>

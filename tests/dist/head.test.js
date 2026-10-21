@@ -38,3 +38,12 @@ test('person structured data, favicon and sitemap are in place', () => {
   assert.equal(meta('meta[name="twitter:title"]'), 'Sai Manoj | Senior Software Engineer');
   assert.ok(doc.querySelector('link[rel="icon"][href="/favicon.ico"]'));
 });
+
+test('profile buttons and links carry their brand icon, hidden from assistive tech', () => {
+  for (const track of ['linkedin:hero', 'github:hero', 'linkedin:connect', 'github:connect']) {
+    const icon = doc.querySelector(`a[data-track="${track}"] svg.icon`);
+    assert.ok(icon, `${track} has an icon`);
+    assert.equal(icon.getAttribute('aria-hidden'), 'true');
+  }
+  assert.equal(doc.querySelectorAll('footer svg.icon').length, 2);
+});
