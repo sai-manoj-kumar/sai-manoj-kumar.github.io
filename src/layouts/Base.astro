@@ -6,6 +6,21 @@ import { site } from '../data/site.js';
 const { title = site.title, description = site.description, notFound = false } = Astro.props;
 const canonical = new URL('/', site.url).href;
 const ogImage = new URL('/og.jpg', site.url).href;
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': `${canonical}#person`,
+      name: site.name,
+      jobTitle: 'Senior Software Engineer',
+      url: canonical,
+      image: new URL('/images/portrait.jpg', site.url).href,
+      sameAs: [site.links.linkedin, site.links.github],
+    },
+    { '@type': 'WebSite', '@id': `${canonical}#website`, url: canonical, name: site.name, publisher: { '@id': `${canonical}#person` } },
+  ],
+};
 ---
 <!doctype html>
 <html lang="en">
@@ -19,6 +34,8 @@ const ogImage = new URL('/og.jpg', site.url).href;
     <meta name="theme-color" content="#472913" media="(prefers-color-scheme: dark)" data-scheme="dark" />
     {notFound ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={site.shareDescription} />
     {!notFound && <meta property="og:url" content={canonical} />}
@@ -27,7 +44,11 @@ const ogImage = new URL('/og.jpg', site.url).href;
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="Sai Manoj, senior software engineer, with a small portrait" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={site.shareDescription} />
     <meta name="twitter:image" content={ogImage} />
+    {!notFound && <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />}
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

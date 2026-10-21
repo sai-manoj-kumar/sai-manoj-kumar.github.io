@@ -13,7 +13,7 @@ test('one h1, and it is the name', () => {
 
 test('the intro carries the facts, the sentence and the two profile links', () => {
   const intro = doc.querySelector('.intro');
-  for (const line of ['Senior software engineer', 'India', 'Java, Python, C#', 'Services on public cloud. Tools for AI agents.']) {
+  for (const line of ['Senior software engineer', 'Backend systems that run at scale. Tools that make AI agents useful.']) {
     assert.ok(intro.textContent.includes(line), line);
   }
   assert.deepEqual([...intro.querySelectorAll('a')].map((a) => a.getAttribute('href')), [

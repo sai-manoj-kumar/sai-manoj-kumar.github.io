@@ -1,17 +1,17 @@
 export const site = {
   name: 'Sai Manoj',
   url: 'https://saimanoj.com',
-  title: 'Sai Manoj',
+  title: 'Sai Manoj | Senior Software Engineer',
   description:
-    'Sai Manoj is a senior software engineer in India. Backend services on public cloud, and tools for AI coding agents.',
-  shareDescription: 'Senior software engineer. Backend services on public cloud, and tools for AI coding agents.',
+    'Sai Manoj is a senior software engineer. Backend systems that run at scale, and tools that make AI agents useful.',
+  shareDescription: 'Senior software engineer. Backend systems that run at scale, and tools that make AI agents useful.',
   links: {
     linkedin: 'https://www.linkedin.com/in/sai-manoj-kumar',
     github: 'https://github.com/sai-manoj-kumar',
   },
   hero: {
-    facts: ['Senior software engineer', 'India', 'Java, Python, C#'],
-    sentence: 'Services on public cloud. Tools for AI agents.',
+    facts: ['Senior software engineer'],
+    sentence: 'Backend systems that run at scale. Tools that make AI agents useful.',
     cta: 'Connect on LinkedIn',
     githubLabel: 'GitHub',
     photoAlt: 'A long aisle between white server racks in a data center in Amravati, India',
