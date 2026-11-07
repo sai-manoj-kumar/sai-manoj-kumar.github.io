@@ -5,7 +5,7 @@ import Icon from './Icon.astro';
 const { hero, links } = site;
 ---
 <section class="intro" aria-label="Introduction">
-  <p class="sentence">{hero.sentence}</p>
+  <h1 class="sentence">{hero.sentence}</h1>
   <p class="facts">{hero.facts.join(' · ')}</p>
   <p class="actions">
     <a class="btn" href={links.linkedin} data-track="linkedin:hero"><Icon name="linkedin" />{hero.cta}</a>

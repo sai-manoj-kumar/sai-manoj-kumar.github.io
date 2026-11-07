@@ -113,6 +113,9 @@ html.swap .role .viz { display: none; }
 
 .reader { min-width: 0; }
 .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; min-height: 64px; padding-inline: var(--pad) var(--m); }
+.topbar-name { margin-right: auto; font-size: var(--step-body); font-weight: 700; text-decoration: none; padding: 12px 0; }
+.topbar-connect { display: inline-flex; align-items: center; min-height: 44px; padding: 0 1.1rem; background: var(--accent); color: var(--accent-ink); font-size: var(--step-small); font-weight: 500; text-decoration: none; transition: filter 0.18s var(--ease); }
+.topbar-connect:hover { filter: brightness(1.08); }
 .topbar nav { display: flex; gap: clamp(12px, 1.8vw, 28px); }
 .topbar nav a { font-size: var(--step-small); font-weight: 500; text-decoration: none; padding: 12px 0; }
 .topbar nav a:hover { text-decoration: underline; text-underline-offset: 0.3em; }
@@ -120,19 +123,11 @@ html.swap .role .viz { display: none; }
 main > section, .end { padding-inline: var(--pad); }
 main > section > * { max-width: 46ch; }
 
-.intro { min-height: calc(100svh - 64px); display: flex; flex-direction: column; gap: 16px; justify-content: flex-start; padding-top: 14svh; }
+.intro { min-height: calc(100svh - 64px); display: flex; flex-direction: column; gap: 16px; justify-content: flex-start; padding-top: 12svh; }
 .intro .sentence, .intro .facts { text-wrap: balance; }
 .intro .sentence { font-size: var(--step-lead); line-height: 1.2; max-width: 26ch; font-weight: 500; }
 .intro .facts { color: var(--muted); }
 
-/* The name runs along the bottom of the first screen, then (with JavaScript) shrinks into the stub ----- */
-.name { position: absolute; z-index: 20; right: var(--m); top: calc(100svh - 38px - 0.84em); font: 500 clamp(5rem, 12vw, 12.5rem)/0.84 var(--font); letter-spacing: -0.045em; text-transform: lowercase; white-space: nowrap; }
-.name.is-fixed { position: fixed; right: auto; left: 0; top: 0; transform-origin: 0 0; transform: translate(var(--tx, 0px), var(--ty, 0px)) scale(var(--ts, 1)); will-change: transform; pointer-events: none; }
-.stub { position: fixed; z-index: 30; right: var(--m); bottom: var(--m); display: flex; text-decoration: none; font-size: 15px; line-height: 1; opacity: 0; visibility: hidden; transform: translateY(8px); transition: opacity 0.25s var(--ease), transform 0.25s var(--ease), visibility 0s linear 0.25s; }
-.stub.on { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
-.stub-name, .stub-act { padding: 14px 18px; font-weight: 700; line-height: 1; }
-.stub-name { background: var(--ink); color: var(--bg); }
-.stub-act { background: var(--accent); color: var(--accent-ink); font-weight: 500; }
 
 /* Sections ------------------------------------------------------------ */
 main h2 { font-size: var(--step-head); font-weight: 500; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 36px; }
@@ -215,11 +210,10 @@ html.anim .rv.in { opacity: 1; transform: none; }
   .slides { width: min(78vw, 400px); margin-top: 0; }
   .slide .dispenser { min-height: 0; }
   .stage-cap { display: none; }
-  .name { top: calc(62svh + 12px); right: auto; left: var(--m); font-size: 21vw; }
-  .topbar { position: absolute; top: 0; left: 0; right: 0; padding-inline: var(--m); z-index: 5; }
+  .topbar { padding-inline: var(--m); }
   .topbar nav { display: none; }
   main > section, .end { padding-inline: var(--m); }
-  .intro { min-height: 0; padding-top: calc(21vw * 0.84 + 28px); }
+  .intro { min-height: 0; padding-top: 16px; }
   .only-wide { display: none; }
   .only-narrow { display: inline; }
   .steps li { grid-template-columns: minmax(0, 1fr); gap: 4px; }
@@ -227,6 +221,6 @@ html.anim .rv.in { opacity: 1; transform: none; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .slide, .stub, .btn, .chip { transition: none; }
+  .slide, .btn, .chip { transition: none; }
   .ticket { animation: none; }
 }
