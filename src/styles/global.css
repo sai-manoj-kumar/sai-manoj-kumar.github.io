@@ -219,9 +219,9 @@ html.anim .rv.in { opacity: 1; transform: none; }
   .stage picture { display: block; }
   .room { position: static; display: block; height: var(--strip); width: 100%; object-position: 50% 40%; }
   .stage::before { bottom: auto; height: var(--strip); }
-  .slides { width: 100%; margin-top: 0; padding: var(--m); }
+  .slides { width: 100%; margin-top: 0; padding: var(--m) 0; }
   .slide[data-slide="demo"] { width: min(480px, 100%); justify-self: start; }
-  .slide .dispenser { min-height: 0; }
+  .slide .dispenser { min-height: 0; padding-inline: var(--m); }
   .stage-cap { display: none; }
   .topbar { padding-inline: var(--m); }
   .topbar nav { display: none; }

@@ -27,6 +27,10 @@ test.describe('Phone layout, words first', () => {
       await page.waitForTimeout(400);
       const box = await page.locator('#dispenser').boundingBox();
       expect(box.y).toBeLessThan(height);
+      if (width === 375) {
+        const take = await page.locator('#take').boundingBox();
+        expect(take.y + take.height, '#take bottom').toBeLessThanOrEqual(height);
+      }
     });
   }
 
@@ -41,8 +45,11 @@ test.describe('Phone layout, words first', () => {
     await page.goto('/');
     await page.waitForTimeout(400);
     await wheelToY(page, 1500);
-    const pinned = await page.$$eval('body *', (els) =>
-      els.filter((el) => ['fixed', 'sticky'].includes(getComputedStyle(el).position)).map((el) => el.className || el.tagName));
+    const { scanned, pinned } = await page.$$eval('body *', (els) => ({
+      scanned: els.length,
+      pinned: els.filter((el) => ['fixed', 'sticky'].includes(getComputedStyle(el).position)).map((el) => el.className || el.tagName),
+    }));
+    expect(scanned).toBeGreaterThan(10);
     expect(pinned).toEqual([]);
   });
 
