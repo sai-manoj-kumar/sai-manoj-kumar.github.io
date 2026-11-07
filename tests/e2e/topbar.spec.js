@@ -31,3 +31,21 @@ test.describe('JavaScript off', () => {
     expect(await page.evaluate(() => document.getElementById('connect').getBoundingClientRect().top)).toBeGreaterThanOrEqual(-1);
   });
 });
+
+test('the Connect link shows a keyboard focus ring that stands out from the page', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 800 });
+  await page.goto('/');
+  for (let i = 0; i < 12; i += 1) {
+    await page.keyboard.press('Tab');
+    if (await page.evaluate(() => document.activeElement?.classList.contains('topbar-connect'))) break;
+  }
+  const ring = await page.evaluate(() => {
+    const el = document.activeElement;
+    const cs = getComputedStyle(el);
+    return { focused: el.classList.contains('topbar-connect'), color: cs.outlineColor, text: cs.color, style: cs.outlineStyle, bg: getComputedStyle(document.body).backgroundColor };
+  });
+  expect(ring.focused).toBe(true);
+  expect(ring.style).not.toBe('none');
+  expect(ring.color).not.toBe(ring.bg);
+  expect(ring.color, 'ring must not be the button text colour (currentColor), which is the accent-ink on the page background').not.toBe(ring.text);
+});
