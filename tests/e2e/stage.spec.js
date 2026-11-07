@@ -26,12 +26,14 @@ test.describe('Scrolling and layout (Review Focus 1)', () => {
     expect(Math.round(stage.width)).toBeGreaterThan(650);
   });
 
-  test('on a phone the stage is a block at the top that scrolls away', async ({ page }) => {
+  test('on a phone the stage sits below the intro and scrolls away', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/');
     await wheelToY(page, 1500);
     const stage = await page.locator('.stage').boundingBox();
+    const intro = await page.locator('.intro').boundingBox();
     expect(stage.y).toBeLessThan(0);
+    expect(stage.y).toBeGreaterThanOrEqual(intro.y + intro.height - 1);
   });
 });
 

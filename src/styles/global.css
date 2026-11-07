@@ -205,16 +205,28 @@ html.anim .rv.in { opacity: 1; transform: none; }
 .lost h1 { font-size: var(--step-head); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; }
 
 /* Phones and narrow windows: one column ----------------------------------- */
+/* Words first: the stage stays first in the DOM (its only focusable element is #take), but shows
+   after the intro as a short photo strip with the demo below it. */
 @media (max-width: 860px) {
-  .split { grid-template-columns: 1fr; }
-  .stage { position: relative; height: 62svh; }
-  .slides { width: min(78vw, 400px); margin-top: 0; }
+  .split { display: flex; flex-direction: column; align-items: stretch; }
+  .reader, main { display: contents; }
+  .topbar { order: 1; }
+  .intro { order: 2; }
+  .stage { order: 3; }
+  main > section { order: 4; }
+  footer { order: 5; }
+  .stage { --strip: clamp(120px, 22svh, 200px); position: relative; isolation: isolate; height: auto; display: flex; flex-direction: column; align-items: stretch; background: var(--surface); margin-top: 28px; }
+  .stage picture { display: block; }
+  .room { position: static; display: block; height: var(--strip); width: 100%; object-position: 50% 40%; }
+  .stage::before { bottom: auto; height: var(--strip); }
+  .slides { width: 100%; margin-top: 0; padding: var(--m); }
+  .slide[data-slide="demo"] { width: min(480px, 100%); justify-self: start; }
   .slide .dispenser { min-height: 0; }
   .stage-cap { display: none; }
   .topbar { padding-inline: var(--m); }
   .topbar nav { display: none; }
   main > section, .end { padding-inline: var(--m); }
-  .intro { min-height: 0; padding-top: 16px; }
+  .intro { min-height: 0; padding-top: 12px; }
   .only-wide { display: none; }
   .only-narrow { display: inline; }
   .steps li { grid-template-columns: minmax(0, 1fr); gap: 4px; }
