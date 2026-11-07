@@ -4,7 +4,7 @@
    before first paint; this runs afterwards and wires up the radios. */
 const root = document.documentElement;
 const KEY = 'theme';
-const COLOR = { light: '#f1ebdc', dark: '#472913' };
+const COLOR = { light: '#f3faf6', dark: '#0a1f1a' };
 
 function read() {
   try {

@@ -1,12 +1,14 @@
 ---
+import { site } from '../data/site.js';
 import ThemeSwitch from './ThemeSwitch.astro';
 ---
 <header class="topbar">
+  <a class="topbar-name" href="#top">{site.name}</a>
   <nav aria-label="Sections">
     <a href="#work">Experience</a>
     <a href="#stack">Tech stack</a>
     <a href="#about">About</a>
-    <a href="#connect">Connect</a>
   </nav>
+  <a class="topbar-connect" href="#connect">Connect</a>
   <ThemeSwitch />
 </header>

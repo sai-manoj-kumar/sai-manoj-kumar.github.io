@@ -4,11 +4,14 @@ import { doc } from './helpers.js';
 
 const squash = (el) => el.textContent.replace(/\s+/g, ' ').trim();
 
-test('one h1, and it is the name', () => {
+test('one h1, and it is the headline sentence', () => {
   const h1s = doc.querySelectorAll('h1');
   assert.equal(h1s.length, 1);
-  assert.equal(h1s[0].textContent.trim(), 'Sai Manoj');
-  assert.equal(h1s[0].id, 'name');
+  assert.equal(h1s[0].textContent.trim(), 'Backend systems that run at scale. Tools that make AI agents useful.');
+  assert.ok(h1s[0].classList.contains('sentence'));
+  assert.equal(doc.getElementById('name'), null);
+  assert.equal(doc.getElementById('stub'), null);
+  assert.equal(doc.querySelector('.name'), null);
 });
 
 test('the intro carries the facts, the sentence and the two profile links', () => {
@@ -37,8 +40,15 @@ test('the photo credit is not in the stage or the intro', () => {
   assert.doesNotMatch(doc.querySelector('.intro').textContent, /PiDatacenters|Photo:/);
 });
 
-test('the stub points at the connect section', () => {
-  assert.ok(doc.querySelector('a#stub[href="#connect"]'));
+test('the top bar has the name link and a Connect link', () => {
+  const name = doc.querySelector('.topbar a.topbar-name[href="#top"]');
+  assert.ok(name);
+  assert.equal(name.textContent.trim(), 'Sai Manoj');
+  const connect = doc.querySelector('.topbar a.topbar-connect[href="#connect"]');
+  assert.ok(connect);
+  assert.equal(connect.textContent.trim(), 'Connect');
+  assert.equal(name.hasAttribute('data-track'), false);
+  assert.equal(connect.hasAttribute('data-track'), false);
 });
 
 test('the stage has four slides in order, only the demo is on, and the demo exists once', () => {
@@ -66,5 +76,5 @@ test('the page shell has the landmarks and the section ids the links need', () =
   assert.equal(doc.querySelectorAll('main').length, 1);
   assert.ok(doc.querySelector('.reader > footer'));
   for (const id of ['work', 'stack', 'about', 'connect']) assert.ok(doc.getElementById(id), `#${id}`);
-  assert.deepEqual([...doc.querySelectorAll('.topbar nav a')].map((a) => a.getAttribute('href')), ['#work', '#stack', '#about', '#connect']);
+  assert.deepEqual([...doc.querySelectorAll('.topbar nav a')].map((a) => a.getAttribute('href')), ['#work', '#stack', '#about']);
 });

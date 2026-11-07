@@ -47,7 +47,18 @@ test('the favicon follows the colour scheme', () => {
 
 test('the share image uses the dark palette, not the old apricot ground', async () => {
   const { data } = await sharp(fileURLToPath(dist('og.jpg'))).resize(1, 1).raw().toBuffer({ resolveWithObject: true });
-  // the average colour of a mostly tobacco-brown card is dark and warm; the old apricot card was light
+  // the average colour of a mostly deep-green card is dark; the old apricot card was light
   const [r, g, b] = data;
   assert.ok(r + g + b < 3 * 128, `average colour ${r},${g},${b} should be dark`);
+});
+
+test('the favicon and share card use the mint palette', () => {
+  const svg = readFileSync(dist('favicon.svg'), 'utf8');
+  for (const hex of ['#0f2a24', '#f3faf6', '#3ee0b0']) assert.ok(svg.toLowerCase().includes(hex), `favicon has ${hex}`);
+  for (const hex of ['#2b170a', '#f1ebdc', '#c79a3e']) assert.ok(!svg.toLowerCase().includes(hex), `favicon drops ${hex}`);
+});
+
+test('favicon.ico exists and starts with the ICO header bytes 00 00 01 00', () => {
+  const ico = readFileSync(dist('favicon.ico'));
+  assert.deepEqual([...ico.subarray(0, 4)], [0, 0, 1, 0]);
 });

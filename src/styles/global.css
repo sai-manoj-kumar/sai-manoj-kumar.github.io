@@ -1,42 +1,42 @@
-/* saimanoj.com: the split stage. Tobacco and olive, General Sans, light and dark.
-   Components read the tokens; the only literal colours are the photo caption scrim. */
+/* saimanoj.com: the split stage. Mint and ink, General Sans, light and dark.
+   Components read the tokens; the only literal colours are the photo caption scrim and the pine tint on the photo. */
 
 :root {
-  --bg: #f1ebdc;
-  --surface: #e6dcc6;
-  --ink: #2b170a;
-  --muted: #6f5a43;
-  --accent: #525e1b;
-  --accent-ink: #f1ebdc;
-  --chip-off: #cbbf9f;
-  --deny: #2b170a;
-  --deny-ink: #f1ebdc;
+  --bg: #f3faf6;
+  --surface: #dff1e8;
+  --ink: #0f2a24;
+  --muted: #4d6b62;
+  --accent: #0a7d63;
+  --accent-ink: #ffffff;
+  --chip-off: #b4d2c4;
+  --deny: #0f2a24;
+  --deny-ink: #f3faf6;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #472913;
-    --surface: #55321a;
-    --ink: #e4e0cf;
-    --muted: #c0ad92;
-    --accent: #c79a3e;
-    --accent-ink: #2b170a;
-    --chip-off: #6e4a2c;
-    --deny: #e4e0cf;
-    --deny-ink: #2b170a;
+    --bg: #0a1f1a;
+    --surface: #12302a;
+    --ink: #e8f6ef;
+    --muted: #8fb5a8;
+    --accent: #3ee0b0;
+    --accent-ink: #06241d;
+    --chip-off: #1f4a40;
+    --deny: #e8f6ef;
+    --deny-ink: #06241d;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #472913;
-  --surface: #55321a;
-  --ink: #e4e0cf;
-  --muted: #c0ad92;
-  --accent: #c79a3e;
-  --accent-ink: #2b170a;
-  --chip-off: #6e4a2c;
-  --deny: #e4e0cf;
-  --deny-ink: #2b170a;
+  --bg: #0a1f1a;
+  --surface: #12302a;
+  --ink: #e8f6ef;
+  --muted: #8fb5a8;
+  --accent: #3ee0b0;
+  --accent-ink: #06241d;
+  --chip-off: #1f4a40;
+  --deny: #e8f6ef;
+  --deny-ink: #06241d;
   color-scheme: dark;
 }
 
@@ -75,6 +75,7 @@ a { color: inherit; }
 .btn:hover { filter: brightness(1.08); transform: translateY(-2px); }
 .btn:active { transform: translateY(1px); }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.btn:focus-visible { outline-color: var(--ink); }
 .textlink { display: inline-flex; align-items: center; gap: 0.45em; font-weight: 500; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.28em; margin-left: 12px; }
 .icon { width: 1.15em; height: 1.15em; flex: none; fill: currentColor; }
 .btn .icon { margin-right: 0.6em; }
@@ -88,18 +89,19 @@ a { color: inherit; }
 .theme input { position: absolute; width: 1px; height: 1px; margin: 0; clip-path: inset(50%); }
 .theme span { display: inline-flex; align-items: center; min-height: 44px; padding: 0 0.7rem; color: var(--muted); font-size: var(--step-small); font-weight: 500; cursor: pointer; }
 .theme input:checked + span { background: var(--ink); color: var(--bg); }
-.theme input:focus-visible + span { outline: 3px solid currentColor; outline-offset: 2px; }
+.theme input:focus-visible + span { outline: 3px solid var(--ink); outline-offset: 2px; }
 html:not(.js) .theme { display: none; }
 
 /* Layout: the stage (left, pinned) and the reader (right) -------------- */
 .split { display: grid; grid-template-columns: 47% 1fr; align-items: start; }
 .stage { position: sticky; top: 0; height: 100svh; overflow: hidden; background: var(--surface); display: grid; place-items: center; }
-.room { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; filter: grayscale(1) brightness(0.55) contrast(1.05); }
+.room { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; filter: grayscale(1) brightness(0.5) contrast(1.1); }
+.stage::before { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: #0b4a3a; mix-blend-mode: color; opacity: 0.7; }
 
 /* The pinned half: four slides in one grid cell, the one for the role being read is shown.
    Without the `swap` class (phones, no JavaScript) only the demo slide shows and the diagrams stay
    inline in their roles. The head script sets `swap` before first paint on wide screens. */
-.slides { position: relative; width: min(600px, 92%); display: grid; margin-top: -6svh; }
+.slides { position: relative; z-index: 2; width: min(600px, 92%); display: grid; margin-top: -6svh; }
 .slide { grid-area: 1 / 1; align-self: center; display: flex; flex-direction: column; gap: 14px; opacity: 0; visibility: hidden; transform: translateY(10px); transition: opacity 0.55s var(--ease), transform 0.55s var(--ease), visibility 0s linear 0.55s; }
 .slide.on { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
 .slide[data-slide="demo"] { width: min(420px, 100%); justify-self: center; }
@@ -112,6 +114,10 @@ html.swap .role .viz { display: none; }
 
 .reader { min-width: 0; }
 .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; min-height: 64px; padding-inline: var(--pad) var(--m); }
+.topbar-name { margin-right: auto; font-size: var(--step-body); font-weight: 700; text-decoration: none; padding: 12px 0; }
+.topbar-connect { display: inline-flex; align-items: center; min-height: 44px; padding: 0 1.1rem; background: var(--accent); color: var(--accent-ink); font-size: var(--step-small); font-weight: 500; text-decoration: none; transition: filter 0.18s var(--ease); }
+.topbar-connect:hover { filter: brightness(1.08); }
+.topbar-connect:focus-visible { outline-color: var(--ink); }
 .topbar nav { display: flex; gap: clamp(12px, 1.8vw, 28px); }
 .topbar nav a { font-size: var(--step-small); font-weight: 500; text-decoration: none; padding: 12px 0; }
 .topbar nav a:hover { text-decoration: underline; text-underline-offset: 0.3em; }
@@ -119,19 +125,11 @@ html.swap .role .viz { display: none; }
 main > section, .end { padding-inline: var(--pad); }
 main > section > * { max-width: 46ch; }
 
-.intro { min-height: calc(100svh - 64px); display: flex; flex-direction: column; gap: 16px; justify-content: flex-start; padding-top: 14svh; }
+.intro { min-height: calc(100svh - 64px); display: flex; flex-direction: column; gap: 16px; justify-content: flex-start; padding-top: 12svh; }
 .intro .sentence, .intro .facts { text-wrap: balance; }
 .intro .sentence { font-size: var(--step-lead); line-height: 1.2; max-width: 26ch; font-weight: 500; }
 .intro .facts { color: var(--muted); }
 
-/* The name runs along the bottom of the first screen, then (with JavaScript) shrinks into the stub ----- */
-.name { position: absolute; z-index: 20; right: var(--m); top: calc(100svh - 38px - 0.84em); font: 500 clamp(5rem, 12vw, 12.5rem)/0.84 var(--font); letter-spacing: -0.045em; text-transform: lowercase; white-space: nowrap; }
-.name.is-fixed { position: fixed; right: auto; left: 0; top: 0; transform-origin: 0 0; transform: translate(var(--tx, 0px), var(--ty, 0px)) scale(var(--ts, 1)); will-change: transform; pointer-events: none; }
-.stub { position: fixed; z-index: 30; right: var(--m); bottom: var(--m); display: flex; text-decoration: none; font-size: 15px; line-height: 1; opacity: 0; visibility: hidden; transform: translateY(8px); transition: opacity 0.25s var(--ease), transform 0.25s var(--ease), visibility 0s linear 0.25s; }
-.stub.on { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
-.stub-name, .stub-act { padding: 14px 18px; font-weight: 700; line-height: 1; }
-.stub-name { background: var(--ink); color: var(--bg); }
-.stub-act { background: var(--accent); color: var(--accent-ink); font-weight: 500; }
 
 /* Sections ------------------------------------------------------------ */
 main h2 { font-size: var(--step-head); font-weight: 500; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 36px; }
@@ -163,6 +161,7 @@ mark { background: color-mix(in srgb, var(--accent) 30%, transparent); color: in
 .connect p { max-width: 36ch; }
 .connect .links { margin-top: 28px; display: flex; gap: 20px; align-items: center; flex-wrap: wrap; max-width: none; }
 .connect .btn { background: var(--accent-ink); color: var(--accent); }
+.connect .btn:focus-visible { outline-color: var(--accent-ink); }
 .connect .textlink { margin: 0; }
 
 .end { padding-block: 40px 36px; font-size: var(--step-small); color: var(--muted); display: flex; flex-direction: column; gap: 10px; }
@@ -208,17 +207,28 @@ html.anim .rv.in { opacity: 1; transform: none; }
 .lost h1 { font-size: var(--step-head); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; }
 
 /* Phones and narrow windows: one column ----------------------------------- */
+/* Words first: the stage stays first in the DOM (its only focusable element is #take), but shows
+   after the intro as a short photo strip with the demo below it. */
 @media (max-width: 860px) {
-  .split { grid-template-columns: 1fr; }
-  .stage { position: relative; height: 62svh; }
-  .slides { width: min(78vw, 400px); margin-top: 0; }
-  .slide .dispenser { min-height: 0; }
+  .split { display: flex; flex-direction: column; align-items: stretch; }
+  .reader, main { display: contents; }
+  .topbar { order: 1; }
+  .intro { order: 2; }
+  .stage { order: 3; }
+  main > section { order: 4; }
+  footer { order: 5; }
+  .stage { --strip: clamp(120px, 22svh, 200px); position: relative; isolation: isolate; height: auto; display: flex; flex-direction: column; align-items: stretch; background: var(--surface); margin-top: 28px; }
+  .stage picture { display: block; }
+  .room { position: static; display: block; height: var(--strip); width: 100%; object-position: 50% 40%; }
+  .stage::before { bottom: auto; height: var(--strip); }
+  .slides { width: 100%; margin-top: 0; padding: var(--m) 0; }
+  .slide[data-slide="demo"] { width: min(480px, 100%); justify-self: start; }
+  .slide .dispenser { min-height: 0; padding-inline: var(--m); }
   .stage-cap { display: none; }
-  .name { top: calc(62svh + 12px); right: auto; left: var(--m); font-size: 21vw; }
-  .topbar { position: absolute; top: 0; left: 0; right: 0; padding-inline: var(--m); z-index: 5; }
+  .topbar { padding-inline: var(--m); }
   .topbar nav { display: none; }
   main > section, .end { padding-inline: var(--m); }
-  .intro { min-height: 0; padding-top: calc(21vw * 0.84 + 28px); }
+  .intro { min-height: 0; padding-top: 12px; }
   .only-wide { display: none; }
   .only-narrow { display: inline; }
   .steps li { grid-template-columns: minmax(0, 1fr); gap: 4px; }
@@ -226,6 +236,6 @@ html.anim .rv.in { opacity: 1; transform: none; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .slide, .stub, .btn, .chip { transition: none; }
+  .slide, .btn, .chip, .topbar-connect { transition: none; }
   .ticket { animation: none; }
 }
