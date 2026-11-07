@@ -1,42 +1,42 @@
-/* saimanoj.com: the split stage. Tobacco and olive, General Sans, light and dark.
-   Components read the tokens; the only literal colours are the photo caption scrim. */
+/* saimanoj.com: the split stage. Mint and ink, General Sans, light and dark.
+   Components read the tokens; the only literal colours are the photo caption scrim and the pine tint on the photo. */
 
 :root {
-  --bg: #f1ebdc;
-  --surface: #e6dcc6;
-  --ink: #2b170a;
-  --muted: #6f5a43;
-  --accent: #525e1b;
-  --accent-ink: #f1ebdc;
-  --chip-off: #cbbf9f;
-  --deny: #2b170a;
-  --deny-ink: #f1ebdc;
+  --bg: #f3faf6;
+  --surface: #dff1e8;
+  --ink: #0f2a24;
+  --muted: #4d6b62;
+  --accent: #0a7d63;
+  --accent-ink: #ffffff;
+  --chip-off: #b4d2c4;
+  --deny: #0f2a24;
+  --deny-ink: #f3faf6;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #472913;
-    --surface: #55321a;
-    --ink: #e4e0cf;
-    --muted: #c0ad92;
-    --accent: #c79a3e;
-    --accent-ink: #2b170a;
-    --chip-off: #6e4a2c;
-    --deny: #e4e0cf;
-    --deny-ink: #2b170a;
+    --bg: #0a1f1a;
+    --surface: #12302a;
+    --ink: #e8f6ef;
+    --muted: #8fb5a8;
+    --accent: #3ee0b0;
+    --accent-ink: #06241d;
+    --chip-off: #1f4a40;
+    --deny: #e8f6ef;
+    --deny-ink: #06241d;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #472913;
-  --surface: #55321a;
-  --ink: #e4e0cf;
-  --muted: #c0ad92;
-  --accent: #c79a3e;
-  --accent-ink: #2b170a;
-  --chip-off: #6e4a2c;
-  --deny: #e4e0cf;
-  --deny-ink: #2b170a;
+  --bg: #0a1f1a;
+  --surface: #12302a;
+  --ink: #e8f6ef;
+  --muted: #8fb5a8;
+  --accent: #3ee0b0;
+  --accent-ink: #06241d;
+  --chip-off: #1f4a40;
+  --deny: #e8f6ef;
+  --deny-ink: #06241d;
   color-scheme: dark;
 }
 
@@ -94,12 +94,13 @@ html:not(.js) .theme { display: none; }
 /* Layout: the stage (left, pinned) and the reader (right) -------------- */
 .split { display: grid; grid-template-columns: 47% 1fr; align-items: start; }
 .stage { position: sticky; top: 0; height: 100svh; overflow: hidden; background: var(--surface); display: grid; place-items: center; }
-.room { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; filter: grayscale(1) brightness(0.55) contrast(1.05); }
+.room { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; filter: grayscale(1) brightness(0.5) contrast(1.1); }
+.stage::before { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: #0b4a3a; mix-blend-mode: color; opacity: 0.7; }
 
 /* The pinned half: four slides in one grid cell, the one for the role being read is shown.
    Without the `swap` class (phones, no JavaScript) only the demo slide shows and the diagrams stay
    inline in their roles. The head script sets `swap` before first paint on wide screens. */
-.slides { position: relative; width: min(600px, 92%); display: grid; margin-top: -6svh; }
+.slides { position: relative; z-index: 2; width: min(600px, 92%); display: grid; margin-top: -6svh; }
 .slide { grid-area: 1 / 1; align-self: center; display: flex; flex-direction: column; gap: 14px; opacity: 0; visibility: hidden; transform: translateY(10px); transition: opacity 0.55s var(--ease), transform 0.55s var(--ease), visibility 0s linear 0.55s; }
 .slide.on { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
 .slide[data-slide="demo"] { width: min(420px, 100%); justify-self: center; }

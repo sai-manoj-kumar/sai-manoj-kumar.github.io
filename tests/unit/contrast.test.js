@@ -31,10 +31,10 @@ const TEXT = [['ink', 'bg'], ['ink', 'surface'], ['muted', 'bg'], ['muted', 'sur
 const GRAPHICS = [['accent', 'bg'], ['accent', 'surface']];
 
 test('the palettes match the spec', () => {
-  assert.equal(light.bg, '#f1ebdc');
-  assert.equal(light.accent, '#525e1b');
-  assert.equal(dark.bg, '#472913');
-  assert.equal(dark.accent, '#c79a3e');
+  assert.equal(light.bg, '#f3faf6');
+  assert.equal(light.accent, '#0a7d63');
+  assert.equal(dark.bg, '#0a1f1a');
+  assert.equal(dark.accent, '#3ee0b0');
 });
 
 test('the dark palette is identical whether it comes from the OS or from the switch', () => {
