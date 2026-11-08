@@ -22,8 +22,8 @@ test('the three diagrams sit inside Defender, Application Gateway and Network Mo
   assert.equal(doc.querySelectorAll('.viz').length, 3);
 });
 
-test('only the first role is rendered open; the rest open as they are scrolled to', () => {
-  assert.deepEqual(roles.map((r) => r.classList.contains('open')), [true, false, false, false]);
+test('no role is rendered open: each one opens as it is scrolled to (without JavaScript or with reduced motion the closed styling never applies)', () => {
+  assert.deepEqual(roles.map((r) => r.classList.contains('open')), [false, false, false, false]);
 });
 
 test('there is no way to close a role: no buttons, details, summaries or aria-expanded in Experience', () => {

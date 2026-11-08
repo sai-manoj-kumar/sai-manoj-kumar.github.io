@@ -1,13 +1,13 @@
 /* Roles open as the reader scrolls down to them, in step with the scroll, and stay open. Nothing here ever closes
    a role: each role's progress only goes up.
-   A role starts opening when its top reaches 85% of the way down the screen and is fully open when it reaches the
-   middle, so the body grows as the page moves, like a page you are turning. Progress is worked out from the
+   A role starts opening as its top enters the bottom of the screen (95% down) and is fully open when it reaches 40%
+   of the way down, so the body grows, rises and comes into focus as the page moves, like a page you are turning. Progress is worked out from the
    role's position, not from an observer, so a reload or an anchor jump that lands mid-page opens every role
-   above the middle too. The styling only exists under html.reveal (see global.css); without JavaScript, or
+   above that line too. The styling only exists under html.reveal (see global.css); without JavaScript, or
    with reduced motion, every role is simply open.
    Each role that finishes opening is announced once as a `role-open` event, which analytics.js listens for. */
-const START = 0.85;
-const END = 0.5;
+const START = 0.95;
+const END = 0.4;
 
 const roles = [...document.querySelectorAll('.role')].map((el) => ({
   el,

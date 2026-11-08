@@ -44,8 +44,10 @@ test('the theme switch reports the choice', async ({ page }) => {
 test('reading down to a role reports it once', async ({ page }) => {
   await record(page);
   await page.goto('/');
-  const tops = await roleTops(page);
-  await wheelToY(page, tops[1] - 200);
+  for (const i of [0, 1]) {
+    await wheelToY(page, (await roleTops(page))[i] - 200); // read fresh: a role that opens pushes the next one down
+    await page.waitForTimeout(300);
+  }
   const roles = (await beacons(page)).filter((b) => b.e === 'role').map((b) => b.l);
   expect(roles).toContain('memory');
   expect(new Set(roles).size).toBe(roles.length);

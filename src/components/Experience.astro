@@ -8,10 +8,10 @@ const diagrams = { memory: MemoryBars, rewrite: HeaderRewrite, trace: Traceroute
 ---
 <section class="work" id="work" aria-labelledby="work-h">
   <h2 id="work-h">Experience</h2>
-  {site.experience.map((role, i) => {
+  {site.experience.map((role) => {
     const Diagram = role.visual ? diagrams[role.visual] : null;
     return (
-      <article class:list={['role', { open: i === 0 }]} data-role={role.slug}>
+      <article class="role" data-role={role.slug}>
         <div class="role-head">
           <h3>{role.project}</h3>
           <p class="who">{role.company}, {role.title}</p>

@@ -11,14 +11,13 @@ const state = (page) =>
     text: r.querySelector('.role-body').textContent.trim().length,
   })));
 
-test('on load only the first role is open, but every role keeps its text in the page', async ({ page }) => {
+test('on load no role is open yet, but every role keeps its text in the page', async ({ page }) => {
   await page.goto('/');
   await page.waitForTimeout(700);
   const roles = await state(page);
-  expect(roles.map((r) => r.open)).toEqual([true, false, false, false]);
-  expect(roles[0].body).toBeGreaterThan(0);
-  for (const r of roles.slice(1)) {
-    expect(r.body, `${r.slug} body is clipped, not removed`).toBe(0);
+  expect(roles.map((r) => r.open)).toEqual([false, false, false, false]);
+  for (const r of roles) {
+    expect(r.body, `${r.slug} body is clipped, not removed`).toBeLessThan(80); // the first role may already have begun to open
     expect(r.text, `${r.slug} text stays readable to assistive tech and find-in-page`).toBeGreaterThan(40);
   }
   const display = await page.locator('.role-body').evaluateAll((els) => els.map((e) => [getComputedStyle(e).display, getComputedStyle(e).visibility]));
@@ -27,7 +26,7 @@ test('on load only the first role is open, but every role keeps its text in the 
 
 test('each role opens as its heading passes the middle of the screen, and stays open', async ({ page }) => {
   await page.goto('/');
-  for (let i = 1; i < 4; i += 1) {
+  for (let i = 0; i < 4; i += 1) {
     const tops = await roleTops(page); // read fresh: every role that opens pushes the later ones down
     await wheelToY(page, tops[i] - 300);
     await page.waitForTimeout(800);
@@ -43,9 +42,10 @@ test('each role opens as its heading passes the middle of the screen, and stays 
 
 test('clicking a role heading or summary changes nothing', async ({ page }) => {
   await page.goto('/');
-  const tops = await roleTops(page);
-  await wheelToY(page, tops[1] - 300);
-  await page.waitForTimeout(800);
+  for (const i of [0, 1]) {
+    await wheelToY(page, (await roleTops(page))[i] - 300); // read fresh: a role that opens pushes the next one down
+    await page.waitForTimeout(500);
+  }
   await page.locator('.role').nth(1).locator('h3').click();
   await page.locator('.role').nth(1).locator('.summary').click();
   await page.locator('.role').first().locator('h3').click();
@@ -59,7 +59,7 @@ test('landing mid-page after a reload opens every role above the middle of the s
   await page.waitForTimeout(200);
   await page.reload();
   await page.waitForTimeout(900);
-  const expected = await page.evaluate(() => [...document.querySelectorAll('.role')].map((r, i) => i === 0 || r.getBoundingClientRect().top <= window.innerHeight * 0.5));
+  const expected = await page.evaluate(() => [...document.querySelectorAll('.role')].map((r) => r.getBoundingClientRect().top <= window.innerHeight * 0.4));
   expect((await state(page)).map((r) => r.open)).toEqual(expected);
   expect(expected.filter(Boolean).length).toBeGreaterThanOrEqual(3);
 });
@@ -120,6 +120,9 @@ test.describe('Scroll-linked opening', () => {
         body: role.querySelector('.role-body').getBoundingClientRect().height,
         full: role.querySelector('.role-inner').offsetHeight,
         opacity: Number(getComputedStyle(role.querySelector('.role-inner')).opacity),
+        head: Number(getComputedStyle(role.querySelector('.role-head')).opacity),
+        blur: getComputedStyle(role.querySelector('.role-inner')).filter,
+        lift: new DOMMatrix(getComputedStyle(role.querySelector('.role-inner')).transform).m42,
         open: role.classList.contains('open'),
       };
     }, index);
@@ -128,11 +131,11 @@ test.describe('Scroll-linked opening', () => {
   test('the body grows with the scroll: a little, then more, then all of it once the heading reaches the middle', async ({ page }) => {
     await page.goto('/');
     await page.waitForTimeout(300);
-    const early = await openness(page, 1, 0.88); // heading just entering the lower part
+    const early = await openness(page, 1, 0.92); // heading just entering at the bottom of the screen
     const mid = await openness(page, 1, 0.7);
-    const later = await openness(page, 1, 0.58);
-    const done = await openness(page, 1, 0.4);
-    expect(early.body, 'barely open at first').toBeLessThan(early.full * 0.2);
+    const later = await openness(page, 1, 0.55);
+    const done = await openness(page, 1, 0.3);
+    expect(early.body, 'barely open at first').toBeLessThan(early.full * 0.25);
     expect(mid.body, 'partly open').toBeGreaterThan(early.body + 20);
     expect(mid.body).toBeLessThan(mid.full * 0.85);
     expect(later.body, 'more open as it travels up').toBeGreaterThan(mid.body + 20);
@@ -141,13 +144,22 @@ test.describe('Scroll-linked opening', () => {
     expect(early.open && mid.open).toBe(false);
     expect(mid.opacity, 'the text fades in as it opens').toBeGreaterThan(early.opacity);
     expect(done.opacity).toBe(1);
+    // the effect has to be easy to see: dim heading, blurred text, text rising into place
+    expect(early.head, 'the heading arrives dimmed').toBeLessThan(0.6);
+    expect(done.head, 'and ends at full strength').toBe(1);
+    expect(mid.head).toBeGreaterThan(early.head);
+    expect(mid.blur, 'text sharpens as it opens').toMatch(/blur/);
+    expect(done.blur).toBe('none');
+    expect(mid.lift, 'text rises into place').toBeGreaterThan(5);
+    expect(done.lift).toBe(0);
   });
 
   test('scrolling back up never closes it again', async ({ page }) => {
     await page.goto('/');
     await page.waitForTimeout(300);
-    const done = await openness(page, 1, 0.4);
-    const back = await openness(page, 1, 0.9);
+    await openness(page, 1, 0.3); // roles above open on the way down and move this one, so settle first
+    const done = await openness(page, 1, 0.3);
+    const back = await openness(page, 1, 0.92);
     expect(back.body).toBeGreaterThanOrEqual(done.full - 2);
     expect(back.open).toBe(true);
     expect(back.opacity).toBe(1);
