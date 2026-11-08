@@ -1,0 +1,11 @@
+---
+import { site } from '../data/site.js';
+import Pipeline from './Pipeline.astro';
+
+const { hero } = site;
+const [before, after] = hero.sentence.split(hero.figure);
+---
+<section class="hero" aria-label="Introduction">
+  <h1>{before}<span class="figure">{hero.figure}</span>{after}</h1>
+  <Pipeline />
+</section>

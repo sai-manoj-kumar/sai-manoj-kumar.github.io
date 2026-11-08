@@ -1,0 +1,11 @@
+---
+import { site } from '../data/site.js';
+import TicketDemo from './diagrams/TicketDemo.astro';
+
+const { limiter } = site;
+---
+<section class="limiter" id="limiter" data-role="demo" aria-labelledby="limiter-h">
+  <h2 id="limiter-h">{limiter.heading}</h2>
+  <p class="note">{limiter.note}</p>
+  <TicketDemo />
+</section>

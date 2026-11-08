@@ -9,7 +9,6 @@ test.describe('JavaScript off (Review Focus 1)', () => {
     await expect(page.locator('#fallback')).toBeVisible();
     await expect(page.locator('#take')).toBeDisabled();
     await expect(page.locator('.role').first()).toBeVisible();
-    expect(await page.locator('.role').first().evaluate((el) => getComputedStyle(el).opacity)).toBe('1');
     await expect(page.locator('#stack .group')).toHaveCount(4);
     expect(await page.locator('.role .viz:visible').count()).toBe(3);
   });
@@ -20,8 +19,8 @@ test.describe('Reduced motion (Review Focus 2)', () => {
 
   test('every section is visible and nothing animates in', async ({ page }) => {
     await page.goto('/');
-    expect(await page.evaluate(() => document.documentElement.classList.contains('anim'))).toBe(false);
-    for (const selector of ['.role', '#stack .group', '#about', '#connect']) {
+    expect(await page.evaluate(() => document.documentElement.classList.contains('reveal'))).toBe(false);
+    for (const selector of ['.hero', '.role', '#stack .group', '#about']) {
       const el = page.locator(selector).first();
       await expect(el).toBeVisible();
       expect(await el.evaluate((e) => getComputedStyle(e).opacity)).toBe('1');

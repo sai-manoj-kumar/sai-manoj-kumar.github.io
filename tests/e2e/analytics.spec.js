@@ -27,11 +27,11 @@ test('a ?ref= tag becomes the source on every event', async ({ page }) => {
   await record(page);
   await page.goto('/?ref=Test-Link');
   await keepOnPage(page);
-  await page.locator('#connect a.btn').click();
-  await expect.poll(async () => (await beacons(page)).length).toBe(3); // the observers report a frame later
+  await page.locator('.topbar-link[data-track="linkedin:topbar"]').click();
+  await expect.poll(async () => (await beacons(page)).length).toBe(2);
   const sent = await beacons(page);
-  expect(sent.map((b) => b.s)).toEqual(['test-link', 'test-link', 'test-link']);
-  expect(sent.map((b) => `${b.e}:${b.l}`).sort()).toEqual(['end:connect', 'link:linkedin:connect', 'visit:page']);
+  expect(sent.map((b) => b.s)).toEqual(['test-link', 'test-link']);
+  expect(sent.map((b) => `${b.e}:${b.l}`).sort()).toEqual(['link:linkedin:topbar', 'visit:page']);
 });
 
 test('the theme switch reports the choice', async ({ page }) => {
@@ -55,6 +55,6 @@ test('Do Not Track sends nothing at all', async ({ page }) => {
   await record(page, { dnt: true });
   await page.goto('/');
   await keepOnPage(page);
-  await page.locator('#connect a.btn').click();
+  await page.locator('.topbar-link[data-track="linkedin:topbar"]').click();
   expect(await beacons(page)).toEqual([]);
 });

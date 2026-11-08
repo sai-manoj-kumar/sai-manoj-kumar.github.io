@@ -15,7 +15,6 @@ const structuredData = {
       name: site.name,
       jobTitle: 'Senior Software Engineer',
       url: canonical,
-      image: new URL('/images/portrait.jpg', site.url).href,
       sameAs: [site.links.linkedin, site.links.github],
     },
     { '@type': 'WebSite', '@id': `${canonical}#website`, url: canonical, name: site.name, publisher: { '@id': `${canonical}#person` } },
@@ -58,9 +57,6 @@ const structuredData = {
       (function () {
         var root = document.documentElement;
         root.classList.add('js');
-        // The stage is pinned from 861px up (global.css switches at 860px). Set before first paint so the
-        // inline diagrams never flash and then disappear.
-        if (window.matchMedia('(min-width: 861px)').matches) root.classList.add('swap');
         // Apply a stored theme before first paint. Storage can throw or hold junk: ignore both.
         try {
           var theme = localStorage.getItem('theme');

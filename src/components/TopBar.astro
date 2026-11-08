@@ -1,14 +1,13 @@
 ---
 import { site } from '../data/site.js';
+import Icon from './Icon.astro';
 import ThemeSwitch from './ThemeSwitch.astro';
+
+const { name, links } = site;
 ---
 <header class="topbar">
-  <a class="topbar-name" href="#top">{site.name}</a>
-  <nav aria-label="Sections">
-    <a href="#work">Experience</a>
-    <a href="#stack">Tech stack</a>
-    <a href="#about">About</a>
-  </nav>
-  <a class="topbar-connect" href="#connect">Connect</a>
+  <a class="topbar-name" href="#top">{name}</a>
+  <a class="topbar-link" href={links.linkedin} data-track="linkedin:topbar"><Icon name="linkedin" />LinkedIn</a>
+  <a class="topbar-link" href={links.github} data-track="github:topbar"><Icon name="github" />GitHub</a>
   <ThemeSwitch />
 </header>

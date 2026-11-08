@@ -2,7 +2,7 @@
 import { site } from '../data/site.js';
 import Icon from './Icon.astro';
 
-const { footer, links, name, photoCredit: c } = site;
+const { footer, links, name } = site;
 const profile = (url) => url.replace('https://www.', '').replace('https://', '');
 ---
 <footer class="end">
@@ -10,8 +10,5 @@ const profile = (url) => url.replace('https://www.', '').replace('https://', '')
     © {footer.year} {name} ·
     <a href={links.linkedin}><Icon name="linkedin" />{profile(links.linkedin)}</a> ·
     <a href={links.github}><Icon name="github" />{profile(links.github)}</a>
-  </p>
-  <p class="credits">
-    Photo: <a href={c.titleUrl}>“{c.title}”</a> by {c.author}, <a href={c.licenseUrl}>{c.license}</a>, via {c.source}. {c.note}
   </p>
 </footer>
