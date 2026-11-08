@@ -148,3 +148,86 @@ test.describe('Auto-play', () => {
     });
   });
 });
+
+test.describe('Tickets travel the diagram', () => {
+  const points = (page, which) => page.evaluate((w) => {
+    const parcel = document.querySelectorAll('.arch-parcel')[w];
+    const frames = parcel.getAnimations()[0].effect.getKeyframes();
+    const xy = (f) => f.transform.match(/translate\((-?[\d.]+)px,\s*(-?[\d.]+)px\)/).slice(1).map(Number);
+    const map = document.querySelector('.arch-map').getBoundingClientRect();
+    const centre = (sel) => { const r = document.querySelector(sel).getBoundingClientRect(); return [r.left - map.left + r.width / 2 - 7, r.top - map.top + r.height / 2 - 7]; };
+    return { cls: parcel.className, path: frames.map(xy), clients: centre('.arch-clients .arch-node'), hot: centre('.arch-node.hot') };
+  }, which);
+
+  test.use({ reducedMotion: 'no-preference' });
+
+  test('an admitted ticket leaves Clients, stops at the rate limiter and ends at a service; then it is gone', async ({ page }) => {
+    await openPage(page);
+    await expect(page.locator('#take')).toBeEnabled();
+    await page.locator('#take').click({ force: true });
+    await expect(page.locator('.arch-parcel')).toHaveCount(1);
+    const p = await points(page, 0);
+    expect(p.cls).toMatch(/\bok\b/);
+    const first = p.path[0];
+    const last = p.path.at(-1);
+    expect(Math.abs(first[0] - p.clients[0])).toBeLessThan(2);
+    expect(p.path.some(([x, y]) => Math.abs(x - p.hot[0]) < 2 && Math.abs(y - p.hot[1]) < 2), 'it stops at the rate limiter').toBe(true);
+    expect(last[0], 'and ends past the limiter, at a service').toBeGreaterThan(p.hot[0] + 40);
+    await expect(page.locator('.arch-parcel')).toHaveCount(0, { timeout: 4000 });
+  });
+
+  test('a denied ticket goes to the rate limiter and comes back to Clients, marked as denied', async ({ page }) => {
+    await openPage(page);
+    const take = page.locator('#take');
+    await expect(take).toBeEnabled();
+    for (let i = 0; i < 6; i += 1) await take.click({ force: true });
+    const count = await page.locator('.arch-parcel').count();
+    const p = await points(page, count - 1);
+    expect(p.cls).toMatch(/\bno\b/);
+    const last = p.path.at(-1);
+    expect(Math.abs(last[0] - p.clients[0])).toBeLessThan(2);
+    expect(Math.abs(last[1] - p.clients[1])).toBeLessThan(2);
+    expect(p.path.some(([x, y]) => Math.abs(x - p.hot[0]) < 2 && Math.abs(y - p.hot[1]) < 2)).toBe(true);
+  });
+
+  test('the rate limiter node flashes with each ticket: accent glow when admitted, dark when denied, then settles', async ({ page }) => {
+    await page.clock.install({ time: 0 });
+    await openPage(page);
+    await page.clock.pauseAt(10000);
+    const arch = page.locator('figure.arch');
+    const take = page.locator('#take');
+    await expect(take).toBeEnabled();
+    await expect(arch).not.toHaveAttribute('data-flash', /.+/);
+    await take.click();
+    await expect(arch).toHaveAttribute('data-flash', 'admit');
+    await page.clock.runFor(900);
+    await expect(arch).not.toHaveAttribute('data-flash', /.+/);
+    for (let i = 0; i < 5; i += 1) await take.click();
+    await expect(arch).toHaveAttribute('data-flash', 'deny');
+    await page.clock.runFor(900);
+    await expect(arch).not.toHaveAttribute('data-flash', /.+/);
+  });
+
+  test('the tokens in the rate limiter node drain as tickets are admitted', async ({ page }) => {
+    await page.clock.install({ time: 0 });
+    await openPage(page);
+    await page.clock.pauseAt(10000);
+    await expect(page.locator('#take')).toBeEnabled();
+    await page.locator('#take').click();
+    await page.locator('#take').click();
+    await expect(page.locator('.arch-node.hot .chip.empty')).toHaveCount(2);
+    await expect(page.locator('.arch-node.hot #bucket-label')).toHaveText('3 of 5 tokens left');
+  });
+
+  test.describe('Reduced motion', () => {
+    test.use({ reducedMotion: 'reduce' });
+    test('nothing travels, but the node still flashes and the log still fills', async ({ page }) => {
+      await openPage(page);
+      await expect(page.locator('#take')).toBeEnabled();
+      await page.locator('#take').click({ force: true });
+      await expect(page.locator('figure.arch')).toHaveAttribute('data-flash', 'admit');
+      expect(await page.locator('.arch-parcel').count()).toBe(0);
+      await expect(page.locator('#tickets .ticket')).toHaveCount(1);
+    });
+  });
+});

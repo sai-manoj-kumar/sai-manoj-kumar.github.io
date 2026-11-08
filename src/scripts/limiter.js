@@ -34,6 +34,49 @@ if (take && list && label) {
     while (list.children.length > 4) list.removeChild(list.lastChild);
   }
 
+  /* A ticket travels the diagram: Clients, Authentication, the rate limiter, then on to a service if admitted or back
+     to Clients if denied. Positions come from the nodes themselves, so it follows the layout on any screen size.
+     Reduced motion gets no parcels; the diagram still flashes. */
+  const arch = document.querySelector('figure.arch');
+  const map = document.querySelector('.arch-map');
+  const layer = document.querySelector('.arch-parcels');
+  const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const FLASH_MS = 450;
+  const FLIGHT_MS = 1500;
+  let flashTimer = null;
+
+  function flash(ok) {
+    if (!arch) return;
+    arch.dataset.flash = ok ? 'admit' : 'deny';
+    clearTimeout(flashTimer);
+    flashTimer = setTimeout(() => delete arch.dataset.flash, FLASH_MS);
+  }
+
+  function centre(el, box) {
+    const r = el.getBoundingClientRect();
+    return [Math.round((r.left - box.left + r.width / 2 - 7) * 10) / 10, Math.round((r.top - box.top + r.height / 2 - 7) * 10) / 10];
+  }
+
+  function send(ok, n) {
+    if (calm || !map || !layer || !layer.animate) return;
+    const box = map.getBoundingClientRect();
+    const at = (sel, i = 0) => centre(document.querySelectorAll(sel)[i], box);
+    const clients = at('.arch-clients .arch-node');
+    const auth = at('.arch-gateway .arch-node');
+    const hot = at('.arch-node.hot');
+    /* Admitted tickets land at the left edge of the service, clear of its name. */
+    const door = document.querySelectorAll('.arch-services .arch-node')[n % 2].getBoundingClientRect();
+    const end = ok ? [Math.round((door.left - box.left + 4) * 10) / 10, at('.arch-services .arch-node', n % 2)[1]] : clients;
+    const parcel = document.createElement('span');
+    parcel.className = `arch-parcel ${ok ? 'ok' : 'no'}`;
+    layer.append(parcel);
+    const frame = ([x, y], offset, opacity = 1) => ({ transform: `translate(${x}px, ${y}px)`, opacity, offset });
+    const run = parcel.animate([
+      frame(clients, 0, 0), frame(clients, 0.04), frame(auth, 0.3), frame(hot, 0.5), frame(hot, 0.62), frame(end, 0.96), frame(end, 1, 0),
+    ], { duration: FLIGHT_MS, easing: 'ease-in-out', fill: 'both' });
+    run.onfinish = () => parcel.remove();
+  }
+
   const denyText = (readyAt) => `429 Too Many Requests. ${describeDenial(readyAt)}`;
 
   function takeOne() {
@@ -45,6 +88,8 @@ if (take && list && label) {
       addTicket(`No. ${pad(served)}`, denyText(result.readyAt), true, result.readyAt);
     }
     paint();
+    flash(result.ok);
+    send(result.ok, served);
   }
 
   /* Auto-play: while the demo is on screen and the tab is showing, a ticket is taken every AUTO_MS, so a visitor sees
@@ -93,7 +138,7 @@ if (take && list && label) {
       if (onScreen) play();
       else pause();
     }, { threshold: 0.5 });
-    watcher.observe(dispenser);
+    watcher.observe(map || dispenser);
     document.addEventListener('visibilitychange', () => (document.hidden ? pause() : play()));
   }
 

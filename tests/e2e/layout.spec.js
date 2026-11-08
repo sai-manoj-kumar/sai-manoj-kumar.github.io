@@ -56,3 +56,49 @@ test('events are moving along the pipeline, and stop with reduced motion', async
   await page.emulateMedia({ reducedMotion: 'reduce' });
   expect(await running()).toBe(false);
 });
+
+test.describe('The rate limiter demo and diagram are one panel', () => {
+  const box = (page, sel) => page.locator(sel).first().evaluate((el) => {
+    const r = el.getBoundingClientRect();
+    return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, width: r.width, height: r.height };
+  });
+
+  test('on a wide screen the panel uses the full column and reads left to right: button, limiter, services', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/');
+    const panel = await box(page, '#dispenser');
+    const take = await box(page, '#take');
+    const hot = await box(page, '.arch-node.hot');
+    const services = await box(page, '.arch-services');
+    expect(panel.width).toBeGreaterThan(900);
+    expect(take.right).toBeLessThanOrEqual(hot.left);
+    expect(hot.right).toBeLessThanOrEqual(services.left);
+    expect(panel.right).toBeLessThanOrEqual(1440);
+    const tokens = await page.locator('.arch-node.hot .chip').count();
+    expect(tokens).toBe(5);
+  });
+
+  test('on a phone it reads top to bottom, with the button first, and nothing overflows', async ({ page }) => {
+    for (const width of [320, 390]) {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto('/');
+      const take = await box(page, '#take');
+      const hot = await box(page, '.arch-node.hot');
+      const services = await box(page, '.arch-services');
+      const panel = await box(page, '#dispenser');
+      expect(take.bottom).toBeLessThanOrEqual(hot.top);
+      expect(hot.bottom).toBeLessThanOrEqual(services.top);
+      expect(panel.right).toBeLessThanOrEqual(width);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
+    }
+  });
+
+  test('the rate limiter is the one filled node, in the accent colour, and its tokens are readable on it', async ({ page }) => {
+    await page.goto('/');
+    const fills = await page.locator('figure.arch .arch-node').evaluateAll((els) => els.map((e) => [e.firstChild.textContent.trim(), getComputedStyle(e).backgroundColor]));
+    const accent = await page.evaluate(() => { const p = document.createElement('i'); p.style.color = 'var(--accent)'; document.body.append(p); const c = getComputedStyle(p).color; p.remove(); return c; });
+    expect(fills.filter(([, bg]) => bg === accent).map(([n]) => n)).toEqual(['Rate limiter']);
+    const chip = await page.locator('.arch-node.hot .chip').first().evaluate((e) => getComputedStyle(e).backgroundColor);
+    expect(chip).not.toBe(accent);
+  });
+});
