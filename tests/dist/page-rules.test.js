@@ -10,7 +10,7 @@ test('exactly one h1, and the three section headings are h2', () => {
   assert.equal(doc.querySelectorAll('h1').length, 1);
   assert.deepEqual(
     [...doc.querySelectorAll('h2')].map((h) => h.textContent.trim()),
-    ['Experience', 'Tech stack', 'Connect with me'],
+    ['Experience', 'Rate limiter', 'Tech stack'],
   );
 });
 
@@ -19,11 +19,11 @@ test('every image has alt text, width and height', () => {
     assert.ok(img.hasAttribute('alt'), `alt on ${img.getAttribute('src')}`);
     assert.ok(img.getAttribute('width') && img.getAttribute('height'), `size on ${img.getAttribute('src')}`);
   }
-  assert.equal(doc.querySelectorAll('img').length, 2, 'stage photo and about portrait');
+  assert.equal(doc.querySelectorAll('img').length, 0, 'the page has no photos');
 });
 
 test('only allow-listed hosts are linked, and nothing loads from Fontshare', () => {
-  const allowed = new Set(['www.linkedin.com', 'github.com', 'commons.wikimedia.org', 'creativecommons.org', 'saimanoj.com']);
+  const allowed = new Set(['www.linkedin.com', 'github.com', 'saimanoj.com']);
   for (const m of html.matchAll(/(?:src|href|content)="(https?:\/\/[^"]+)"/g)) {
     assert.ok(allowed.has(new URL(m[1]).hostname), `unexpected host: ${m[1]}`);
   }
@@ -39,7 +39,7 @@ test('no email, resume or repository links', () => {
 test('no email address in any file the site publishes', () => {
   const dist = new URL('../../dist/', import.meta.url);
   const files = readdirSync(dist, { recursive: true }).filter((f) => !f.endsWith('.woff2') && /\.[a-z0-9]+$|_headers$/i.test(f));
-  for (const required of ['index.html', '404.html', 'robots.txt', 'og.jpg', 'images/hero-stage.jpg', 'images/portrait.jpg']) {
+  for (const required of ['index.html', '404.html', 'robots.txt', 'og.jpg', 'favicon.svg']) {
     assert.ok(files.includes(required), `${required} must be part of the scan (found ${files.length} files)`);
   }
   for (const f of files) {
@@ -52,7 +52,7 @@ test('no email address in any file the site publishes', () => {
 
 test('LinkedIn is the contact route, and it is a profile link', () => {
   const links = [...doc.querySelectorAll('a[href*="linkedin.com"]')].map((a) => a.getAttribute('href'));
-  assert.ok(links.length >= 2, 'LinkedIn linked from the intro and the connect section');
+  assert.ok(links.length >= 3, 'LinkedIn linked from the top bar, About and the footer');
   for (const href of links) assert.equal(href, 'https://www.linkedin.com/in/sai-manoj-kumar');
 });
 

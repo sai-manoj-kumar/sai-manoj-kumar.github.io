@@ -6,15 +6,15 @@
   html, body { margin: 0; }
   body {
     width: 1200px; height: 630px; box-sizing: border-box; padding: 0 96px;
-    display: flex; align-items: center; gap: 72px;
-    background: #0a1f1a; color: #e8f6ef; font-family: 'General Sans', system-ui, sans-serif;
+    display: flex; flex-direction: column; justify-content: center;
+    background: #0e0f12; color: #ecedf0; font-family: 'General Sans', system-ui, sans-serif;
   }
-  .copy { flex: 1; }
-  h1 { margin: 0; font-size: 120px; line-height: 0.95; letter-spacing: -0.03em; font-weight: 700; }
-  p { margin: 28px 0 0; font-size: 48px; line-height: 1.1; font-weight: 500; }
-  img { display: block; width: 240px; height: 300px; padding: 10px; background: #12302a; object-fit: cover; object-position: 50% 22%; }
+  h1 { margin: 0; font-size: 132px; line-height: 0.95; letter-spacing: -0.03em; font-weight: 700; }
+  .rule { width: 160px; height: 8px; background: #7b9bff; margin: 40px 0 36px; }
+  p { margin: 0; font-size: 48px; line-height: 1.1; font-weight: 500; color: #9aa0ad; }
 </style>
 <body>
-  <div class="copy"><h1>Sai Manoj</h1><p>Senior software engineer</p></div>
-  <img src="../public/images/portrait.jpg" alt="">
+  <h1>Sai Manoj</h1>
+  <div class="rule"></div>
+  <p>Senior software engineer</p>
 </body>

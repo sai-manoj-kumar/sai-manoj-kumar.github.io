@@ -23,15 +23,15 @@ test('the head script reads the stored choice before first paint, safely', () =>
   assert.match(script, /localStorage\.getItem\('theme'\)/);
   assert.match(script, /setAttribute\('data-theme'/);
   assert.match(script, /try\s*{/, 'storage access is inside try/catch');
-  assert.match(script, /min-width: 861px/, 'sets the swap class before first paint');
+  assert.doesNotMatch(script, /swap|min-width: 861px/, 'the pinned stage is gone, so no layout class is set');
 });
 
 test('the colour scheme and theme-color metas exist for both modes', () => {
   assert.equal(doc.querySelector('meta[name="color-scheme"]').getAttribute('content'), 'light dark');
   const colors = [...doc.querySelectorAll('meta[name="theme-color"]')];
   assert.deepEqual(colors.map((m) => [m.getAttribute('data-scheme'), m.getAttribute('content'), m.getAttribute('media')]), [
-    ['light', '#f3faf6', '(prefers-color-scheme: light)'],
-    ['dark', '#0a1f1a', '(prefers-color-scheme: dark)'],
+    ['light', '#ffffff', '(prefers-color-scheme: light)'],
+    ['dark', '#0e0f12', '(prefers-color-scheme: dark)'],
   ]);
 });
 

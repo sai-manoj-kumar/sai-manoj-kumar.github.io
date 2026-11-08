@@ -5,7 +5,7 @@ import { parseHTML } from 'linkedom';
 import { doc } from './helpers.js';
 import { EVENT_LABELS } from '../../src/scripts/events.js';
 
-test('every tracked link carries an allowed label, and the five links are all tagged', () => {
+test('every tracked link carries an allowed label, and the three links are all tagged', () => {
   const tracked = [...doc.querySelectorAll('[data-track]')];
   const labels = tracked.map((a) => a.getAttribute('data-track'));
   for (const label of labels) assert.ok(EVENT_LABELS.link.includes(label), `unknown link label: ${label}`);
@@ -19,8 +19,8 @@ test('each tracked link points at LinkedIn or GitHub, matching its label', () =>
   }
 });
 
-test('every role has a slide name the analytics allow-list knows', () => {
-  const names = [...doc.querySelectorAll('.role[data-slide]')].map((r) => r.getAttribute('data-slide'));
+test('every role has a name the analytics allow-list knows', () => {
+  const names = [...doc.querySelectorAll('.role[data-role]')].map((r) => r.getAttribute('data-role'));
   assert.equal(names.length, 4);
   for (const name of names) assert.ok(EVENT_LABELS.role.includes(name), `unknown role: ${name}`);
 });

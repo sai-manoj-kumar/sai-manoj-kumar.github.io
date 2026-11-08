@@ -19,22 +19,10 @@ test('about: nine years of backend and one LinkedIn link in the letter', () => {
   assert.deepEqual(links, ['https://www.linkedin.com/in/sai-manoj-kumar']);
 });
 
-test('connect: LinkedIn and GitHub profile only, and the GitHub label invites collaboration', () => {
-  const links = [...doc.querySelectorAll('#connect a')];
-  assert.deepEqual(links.map((a) => a.getAttribute('href')), [
-    'https://www.linkedin.com/in/sai-manoj-kumar',
-    'https://github.com/sai-manoj-kumar',
-  ]);
-  assert.equal(links[1].textContent.trim(), 'Collaborate on GitHub');
-});
-
-test('footer: copyright, profile links and the photo credit', () => {
+test('footer: copyright and the profile links', () => {
   const footer = doc.querySelector('footer');
   assert.match(footer.textContent, /© 2026 Sai Manoj/);
-  assert.match(footer.textContent, /Racks Amravati Data Center/);
-  assert.match(footer.textContent, /CC BY-SA 4\.0/);
   const hrefs = [...footer.querySelectorAll('a')].map((a) => a.getAttribute('href'));
   assert.ok(hrefs.includes('https://www.linkedin.com/in/sai-manoj-kumar'));
   assert.ok(hrefs.includes('https://github.com/sai-manoj-kumar'));
-  assert.ok(hrefs.includes('https://creativecommons.org/licenses/by-sa/4.0'));
 });

@@ -40,7 +40,7 @@ test('person structured data, favicon and sitemap are in place', () => {
 });
 
 test('profile buttons and links carry their brand icon, hidden from assistive tech', () => {
-  for (const track of ['linkedin:hero', 'github:hero', 'linkedin:connect', 'github:connect']) {
+  for (const track of ['linkedin:topbar', 'github:topbar']) {
     const icon = doc.querySelector(`a[data-track="${track}"] svg.icon`);
     assert.ok(icon, `${track} has an icon`);
     assert.equal(icon.getAttribute('aria-hidden'), 'true');

@@ -1,0 +1,22 @@
+---
+import { site } from '../data/site.js';
+
+const { hero } = site;
+/* How many events travel on the line leaving each stage; the last stage has no line. */
+const dots = { event: 2, queue: 3, delivery: 3 };
+---
+<ol class="pipeline" aria-label={hero.pipelineLabel}>
+  {hero.stages.map((stage) => (
+    <li data-stage={stage.id}>
+      <div class="node-wrap">
+        <span class="node">{stage.label}</span>
+        {stage.fact && <p class="fact">{stage.fact}</p>}
+      </div>
+      {dots[stage.id] && (
+        <span class="lane" aria-hidden="true" style={`--n:${dots[stage.id]}`}>
+          {Array.from({ length: dots[stage.id] }, (_, i) => <span class="dot" aria-hidden="true" style={`--i:${i}`}></span>)}
+        </span>
+      )}
+    </li>
+  ))}
+</ol>

@@ -48,3 +48,21 @@ test('thirty rapid clicks keep the list at four tickets and throw nothing (Revie
   await expect(page.locator('#tickets .ticket.deny').first()).toContainText(/Try again (in [12]s|now)/);
   expect(errors).toEqual([]);
 });
+
+test.describe('The demo on a phone', () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test('it is a section in the flow, not pinned, and Tab reaches it after the roles', async ({ page }) => {
+    await openPage(page);
+    const fixed = await page.evaluate(() => [...document.querySelectorAll('body *')].filter((el) => ['fixed', 'sticky'].includes(getComputedStyle(el).position)).map((el) => el.className));
+    expect(fixed).toEqual([]);
+    const order = await page.evaluate(() => {
+      const pos = (sel) => document.querySelector(sel).getBoundingClientRect().top + scrollY;
+      return [pos('#work'), pos('#limiter'), pos('#stack'), pos('#about')];
+    });
+    expect([...order].sort((a, b) => a - b)).toEqual(order);
+    await expect(page.locator('#take')).toBeEnabled();
+    await page.locator('#take').focus();
+    await expect(page.locator('#take')).toBeFocused();
+  });
+});

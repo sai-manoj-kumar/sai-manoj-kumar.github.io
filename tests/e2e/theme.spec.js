@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-const LIGHT = 'rgb(243, 250, 246)'; // #f3faf6
-const DARK = 'rgb(10, 31, 26)'; // #0a1f1a
+const LIGHT = 'rgb(255, 255, 255)'; // #ffffff
+const DARK = 'rgb(14, 15, 18)'; // #0e0f12
 const bg = (page) => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
 const choose = (page, name) => page.locator('.theme label', { hasText: name }).click();
 const themeAttr = (page) => page.evaluate(() => document.documentElement.getAttribute('data-theme'));
@@ -56,10 +56,10 @@ test('the theme-color metas follow an override', async ({ page }) => {
   await page.goto('/');
   await choose(page, 'Dark');
   const colors = await page.$$eval('meta[name="theme-color"]', (metas) => metas.map((m) => m.getAttribute('content')));
-  expect(colors).toEqual(['#0a1f1a', '#0a1f1a']);
+  expect(colors).toEqual(['#0e0f12', '#0e0f12']);
   await choose(page, 'System');
   const back = await page.$$eval('meta[name="theme-color"]', (metas) => metas.map((m) => m.getAttribute('content')));
-  expect(back).toEqual(['#f3faf6', '#0a1f1a']);
+  expect(back).toEqual(['#ffffff', '#0e0f12']);
 });
 
 test('blocked or throwing storage does not break the page, and the switch still works for the visit', async ({ page }) => {

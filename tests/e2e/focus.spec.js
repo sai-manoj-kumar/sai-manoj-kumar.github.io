@@ -6,9 +6,8 @@ import { test, expect } from '@playwright/test';
 // background, since an outline is painted outside the element) with the WCAG contrast formula.
 
 const TARGETS = [
-  { name: 'hero LinkedIn button', selector: '.intro .btn' },
+  { name: 'top bar LinkedIn link', selector: '.topbar-link[data-track="linkedin:topbar"]' },
   { name: 'Take a ticket button', selector: '#take' },
-  { name: 'Connect section button', selector: '.connect .btn' },
   { name: 'selected theme option', selector: '.theme input:checked + span', focus: '.theme input:checked' },
 ];
 

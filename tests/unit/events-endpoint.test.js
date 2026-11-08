@@ -14,9 +14,9 @@ function call(body, { env, lie, omitLength } = {}) {
 }
 
 test('a valid event is written as event, label and source, with nothing else', async () => {
-  const { response, rows } = await call({ e: 'link', l: 'linkedin:connect', s: 'T.co' });
+  const { response, rows } = await call({ e: 'link', l: 'linkedin:topbar', s: 'T.co' });
   assert.equal(response.status, 204);
-  assert.deepEqual(rows, [{ indexes: ['link'], blobs: ['link', 'linkedin:connect', 't.co'] }]);
+  assert.deepEqual(rows, [{ indexes: ['link'], blobs: ['link', 'linkedin:topbar', 't.co'] }]);
 });
 
 test('an unknown event or bad JSON writes nothing', async () => {
@@ -40,12 +40,12 @@ test('a client that under-reports its size is cut off at the cap while streaming
 });
 
 test('a missing Content-Length is refused', async () => {
-  const { response, rows } = await call({ e: 'end', l: 'connect' }, { omitLength: true });
+  const { response, rows } = await call({ e: 'visit', l: 'page' }, { omitLength: true });
   assert.equal(response.status, 413);
   assert.deepEqual(rows, []);
 });
 
 test('a missing dataset binding is not an error for the visitor', async () => {
-  const { response } = await call({ e: 'end', l: 'connect' }, { env: {} });
+  const { response } = await call({ e: 'visit', l: 'page' }, { env: {} });
   assert.equal(response.status, 204);
 });

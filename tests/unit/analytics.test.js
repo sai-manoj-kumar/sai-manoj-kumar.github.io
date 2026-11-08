@@ -11,8 +11,8 @@ test('every allowed event and label parses, and the source is cleaned', () => {
 });
 
 test('a missing source becomes direct', () => {
-  assert.equal(parseEvent({ e: 'end', l: 'connect' }).source, 'direct');
-  assert.equal(parseEvent({ e: 'end', l: 'connect', s: '!!!' }).source, 'direct');
+  assert.equal(parseEvent({ e: 'visit', l: 'page' }).source, 'direct');
+  assert.equal(parseEvent({ e: 'visit', l: 'page', s: '!!!' }).source, 'direct');
 });
 
 test('unknown events, labels and shapes are rejected', () => {
@@ -21,6 +21,10 @@ test('unknown events, labels and shapes are rejected', () => {
   assert.equal(parseEvent({ e: 'link', l: 'email:hero' }), null);
   assert.equal(parseEvent({ e: 'purchase', l: 'page' }), null);
   assert.equal(parseEvent({ e: 'role', l: 'connect' }), null);
+  assert.equal(parseEvent({ e: 'role', l: 'bogus' }), null);
+  assert.equal(parseEvent({ e: 'link', l: 'linkedin:hero' }), null);
+  assert.equal(parseEvent({ e: 'link', l: 'github:connect' }), null);
+  assert.equal(parseEvent({ e: 'end', l: 'connect' }), null);
   assert.equal(parseEvent({ e: 'link' }), null);
   assert.equal(parseEvent({ e: 7, l: 'page' }), null);
 });
@@ -29,4 +33,13 @@ test('prototype keys are not events', () => {
   assert.equal(parseEvent({ e: '__proto__', l: 'page' }), null);
   assert.equal(parseEvent({ e: 'constructor', l: 'page' }), null);
   assert.equal(parseEvent({ e: 'toString', l: 'page' }), null);
+});
+
+test('the labels are the top bar links, the About link, the five page pieces and the three themes', () => {
+  assert.deepEqual(EVENT_LABELS, {
+    visit: ['page'],
+    link: ['linkedin:topbar', 'github:topbar', 'linkedin:about'],
+    role: ['webhooks', 'memory', 'rewrite', 'trace', 'demo'],
+    theme: ['system', 'light', 'dark'],
+  });
 });

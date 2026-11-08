@@ -1,49 +1,56 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { doc, html } from './helpers.js';
+import { site } from '../../src/data/site.js';
 
-const roles = () => [...doc.querySelectorAll('article.role')];
+const roles = [...doc.querySelectorAll('#work article.role')];
 
-test('four roles in order: project, then company and title', () => {
-  assert.equal(roles().length, 4);
-  assert.deepEqual(roles().map((r) => r.querySelector('h3').textContent.trim()), [
-    'Webhooks Platform', 'Defender', 'Application Gateway', 'Network Monitoring',
-  ]);
-  assert.deepEqual(roles().map((r) => r.querySelector('p.who').textContent.trim()), [
-    'LinkedIn, Senior Software Engineer',
-    'Microsoft, Software Engineer II',
-    'Microsoft, Software Engineer II',
-    'Microsoft, Software Engineer',
-  ]);
-  for (const r of roles()) assert.equal(r.querySelector('h3').nextElementSibling.className, 'who', 'title follows project');
+test('four roles in order, each with a head (project, company and title, summary) and a body', () => {
+  assert.deepEqual(roles.map((r) => r.getAttribute('data-role')), ['webhooks', 'memory', 'rewrite', 'trace']);
+  roles.forEach((role, i) => {
+    const data = site.experience[i];
+    assert.equal(role.querySelector('.role-head h3').textContent.trim(), data.project);
+    assert.equal(role.querySelector('.role-head .who').textContent.trim(), `${data.company}, ${data.title}`);
+    assert.equal(role.querySelector('.role-head .summary').textContent.trim(), data.summary);
+    assert.equal(role.querySelectorAll('.role-body .role-inner > p').length, data.paragraphs.length);
+  });
 });
 
-test('each role names the slide it is shown with, and only the demo role is #limiter', () => {
-  assert.deepEqual(roles().map((r) => r.getAttribute('data-slide')), ['demo', 'memory', 'rewrite', 'trace']);
-  assert.deepEqual(roles().map((r) => r.id), ['limiter', '', '', '']);
+test('the three diagrams sit inside Defender, Application Gateway and Network Monitoring, and nowhere else', () => {
+  const found = roles.map((r) => r.querySelectorAll('.role-body .viz').length);
+  assert.deepEqual(found, [0, 1, 1, 1]);
+  assert.equal(doc.querySelectorAll('.viz').length, 3);
 });
 
-test('the demo has a plain fallback when JavaScript is off', () => {
-  const take = doc.getElementById('take');
-  assert.ok(take.hasAttribute('disabled'), 'button starts disabled');
-  assert.match(doc.getElementById('fallback').textContent, /needs JavaScript/);
-  assert.equal(doc.getElementById('tickets').getAttribute('aria-live'), 'polite');
-  assert.equal(doc.querySelectorAll('#dispenser .chip').length, 5);
+test('only the first role is rendered open; the rest open as they are scrolled to', () => {
+  assert.deepEqual(roles.map((r) => r.classList.contains('open')), [true, false, false, false]);
+});
+
+test('there is no way to close a role: no buttons, details, summaries or aria-expanded in Experience', () => {
+  const work = doc.getElementById('work');
+  assert.equal(work.querySelectorAll('button, details, summary, [aria-expanded], [role="button"], [tabindex]').length, 0);
+  assert.equal(work.querySelectorAll('a').length, 0);
+});
+
+test('the demo is not a role: it is its own section after Experience', () => {
+  assert.equal(doc.querySelectorAll('#work #take').length, 0);
+  assert.equal(doc.querySelectorAll('#limiter #take').length, 1);
+  assert.ok(doc.querySelector('#take').closest('#limiter'));
 });
 
 test('illustrations are labelled as illustrations', () => {
-  assert.match(html, /A header rewrite, illustrated/);
-  assert.match(html, /A traceroute, illustrated/);
-  assert.match(html, /Drawn to scale: 30% lower\./);
+  const titles = [...doc.querySelectorAll('.viz-title')].map((t) => t.textContent.trim());
+  assert.equal(titles.length, 3);
+  assert.match(doc.querySelector('.bars').getAttribute('aria-label'), /drawn to scale/);
 });
 
-test('the made-up notes are gone, and the demo sentence says two seconds', () => {
-  assert.doesNotMatch(html, /Made-up/);
-  assert.match(doc.querySelector('#limiter .note').textContent, /a new one every two seconds/);
+test('the demo has a plain fallback when JavaScript is off', () => {
+  assert.match(doc.getElementById('fallback').textContent, /needs JavaScript/);
+  assert.ok(doc.getElementById('take').hasAttribute('disabled'));
 });
 
-test('the demo note has a wording for each layout', () => {
-  const note = doc.querySelector('#limiter .note');
-  assert.match(note.querySelector('.only-wide').textContent, /panel pinned on the left/);
-  assert.match(note.querySelector('.only-narrow').textContent, /panel at the top of the page/);
+test('the head script turns the reveal class on before first paint only when motion is allowed', () => {
+  const head = html.slice(0, html.indexOf('</head>'));
+  assert.match(head, /matchMedia\('\(prefers-reduced-motion: reduce\)'\)/);
+  assert.match(head, /classList\.add\('reveal'\)/);
 });
