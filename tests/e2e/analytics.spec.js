@@ -68,3 +68,18 @@ test('the first role is reported once its heading passes the middle, not on load
   await wheelToY(page, tops[0] - 300);
   await expect.poll(async () => (await beacons(page)).filter((b) => b.e === 'role').map((b) => b.l)).toEqual(['webhooks']);
 });
+
+test('the rate limiter reports itself once, when it reaches the middle of the screen', async ({ page }) => {
+  await record(page);
+  await page.goto('/');
+  await page.waitForTimeout(300);
+  expect((await beacons(page)).filter((b) => b.l === 'demo')).toEqual([]);
+  // read fresh each time: roles above the demo open as the reader passes them and push it down
+  const limiterTop = () => page.evaluate(() => Math.round(document.getElementById('limiter').getBoundingClientRect().top + scrollY));
+  for (let i = 0; i < 4; i += 1) await wheelToY(page, (await limiterTop()) - 300);
+  await expect.poll(async () => (await beacons(page)).filter((b) => b.e === 'role' && b.l === 'demo').length).toBe(1);
+  await wheelToY(page, (await limiterTop()) - 700);
+  await wheelToY(page, (await limiterTop()) - 300);
+  await page.waitForTimeout(300);
+  expect((await beacons(page)).filter((b) => b.l === 'demo').length).toBe(1);
+});
