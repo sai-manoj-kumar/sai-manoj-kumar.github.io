@@ -36,8 +36,7 @@ if (take && list && label) {
 
   const denyText = (readyAt) => `429 Too Many Requests. ${describeDenial(readyAt)}`;
 
-  take.disabled = false;
-  take.addEventListener('click', () => {
+  function takeOne() {
     served += 1;
     const result = bucket.tryTake();
     if (result.ok) {
@@ -46,7 +45,57 @@ if (take && list && label) {
       addTicket(`No. ${pad(served)}`, denyText(result.readyAt), true, result.readyAt);
     }
     paint();
+  }
+
+  /* Auto-play: while the demo is on screen and the tab is showing, a ticket is taken every AUTO_MS, so a visitor sees
+     the admitted tickets, then the 429s, then the refill rhythm, without touching anything. data-auto on the
+     dispenser says which it is: off (waiting or paused), on (playing) or manual (the visitor clicked, so it stays
+     theirs). Reduced motion never plays by itself. While it plays the list is not announced to screen readers. */
+  const AUTO_MS = 700;
+  const dispenser = document.getElementById('dispenser');
+  const canAuto = !window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window;
+  let mode = 'off';
+  let timer = null;
+  let onScreen = false;
+  let watcher = null;
+
+  function setMode(next) {
+    mode = next;
+    dispenser.dataset.auto = next;
+  }
+  function play() {
+    if (mode !== 'off' || !onScreen || document.hidden) return;
+    setMode('on');
+    timer = setInterval(takeOne, AUTO_MS);
+  }
+  function pause() {
+    if (mode !== 'on') return;
+    clearInterval(timer);
+    setMode('off');
+  }
+
+  take.disabled = false;
+  take.addEventListener('click', () => {
+    if (mode !== 'manual') {
+      clearInterval(timer);
+      if (watcher) watcher.disconnect();
+      setMode('manual');
+      list.setAttribute('aria-live', 'polite');
+    }
+    takeOne();
   });
+
+  dispenser.dataset.auto = 'off';
+  if (canAuto) {
+    list.setAttribute('aria-live', 'off');
+    watcher = new IntersectionObserver((entries) => {
+      onScreen = entries.at(-1).isIntersecting;
+      if (onScreen) play();
+      else pause();
+    }, { threshold: 0.5 });
+    watcher.observe(dispenser);
+    document.addEventListener('visibilitychange', () => (document.hidden ? pause() : play()));
+  }
 
   /* Repaint the chips and keep every denied ticket's countdown live. */
   setInterval(() => {

@@ -105,7 +105,11 @@ numbers, an inline diagram where one exists). All roles are always shown in full
 rest with reduced motion.
 
 **Rate limiter.** The existing token-bucket demo (take a ticket, get a 429 when the bucket is empty) keeps its
-behaviour and its analytics, restyled to match, placed after the roles.
+behaviour and its analytics, restyled to match, placed after the roles. It also plays by itself: while it is on screen and
+the tab is showing it takes a ticket every 0.7 s, so a visitor sees the admitted tickets, the 429s and the refill rhythm
+without clicking. The first click takes over for good. It never plays with reduced motion, and its list is not announced
+to screen readers while it plays (owner request: "auto pick up the tickets"; the 0.7 s rhythm and the hand-over on click
+are my choices).
 
 **Theme.** System / Light / Dark switch stays in the top bar. The choice is remembered as today (`localStorage`
 key `theme`, `data-theme` on the root). Dark follows the system by default.
