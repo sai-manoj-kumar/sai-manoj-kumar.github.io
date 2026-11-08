@@ -37,15 +37,12 @@ function start() {
     }
   });
 
-  /* A role counts as read once it has opened, which reveal.js does as it passes the middle of the screen. */
-  document.addEventListener('role-open', (event) => send('role', event.detail, true));
-
-  /* The rate limiter counts the same way, but it is not a role, so reveal.js does not watch it. */
-  const limiter = document.getElementById('limiter');
-  if (limiter && 'IntersectionObserver' in window) {
-    new IntersectionObserver((entries) => {
-      for (const entry of entries) if (entry.isIntersecting) send('role', 'demo', true);
-    }, { rootMargin: '-50% 0px -50% 0px' }).observe(limiter);
+  /* A role counts as read once it crosses the middle of the screen, and so does the rate limiter. */
+  if ('IntersectionObserver' in window) {
+    const middle = new IntersectionObserver((entries) => {
+      for (const entry of entries) if (entry.isIntersecting) send('role', entry.target.dataset.role, true);
+    }, { rootMargin: '-50% 0px -50% 0px' });
+    document.querySelectorAll('.role[data-role], #limiter[data-role]').forEach((el) => middle.observe(el));
   }
 }
 

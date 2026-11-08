@@ -1,167 +1,58 @@
 import { test, expect } from '@playwright/test';
-import { wheelToY, roleTops } from './helpers.js';
 
-test.use({ viewport: { width: 1440, height: 900 } });
-
+/* Every role is shown in full, always: no closed state, no scroll effect, nothing to click. */
 const state = (page) =>
   page.evaluate(() => [...document.querySelectorAll('.role')].map((r) => ({
     slug: r.dataset.role,
-    open: r.classList.contains('open'),
     body: Math.round(r.querySelector('.role-body').getBoundingClientRect().height),
-    text: r.querySelector('.role-body').textContent.trim().length,
+    opacity: getComputedStyle(r.querySelector('.role-body')).opacity,
+    filter: getComputedStyle(r.querySelector('.role-body')).filter,
+    transform: getComputedStyle(r.querySelector('.role-body')).transform,
+    headOpacity: getComputedStyle(r.querySelector('.role-head')).opacity,
   })));
 
-test('on load no role is open yet, but every role keeps its text in the page', async ({ page }) => {
-  await page.goto('/');
-  await page.waitForTimeout(700);
-  const roles = await state(page);
-  expect(roles.map((r) => r.open)).toEqual([false, false, false, false]);
-  for (const r of roles) {
-    expect(r.body, `${r.slug} body is clipped, not removed`).toBeLessThan(80); // the first role may already have begun to open
-    expect(r.text, `${r.slug} text stays readable to assistive tech and find-in-page`).toBeGreaterThan(40);
-  }
-  const display = await page.locator('.role-body').evaluateAll((els) => els.map((e) => [getComputedStyle(e).display, getComputedStyle(e).visibility]));
-  for (const [d, v] of display) { expect(d).not.toBe('none'); expect(v).toBe('visible'); }
-});
-
-test('each role opens as its heading passes the middle of the screen, and stays open', async ({ page }) => {
-  await page.goto('/');
-  for (let i = 0; i < 4; i += 1) {
-    const tops = await roleTops(page); // read fresh: every role that opens pushes the later ones down
-    await wheelToY(page, tops[i] - 300);
-    await page.waitForTimeout(800);
+for (const [width, height] of [[1440, 900], [390, 844], [320, 700]]) {
+  test(`all four roles are fully shown on load at ${width}x${height}, and nothing hides or blurs them`, async ({ page }) => {
+    await page.setViewportSize({ width, height });
+    await page.goto('/');
+    await page.waitForTimeout(300);
     const roles = await state(page);
-    expect(roles[i].open, `role ${i} opens`).toBe(true);
-    expect(roles[i].body).toBeGreaterThan(0);
-    if (i < 3) expect(roles[i + 1].open, `role ${i + 1} is still closed`).toBe(false);
-  }
-  await wheelToY(page, 0);
-  await page.waitForTimeout(300);
-  expect((await state(page)).map((r) => r.open)).toEqual([true, true, true, true]);
+    expect(roles.map((r) => r.slug)).toEqual(['webhooks', 'memory', 'rewrite', 'trace']);
+    for (const r of roles) {
+      expect(r.body, `${r.slug} body is open`).toBeGreaterThan(60);
+      expect(r.opacity).toBe('1');
+      expect(r.headOpacity).toBe('1');
+      expect(r.filter).toBe('none');
+      expect(r.transform).toBe('none');
+    }
+  });
+}
+
+test('roles stay the same height while the page is scrolled, and the page has no reveal class', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  const before = (await state(page)).map((r) => r.body);
+  await page.mouse.move(700, 450);
+  for (let i = 0; i < 30; i += 1) { await page.mouse.wheel(0, 300); await page.waitForTimeout(30); }
+  await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
+  expect((await state(page)).map((r) => r.body)).toEqual(before);
+  expect(await page.evaluate(() => document.documentElement.classList.contains('reveal'))).toBe(false);
 });
 
 test('clicking a role heading or summary changes nothing', async ({ page }) => {
   await page.goto('/');
-  for (const i of [0, 1]) {
-    await wheelToY(page, (await roleTops(page))[i] - 300); // read fresh: a role that opens pushes the next one down
-    await page.waitForTimeout(500);
-  }
+  const before = await state(page);
   await page.locator('.role').nth(1).locator('h3').click();
   await page.locator('.role').nth(1).locator('.summary').click();
-  await page.locator('.role').first().locator('h3').click();
-  await page.waitForTimeout(700);
-  expect((await state(page)).slice(0, 2).map((r) => r.open)).toEqual([true, true]);
+  await page.waitForTimeout(300);
+  expect(await state(page)).toEqual(before);
 });
 
-test('landing mid-page after a reload opens every role above the middle of the screen', async ({ page }) => {
-  await page.goto('/');
-  await page.evaluate(() => window.scrollTo({ top: document.querySelector('[data-role="rewrite"]').offsetTop + 200, behavior: 'instant' }));
-  await page.waitForTimeout(200);
-  await page.reload();
-  await page.waitForTimeout(900);
-  const expected = await page.evaluate(() => [...document.querySelectorAll('.role')].map((r) => r.getBoundingClientRect().top <= window.innerHeight * 0.4));
-  expect((await state(page)).map((r) => r.open)).toEqual(expected);
-  expect(expected.filter(Boolean).length).toBeGreaterThanOrEqual(3);
-});
-
-test('an anchor jump to the rate limiter leaves no earlier role closed', async ({ page }) => {
+test('a link straight to a section lands on it', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/#limiter');
-  await page.waitForTimeout(900);
-  expect((await state(page)).map((r) => r.open)).toEqual([true, true, true, true]);
-});
-
-test('on a tall 1920x1200 screen the last role still opens', async ({ page }) => {
-  await page.setViewportSize({ width: 1920, height: 1200 });
-  await page.goto('/');
-  const height = await page.evaluate(() => document.documentElement.scrollHeight);
-  await wheelToY(page, height - 1200);
-  await page.waitForTimeout(800);
-  expect((await state(page)).map((r) => r.open)).toEqual([true, true, true, true]);
-});
-
-test('the opening never moves the heading the reader is looking at', async ({ page }) => {
-  await page.goto('/');
-  const tops = await roleTops(page);
-  await wheelToY(page, tops[1] - 300);
-  await page.waitForTimeout(100);
-  const before = await page.locator('.role').nth(1).locator('h3').evaluate((e) => e.getBoundingClientRect().top);
-  await page.waitForTimeout(800);
-  const after = await page.locator('.role').nth(1).locator('h3').evaluate((e) => e.getBoundingClientRect().top);
-  expect(Math.abs(after - before)).toBeLessThanOrEqual(2);
-});
-
-test.describe('Reduced motion', () => {
-  test.use({ reducedMotion: 'reduce' });
-  test('every role is open and nothing animates', async ({ page }) => {
-    await page.goto('/');
-    const roles = await state(page);
-    for (const r of roles) expect(r.body, r.slug).toBeGreaterThan(0);
-    expect(await page.locator('.role-body').first().evaluate((e) => getComputedStyle(e).transitionDuration)).toMatch(/^0s/);
-  });
-});
-
-test.describe('JavaScript off', () => {
-  test.use({ javaScriptEnabled: false });
-  test('every role is open', async ({ page }) => {
-    await page.goto('/');
-    for (const r of await state(page)) expect(r.body, r.slug).toBeGreaterThan(0);
-  });
-});
-
-test.describe('Scroll-linked opening', () => {
-  /* Put a role's heading at `fraction` of the screen height and read how far its body has opened. */
-  async function openness(page, index, fraction) {
-    const top = await page.evaluate((i) => Math.round(document.querySelectorAll('.role')[i].getBoundingClientRect().top + scrollY), index);
-    await wheelToY(page, top - Math.round(900 * fraction));
-    await page.waitForTimeout(450);
-    return page.evaluate((i) => {
-      const role = document.querySelectorAll('.role')[i];
-      return {
-        body: role.querySelector('.role-body').getBoundingClientRect().height,
-        full: role.querySelector('.role-inner').offsetHeight,
-        opacity: Number(getComputedStyle(role.querySelector('.role-inner')).opacity),
-        head: Number(getComputedStyle(role.querySelector('.role-head')).opacity),
-        blur: getComputedStyle(role.querySelector('.role-inner')).filter,
-        lift: new DOMMatrix(getComputedStyle(role.querySelector('.role-inner')).transform).m42,
-        open: role.classList.contains('open'),
-      };
-    }, index);
-  }
-
-  test('the body grows with the scroll: a little, then more, then all of it once the heading reaches the middle', async ({ page }) => {
-    await page.goto('/');
-    await page.waitForTimeout(300);
-    const early = await openness(page, 1, 0.92); // heading just entering at the bottom of the screen
-    const mid = await openness(page, 1, 0.7);
-    const later = await openness(page, 1, 0.55);
-    const done = await openness(page, 1, 0.3);
-    expect(early.body, 'barely open at first').toBeLessThan(early.full * 0.25);
-    expect(mid.body, 'partly open').toBeGreaterThan(early.body + 20);
-    expect(mid.body).toBeLessThan(mid.full * 0.85);
-    expect(later.body, 'more open as it travels up').toBeGreaterThan(mid.body + 20);
-    expect(done.body, 'fully open at the middle').toBeGreaterThanOrEqual(done.full - 2);
-    expect(done.open).toBe(true);
-    expect(early.open && mid.open).toBe(false);
-    expect(mid.opacity, 'the text fades in as it opens').toBeGreaterThan(early.opacity);
-    expect(done.opacity).toBe(1);
-    // the effect has to be easy to see: dim heading, blurred text, text rising into place
-    expect(early.head, 'the heading arrives dimmed').toBeLessThan(0.6);
-    expect(done.head, 'and ends at full strength').toBe(1);
-    expect(mid.head).toBeGreaterThan(early.head);
-    expect(mid.blur, 'text sharpens as it opens').toMatch(/blur/);
-    expect(done.blur).toBe('none');
-    expect(mid.lift, 'text rises into place').toBeGreaterThan(5);
-    expect(done.lift).toBe(0);
-  });
-
-  test('scrolling back up never closes it again', async ({ page }) => {
-    await page.goto('/');
-    await page.waitForTimeout(300);
-    await openness(page, 1, 0.3); // roles above open on the way down and move this one, so settle first
-    const done = await openness(page, 1, 0.3);
-    const back = await openness(page, 1, 0.92);
-    expect(back.body).toBeGreaterThanOrEqual(done.full - 2);
-    expect(back.open).toBe(true);
-    expect(back.opacity).toBe(1);
-  });
+  await page.waitForTimeout(1200);
+  const top = await page.locator('#limiter').evaluate((e) => Math.round(e.getBoundingClientRect().top));
+  expect(top).toBeLessThanOrEqual(120);
+  expect(top).toBeGreaterThanOrEqual(0);
 });

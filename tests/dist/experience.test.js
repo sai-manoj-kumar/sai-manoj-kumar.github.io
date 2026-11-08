@@ -12,7 +12,7 @@ test('four roles in order, each with a head (project, company and title, summary
     assert.equal(role.querySelector('.role-head h3').textContent.trim(), data.project);
     assert.equal(role.querySelector('.role-head .who').textContent.trim(), `${data.company}, ${data.title}`);
     assert.equal(role.querySelector('.role-head .summary').textContent.trim(), data.summary);
-    assert.equal(role.querySelectorAll('.role-body .role-inner > p').length, data.paragraphs.length);
+    assert.equal(role.querySelectorAll('.role-body > p').length, data.paragraphs.length);
   });
 });
 
@@ -22,8 +22,10 @@ test('the three diagrams sit inside Defender, Application Gateway and Network Mo
   assert.equal(doc.querySelectorAll('.viz').length, 3);
 });
 
-test('no role is rendered open: each one opens as it is scrolled to (without JavaScript or with reduced motion the closed styling never applies)', () => {
-  assert.deepEqual(roles.map((r) => r.classList.contains('open')), [false, false, false, false]);
+test('every role is shown in full: there is no open or closed state in the markup', () => {
+  assert.equal(doc.querySelectorAll('.open, .snap').length, 0);
+  assert.equal(doc.querySelectorAll('.role-inner').length, 0);
+  assert.equal(doc.querySelectorAll('.role-body').length, 4);
 });
 
 test('there is no way to close a role: no buttons, details, summaries or aria-expanded in Experience', () => {
@@ -49,8 +51,7 @@ test('the demo has a plain fallback when JavaScript is off', () => {
   assert.ok(doc.getElementById('take').hasAttribute('disabled'));
 });
 
-test('the head script turns the reveal class on before first paint only when motion is allowed', () => {
-  const head = html.slice(0, html.indexOf('</head>'));
-  assert.match(head, /matchMedia\('\(prefers-reduced-motion: reduce\)'\)/);
-  assert.match(head, /classList\.add\('reveal'\)/);
+test('nothing scroll-driven is set up: no reveal class and no role-opening script', () => {
+  assert.doesNotMatch(html, /reveal/);
+  assert.doesNotMatch(html, /role-open/);
 });

@@ -18,10 +18,8 @@ const diagrams = { memory: MemoryBars, rewrite: HeaderRewrite, trace: Traceroute
           <p class="summary">{role.summary}</p>
         </div>
         <div class="role-body">
-          <div class="role-inner">
-            {role.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
-            {Diagram && <Diagram />}
-          </div>
+          {role.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+          {Diagram && <Diagram />}
         </div>
       </article>
     );
