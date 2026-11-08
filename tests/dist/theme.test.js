@@ -30,8 +30,8 @@ test('the colour scheme and theme-color metas exist for both modes', () => {
   assert.equal(doc.querySelector('meta[name="color-scheme"]').getAttribute('content'), 'light dark');
   const colors = [...doc.querySelectorAll('meta[name="theme-color"]')];
   assert.deepEqual(colors.map((m) => [m.getAttribute('data-scheme'), m.getAttribute('content'), m.getAttribute('media')]), [
-    ['light', '#f3faf6', '(prefers-color-scheme: light)'],
-    ['dark', '#0a1f1a', '(prefers-color-scheme: dark)'],
+    ['light', '#ffffff', '(prefers-color-scheme: light)'],
+    ['dark', '#0e0f12', '(prefers-color-scheme: dark)'],
   ]);
 });
 
