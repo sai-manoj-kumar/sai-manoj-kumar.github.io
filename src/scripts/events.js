@@ -4,9 +4,8 @@ import { cleanSource } from './source.js';
    (functions/e.js) both use this list, so the dataset can only ever hold values we chose. */
 export const EVENT_LABELS = {
   visit: ['page'],
-  link: ['linkedin:hero', 'github:hero', 'linkedin:about', 'linkedin:connect', 'github:connect'],
-  role: ['demo', 'memory', 'rewrite', 'trace'],
-  end: ['connect'],
+  link: ['linkedin:topbar', 'github:topbar', 'linkedin:about'],
+  role: ['webhooks', 'memory', 'rewrite', 'trace', 'demo'],
   theme: ['system', 'light', 'dark'],
 };
 

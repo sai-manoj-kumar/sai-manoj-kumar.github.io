@@ -20,7 +20,7 @@ test('experience has four roles with the company and project in the same fields'
     assert.ok(['LinkedIn', 'Microsoft'].includes(role.company), `company: ${role.company}`);
     assert.ok(role.project && role.title, 'project and title present');
     assert.ok(role.paragraphs.length > 0, 'has paragraphs');
-    assert.ok(['ticketDemo', 'memory', 'rewrite', 'trace'].includes(role.visual), `visual: ${role.visual}`);
+    assert.ok([null, 'memory', 'rewrite', 'trace'].includes(role.visual), `visual: ${role.visual}`);
   }
   assert.deepEqual(
     site.experience.map((r) => r.project),
@@ -78,4 +78,33 @@ test('roles carry no leftover layout fields', () => {
   for (const role of site.experience) assert.equal('tone' in role, false, `tone on ${role.project}`);
   assert.equal('titleWords' in site.hero, false);
   assert.equal('tearCta' in site.about, false);
+});
+
+test('the hero sentence and the pipeline carry the facts the owner chose', () => {
+  assert.equal(site.hero.sentence, 'I own the systems that deliver 100M webhook events a day.');
+  assert.ok(site.hero.sentence.includes(site.hero.figure));
+  assert.equal(site.hero.figure, '100M');
+  assert.deepEqual(site.hero.stages.map((s) => s.id), ['event', 'queue', 'delivery', 'endpoint']);
+  assert.deepEqual(site.hero.stages.filter((s) => s.fact).map((s) => [s.id, s.fact]), [
+    ['delivery', '30% fewer failed deliveries'],
+    ['endpoint', '25% lower latency'],
+  ]);
+  assert.ok(site.hero.pipelineLabel);
+});
+
+test('roles carry a slug and a one-line summary, and only three have a diagram', () => {
+  assert.deepEqual(site.experience.map((r) => r.slug), ['webhooks', 'memory', 'rewrite', 'trace']);
+  assert.deepEqual(site.experience.map((r) => r.visual), [null, 'memory', 'rewrite', 'trace']);
+  for (const role of site.experience) {
+    assert.ok(role.summary && !/\n/.test(role.summary), `summary on ${role.project}`);
+    assert.equal('note' in role, false, `note moved to site.limiter (${role.project})`);
+  }
+});
+
+test('the rate limiter has its own heading and note, and the removed parts are gone', () => {
+  assert.equal(site.limiter.heading, 'Try a rate limiter');
+  assert.match(site.limiter.note, /token bucket/);
+  assert.match(site.limiter.note, /two seconds/);
+  for (const key of ['connect', 'photoCredit']) assert.equal(key in site, false, key);
+  for (const key of ['facts', 'cta', 'githubLabel', 'photoAlt', 'portraitAlt']) assert.equal(key in site.hero, false, key);
 });
