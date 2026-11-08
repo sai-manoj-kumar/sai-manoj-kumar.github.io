@@ -46,6 +46,7 @@
 :root {
   --gutter: max(20px, calc((100vw - 64rem) / 2));
   --measure: 42rem;
+  --section-gap: clamp(48px, 6vw, 80px);
   --topbar: 64px;
   --step-small: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem);
   --step-body: clamp(1.0625rem, 1rem + 0.2vw, 1.125rem);
@@ -100,15 +101,15 @@ html:not(.js) .theme { display: none; }
 
 main > section { padding-inline: var(--gutter); }
 main > section > * { max-width: var(--measure); }
+main > section { padding-bottom: var(--section-gap); }
 main > section + section {
-  padding-top: clamp(56px, 8vw, 104px);
+  padding-top: var(--section-gap);
   background: linear-gradient(var(--line), var(--line)) center top / calc(100% - 2 * var(--gutter)) 1px no-repeat;
 }
 main h2 { font-size: var(--step-h2); font-weight: 600; line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 28px; }
-main > section:last-child { padding-bottom: clamp(56px, 8vw, 104px); }
 
 /* Hero: the sentence, then the system it describes ------------------------------ */
-.hero { padding-top: clamp(48px, 9vw, 112px); padding-bottom: clamp(56px, 8vw, 104px); }
+.hero { padding-top: clamp(40px, 8vw, 104px); }
 .hero h1 { max-width: 20ch; font-size: var(--step-hero); font-weight: 700; line-height: 1.04; letter-spacing: -0.035em; text-wrap: balance; }
 .hero .figure { color: var(--accent); }
 .hero .pipeline { max-width: none; margin-top: clamp(40px, 6vw, 72px); }
@@ -199,7 +200,9 @@ html.js .fallback { display: none; }
 
 /* Phones and narrow windows ---------------------------------------------------- */
 @media (max-width: 860px) {
-  .topbar { position: static; padding-inline: var(--gutter); }
+  :root { --gutter: 16px; }
+  .topbar-link { padding: 0 0.75rem; }
+  .topbar { position: static; }
   .pipeline { flex-direction: column; }
   .pipeline > li { flex: none; flex-direction: column; }
   .node-wrap { max-width: none; }
