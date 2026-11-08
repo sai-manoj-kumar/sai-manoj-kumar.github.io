@@ -19,7 +19,6 @@ test.describe('Reduced motion (Review Focus 2)', () => {
 
   test('every section is visible and nothing animates in', async ({ page }) => {
     await page.goto('/');
-    expect(await page.evaluate(() => document.documentElement.classList.contains('reveal'))).toBe(false);
     for (const selector of ['.hero', '.role', '#stack .group', '#about']) {
       const el = page.locator(selector).first();
       await expect(el).toBeVisible();

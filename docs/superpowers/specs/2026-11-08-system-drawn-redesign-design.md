@@ -22,7 +22,7 @@ and file structure are not a starting point. Content, analytics, SEO and the wor
 1. A first screen that says "I managed the systems that deliver 100M webhook events a day" over a live pipeline
    diagram, and nothing else competing with it.
 2. One wide single column on every screen size. No pinned half, no side-by-side stage.
-3. Each role is a case study that opens by itself as the reader scrolls to it, and stays open.
+3. Each role is a case study, shown in full by default: every role is expanded, with nothing to open or close.
 4. A simple, clean look: white or neutral near-black, one blue accent, one sans-serif font, almost no decoration.
 5. LinkedIn and GitHub live in the top bar and nowhere else in the hero.
 6. The rate-limiter demo remains a working, separate piece of the page.
@@ -42,8 +42,8 @@ and file structure are not a starting point. Content, analytics, SEO and the wor
 - Looks like the Claude homepage: cream or beige background, orange or terracotta accent, serif headlines.
 - Looks like the previous mint site, or like an ops console or terminal (the owner was shown dark control-room,
   warm-paper and blueprint moods and chose none of them).
-- A role the reader can close, a toggle, a chevron or any control that suggests the roles are collapsible.
-- Content jumping under the reader's eyes while they scroll: a role opening must not move what they are reading.
+- A role the reader can close or open, a toggle, a chevron or any control that suggests the roles are collapsible.
+- Content that changes, hides or moves while the reader scrolls past the roles.
 - The pipeline diagram being the only way to learn the 100M, 30% and 25% facts; they also appear as text.
 - Contrast below WCAG AA in either theme, or losing the System / Light / Dark switch.
 - Putting LinkedIn or GitHub buttons inside the hero block.
@@ -60,7 +60,7 @@ and file structure are not a starting point. Content, analytics, SEO and the wor
 - Single wide column. The left half is not pinned.
 - Simple and clean; one accent colour; not like the Claude homepage.
 - The photo is dropped.
-- Roles open on their own as the reader scrolls to them, and there is no way to close one.
+- All roles are shown expanded by default. (The owner first asked for roles that open on their own as you scroll, tried a timed version and then a scroll-linked one, and chose to drop the effect: every role is simply open.)
 
 ## Decided by me (the owner has not seen these; each is a guess to check)
 
@@ -81,13 +81,11 @@ and file structure are not a starting point. Content, analytics, SEO and the wor
   In the new design the LinkedIn role has no inline visual (the hero pipeline is its picture), the three diagrams
   stay inside Defender, Application Gateway and Network Monitoring, and the demo, with its explanatory `note`
   ("a token bucket... five tokens, and a new one every two seconds"), becomes the standalone rate-limiter piece.
-- **First role open.** The newest role (LinkedIn Webhooks Platform) begins open on load so a visitor sees what an
-  opened role looks like; the rest open as they scroll to them.
 - **Phone diagram.** On narrow screens the pipeline turns vertical, top to bottom, with the same stages and
   numbers.
 - **Analytics.** Event names keep their allowlist shape in `src/scripts/events.js` and the Pages Function.
   `linkedin:hero` and `github:hero` are replaced by `linkedin:topbar` and `github:topbar`; `linkedin:connect`,
-  `github:connect` and `end: connect` go away with the Connect band; `role` events fire once when a role opens,
+  `github:connect` and `end: connect` go away with the Connect band; `role` events fire once when a role crosses the middle of the screen,
   using labels for the roles (the old `demo` label now means the rate-limiter piece came into view); `linkedin:about` and `theme` events stay. The builder updates the allowlist, the
   function and `scripts/stats.sh` together.
 
@@ -101,13 +99,10 @@ role copy before shipping). The same facts are in real text so a screen reader o
 them; the diagram itself is described by a short accessible label and is not read node by node.
 
 **Roles.** Each role is a heading, the company and title (no dates, as in the data today), a one-line summary, and its body (what they owned,
-numbers, an inline diagram where one exists). While closed a role shows only its heading and one-line summary. It
-opens when it reaches the middle of the viewport, with a short smooth expansion, and stays open for the rest of
-the visit. Nothing in a role is clickable to close it. The expansion must not move content the reader is looking
-at: roles open below the viewport centre, and the page must not shift the reader's position.
+numbers, an inline diagram where one exists). All roles are always shown in full, in every browser, with or without JavaScript. Nothing about a role is clickable, collapsible or animated by scrolling.
 
-**No JavaScript, reduced motion, print.** Every role is open and readable. The diagram shows static events at
-rest. Reduced motion stops the flow and the expansion animation.
+**No JavaScript, reduced motion, print.** Every role is open and readable (as always). The diagram shows static events at
+rest with reduced motion.
 
 **Rate limiter.** The existing token-bucket demo (take a ticket, get a 429 when the bucket is empty) keeps its
 behaviour and its analytics, restyled to match, placed after the roles.
@@ -121,8 +116,8 @@ key `theme`, `data-theme` on the root). Dark follows the system by default.
 - `theme-color` metas, `src/scripts/theme.js` colour map, favicon and share card must match the new palette.
 - Breakpoints for testing: 320, 375, 390, 860, 861, 1440 px wide, light and dark, with and without JavaScript.
 - The existing tests (unit, dist, e2e) pin palette values, the pinned stage, the name shrink, hero buttons and the
-  Connect band. They must be rewritten to the new design, not deleted. Add tests for role opening on scroll, no
-  close control, no-JavaScript fallback, and the top bar links.
+  Connect band. They must be rewritten to the new design, not deleted. Add tests that every role is shown in full, that
+  nothing can close one, and for the top bar links.
 - Keep the Pages build passing; confirm the Pages Function and the Analytics Engine binding still build
   (an earlier build failure on Pages was suspected, never verified).
 - Respect `prefers-reduced-motion`. Contrast WCAG AA both themes.
@@ -130,6 +125,5 @@ key `theme`, `data-theme` on the root). Dark follows the system by default.
 ## What is left to the builder
 
 Exact spacing, type sizes and measure of the column; the exact blue; how the pipeline is drawn (SVG or HTML) and
-how the flow animation is paced; where each number attaches in the diagram; the scroll trigger mechanism (for
-example IntersectionObserver) and its thresholds; labels for the `role` analytics events; the accessible text for
+how the flow animation is paced; where each number attaches in the diagram; the labels for the `role` analytics events; the accessible text for
 the diagram; footer wording after the photo credit is removed.

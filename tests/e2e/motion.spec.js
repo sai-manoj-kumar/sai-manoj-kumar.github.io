@@ -9,7 +9,6 @@ test.describe('Reduced motion (Review Focus 5)', () => {
   test('nothing animates and everything is visible', async ({ page }) => {
     await page.goto('/');
     await page.waitForTimeout(300);
-    expect(await page.evaluate(() => document.documentElement.classList.contains('reveal'))).toBe(false);
     await wheelToY(page, 1200);
     await page.waitForTimeout(300);
     for (const selector of ['.hero', '.role', '#limiter', '#stack .group', '#about']) {
