@@ -58,3 +58,13 @@ test('Do Not Track sends nothing at all', async ({ page }) => {
   await page.locator('.topbar-link[data-track="linkedin:topbar"]').click();
   expect(await beacons(page)).toEqual([]);
 });
+
+test('the first role is reported once its heading passes the middle, not on load', async ({ page }) => {
+  await record(page);
+  await page.goto('/');
+  await page.waitForTimeout(300);
+  expect((await beacons(page)).filter((b) => b.e === 'role')).toEqual([]);
+  const tops = await roleTops(page);
+  await wheelToY(page, tops[0] - 300);
+  await expect.poll(async () => (await beacons(page)).filter((b) => b.e === 'role').map((b) => b.l)).toEqual(['webhooks']);
+});
