@@ -102,7 +102,8 @@ test('roles carry a slug and a one-line summary, and only three have a diagram',
 });
 
 test('the rate limiter has its own heading and note, and the removed parts are gone', () => {
-  assert.equal(site.limiter.heading, 'Try a rate limiter');
+  assert.equal(site.limiter.heading, 'Rate limiter');
+  assert.equal(site.limiter.tagline, 'A crucial part of Gateways that I built');
   assert.match(site.limiter.note, /token bucket/);
   assert.match(site.limiter.note, /two seconds/);
   for (const key of ['connect', 'photoCredit']) assert.equal(key in site, false, key);

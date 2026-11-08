@@ -21,7 +21,8 @@ export const site = {
     ],
   },
   limiter: {
-    heading: 'Try a rate limiter',
+    heading: 'Rate limiter',
+    tagline: 'A crucial part of Gateways that I built',
     note: 'The demo is a token bucket, the idea behind rate limiting at a gateway: five tokens, and a new one every two seconds.',
   },
   experience: [

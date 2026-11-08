@@ -162,7 +162,9 @@ html.reveal .role.snap .role-body, html.reveal .role.snap .role-inner { transiti
 .hops b { text-align: right; font-variant-numeric: tabular-nums; }
 
 /* The rate limiter ------------------------------------------------------------- */
-.limiter .note { color: var(--muted); margin-bottom: 24px; }
+.limiter h2 { margin-bottom: 8px; }
+.limiter .tagline { font-size: clamp(1.125rem, 1rem + 0.5vw, 1.375rem); font-weight: 500; line-height: 1.35; }
+.limiter .note { color: var(--muted); margin-top: 12px; margin-bottom: 24px; }
 .dispenser { display: flex; flex-direction: column; gap: 16px; padding: clamp(16px, 2vw, 24px); border: 1px solid var(--line); border-radius: 8px; max-width: 26rem; }
 .bucket { display: flex; gap: 8px; }
 .chip { width: 36px; height: 36px; background: var(--accent); border-radius: 6px; transition: background-color 0.25s var(--ease), transform 0.25s var(--ease); }

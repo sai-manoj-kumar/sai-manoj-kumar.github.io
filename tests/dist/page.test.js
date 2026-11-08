@@ -58,3 +58,11 @@ test('page order: hero, experience, rate limiter, tech stack, about', () => {
   const ids = [...doc.querySelectorAll('main > section')].map((s) => s.id || s.className.split(' ')[0]);
   assert.deepEqual(ids, ['hero', 'work', 'limiter', 'stack', 'about']);
 });
+
+test('the rate limiter section says what it is, then explains the demo', () => {
+  const section = doc.getElementById('limiter');
+  assert.equal(section.querySelector('h2').textContent.trim(), 'Rate limiter');
+  assert.equal(section.querySelector('.tagline').textContent.trim(), 'A crucial part of Gateways that I built');
+  const kids = [...section.children].map((c) => c.className || c.tagName.toLowerCase());
+  assert.deepEqual(kids.slice(0, 3), ['h2', 'tagline', 'note']);
+});

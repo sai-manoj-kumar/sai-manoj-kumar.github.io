@@ -10,7 +10,7 @@ test('exactly one h1, and the three section headings are h2', () => {
   assert.equal(doc.querySelectorAll('h1').length, 1);
   assert.deepEqual(
     [...doc.querySelectorAll('h2')].map((h) => h.textContent.trim()),
-    ['Experience', 'Try a rate limiter', 'Tech stack'],
+    ['Experience', 'Rate limiter', 'Tech stack'],
   );
 });
 
