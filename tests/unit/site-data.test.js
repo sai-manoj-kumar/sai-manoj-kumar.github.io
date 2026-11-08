@@ -81,7 +81,7 @@ test('roles carry no leftover layout fields', () => {
 });
 
 test('the hero sentence and the pipeline carry the facts the owner chose', () => {
-  assert.equal(site.hero.sentence, 'I own the systems that deliver 100M webhook events a day.');
+  assert.equal(site.hero.sentence, 'I managed the systems that deliver 100M webhook events a day.');
   assert.ok(site.hero.sentence.includes(site.hero.figure));
   assert.equal(site.hero.figure, '100M');
   assert.deepEqual(site.hero.stages.map((s) => s.id), ['event', 'queue', 'delivery', 'endpoint']);

@@ -19,7 +19,7 @@ and file structure are not a starting point. Content, analytics, SEO and the wor
 
 ## Goals
 
-1. A first screen that says "I own the systems that deliver 100M webhook events a day" over a live pipeline
+1. A first screen that says "I managed the systems that deliver 100M webhook events a day" over a live pipeline
    diagram, and nothing else competing with it.
 2. One wide single column on every screen size. No pinned half, no side-by-side stage.
 3. Each role is a case study that opens by itself as the reader scrolls to it, and stays open.
@@ -51,7 +51,7 @@ and file structure are not a starting point. Content, analytics, SEO and the wor
 ## Decided by the owner
 
 - Direction "B, the system, drawn": hero sentence plus live pipeline diagram; roles are case studies.
-- The hero sentence: "I own the systems that deliver 100M webhook events a day."
+- The hero sentence: "I managed the systems that deliver 100M webhook events a day."
 - The pipeline: Event → Queue → Delivery service ×3 → Customer endpoint, with events flowing and a number at each
   stage. (The owner saw this as a sketch with 30% fewer failed deliveries and 25% lower latency; where each number
   attaches is the builder's call, see below.)

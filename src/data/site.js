@@ -10,7 +10,7 @@ export const site = {
     github: 'https://github.com/sai-manoj-kumar',
   },
   hero: {
-    sentence: 'I own the systems that deliver 100M webhook events a day.',
+    sentence: 'I managed the systems that deliver 100M webhook events a day.',
     figure: '100M',
     pipelineLabel: 'How a webhook event is delivered',
     stages: [
