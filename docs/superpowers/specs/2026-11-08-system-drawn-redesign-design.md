@@ -102,8 +102,8 @@ them; the diagram itself is described by a short accessible label and is not rea
 
 **Roles.** Each role is a heading, the company and title (no dates, as in the data today), a one-line summary, and its body (what they owned,
 numbers, an inline diagram where one exists). While closed a role shows only its heading and one-line summary. It
-opens when it reaches the middle of the viewport, with a short smooth expansion, and stays open for the rest of
-the visit. Nothing in a role is clickable to close it. The expansion must not move content the reader is looking
+opens in step with the scroll: it starts when the role reaches 85% of the way down the screen and is fully
+open when it reaches the middle, growing and fading in as the page moves, and it stays open for the rest of the visit. Nothing in a role is clickable to close it. The expansion must not move content the reader is looking
 at: roles open below the viewport centre, and the page must not shift the reader's position.
 
 **No JavaScript, reduced motion, print.** Every role is open and readable. The diagram shows static events at

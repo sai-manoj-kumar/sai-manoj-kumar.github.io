@@ -107,3 +107,49 @@ test.describe('JavaScript off', () => {
     for (const r of await state(page)) expect(r.body, r.slug).toBeGreaterThan(0);
   });
 });
+
+test.describe('Scroll-linked opening', () => {
+  /* Put a role's heading at `fraction` of the screen height and read how far its body has opened. */
+  async function openness(page, index, fraction) {
+    const top = await page.evaluate((i) => Math.round(document.querySelectorAll('.role')[i].getBoundingClientRect().top + scrollY), index);
+    await wheelToY(page, top - Math.round(900 * fraction));
+    await page.waitForTimeout(450);
+    return page.evaluate((i) => {
+      const role = document.querySelectorAll('.role')[i];
+      return {
+        body: role.querySelector('.role-body').getBoundingClientRect().height,
+        full: role.querySelector('.role-inner').offsetHeight,
+        opacity: Number(getComputedStyle(role.querySelector('.role-inner')).opacity),
+        open: role.classList.contains('open'),
+      };
+    }, index);
+  }
+
+  test('the body grows with the scroll: a little, then more, then all of it once the heading reaches the middle', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForTimeout(300);
+    const early = await openness(page, 1, 0.88); // heading just entering the lower part
+    const mid = await openness(page, 1, 0.7);
+    const later = await openness(page, 1, 0.58);
+    const done = await openness(page, 1, 0.4);
+    expect(early.body, 'barely open at first').toBeLessThan(early.full * 0.2);
+    expect(mid.body, 'partly open').toBeGreaterThan(early.body + 20);
+    expect(mid.body).toBeLessThan(mid.full * 0.85);
+    expect(later.body, 'more open as it travels up').toBeGreaterThan(mid.body + 20);
+    expect(done.body, 'fully open at the middle').toBeGreaterThanOrEqual(done.full - 2);
+    expect(done.open).toBe(true);
+    expect(early.open && mid.open).toBe(false);
+    expect(mid.opacity, 'the text fades in as it opens').toBeGreaterThan(early.opacity);
+    expect(done.opacity).toBe(1);
+  });
+
+  test('scrolling back up never closes it again', async ({ page }) => {
+    await page.goto('/');
+    await page.waitForTimeout(300);
+    const done = await openness(page, 1, 0.4);
+    const back = await openness(page, 1, 0.9);
+    expect(back.body).toBeGreaterThanOrEqual(done.full - 2);
+    expect(back.open).toBe(true);
+    expect(back.opacity).toBe(1);
+  });
+});

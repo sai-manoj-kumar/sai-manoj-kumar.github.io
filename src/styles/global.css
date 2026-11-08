@@ -133,15 +133,17 @@ main h2 { font-size: var(--step-h2); font-weight: 600; line-height: 1.15; letter
 .role .who { color: var(--muted); font-weight: 500; }
 .role .summary { margin-top: 6px; }
 .role-inner > * { margin-top: 1em; }
-.role-inner { min-height: 0; overflow: hidden; }
-.role-body { display: grid; grid-template-rows: 1fr; }
+.role-body { overflow: hidden; }
 
-/* Closed roles are clipped to their head, never display:none, so their text stays in the page for screen
+/* A role that is not yet open is clipped to progress x its full height (--p from 0 to 1, --h set by reveal.js), and
+   its text fades and rises in with it. It is clipped, never display:none, so its text stays in the page for screen
    readers and find-in-page. Only under html.reveal: without it every role is open. Nothing here is a control. */
-html.reveal .role-body { transition: grid-template-rows 0.55s var(--ease); }
-html.reveal .role-inner { transition: opacity 0.55s var(--ease); }
-html.reveal .role:not(.open) .role-body { grid-template-rows: 0fr; }
-html.reveal .role:not(.open) .role-inner { opacity: 0; }
+html.reveal .role:not(.open) .role-body { height: calc(var(--h, 0px) * var(--p, 0)); transition: height 0.18s linear; }
+html.reveal .role:not(.open) .role-inner {
+  opacity: clamp(0, calc(var(--p, 0) * 1.6 - 0.3), 1);
+  transform: translateY(calc((1 - var(--p, 0)) * 20px));
+  transition: opacity 0.18s linear, transform 0.18s linear;
+}
 html.reveal .role.snap .role-body, html.reveal .role.snap .role-inner { transition: none; }
 
 /* Diagrams inside roles --------------------------------------------------------- */
