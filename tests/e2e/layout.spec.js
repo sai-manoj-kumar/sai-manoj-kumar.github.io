@@ -113,13 +113,13 @@ test.describe('The rate limiter demo and diagram are one panel', () => {
 });
 
 test.describe('The top bar on a phone is one compact row', () => {
-  for (const width of [320, 375, 390, 860]) {
-    test(`at ${width}px the name, both profile buttons and the theme button share one row`, async ({ page }) => {
+  for (const width of [320, 375, 390, 860, 861, 1440]) {
+    test(`at ${width}px the name, both profile buttons and the theme button share one row, all icons`, async ({ page }) => {
       await page.setViewportSize({ width, height: 800 });
       await page.goto('/');
       const rects = await page.evaluate(() => {
         const r = (sel) => { const b = document.querySelector(sel).getBoundingClientRect(); return { top: b.top, bottom: b.bottom, left: b.left, right: b.right, width: b.width, height: b.height }; };
-        return { bar: r('.topbar'), name: r('.topbar-name'), li: r('[data-track="linkedin:topbar"]'), gh: r('[data-track="github:topbar"]'), cycle: r('.theme-cycle'), theme: getComputedStyle(document.querySelector('fieldset.theme')).display };
+        return { bar: r('.topbar'), name: r('.topbar-name'), li: r('[data-track="linkedin:topbar"]'), gh: r('[data-track="github:topbar"]'), cycle: r('.theme-cycle'), text: document.querySelector('[data-track="linkedin:topbar"] .topbar-text').getBoundingClientRect().width };
       });
       expect(rects.bar.height).toBeLessThan(80);
       for (const k of ['name', 'li', 'gh', 'cycle']) {
@@ -131,21 +131,20 @@ test.describe('The top bar on a phone is one compact row', () => {
         expect(rects[k].width, `${k} is at least a 44px target`).toBeGreaterThanOrEqual(44);
         expect(rects[k].height).toBeGreaterThanOrEqual(44);
       }
-      expect(rects.theme, 'the three-way switch is replaced by the single button').toBe('none');
+      expect(rects.text, 'the profile buttons are icons, with their names kept for screen readers').toBeLessThanOrEqual(1);
       expect(rects.cycle.right).toBeLessThanOrEqual(width);
       expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
     });
   }
 
-  test('the profile buttons are icons on a phone but still have their names, and show their words on a wide screen', async ({ page }) => {
+  test('the profile buttons are icons at every width but still have their names', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 800 });
     await page.goto('/');
     await expect(page.getByRole('link', { name: 'LinkedIn' }).first()).toBeVisible();
     expect(await page.locator('[data-track="linkedin:topbar"] .topbar-text').evaluate((el) => el.getBoundingClientRect().width)).toBeLessThanOrEqual(1);
     await page.setViewportSize({ width: 1440, height: 800 });
-    expect(await page.locator('[data-track="linkedin:topbar"] .topbar-text').evaluate((el) => el.getBoundingClientRect().width)).toBeGreaterThan(30);
-    await expect(page.locator('.theme-cycle')).toBeHidden();
-    await expect(page.locator('fieldset.theme')).toBeVisible();
+    expect(await page.locator('[data-track="linkedin:topbar"] .topbar-text').evaluate((el) => el.getBoundingClientRect().width)).toBeLessThanOrEqual(1);
+    await expect(page.locator('.theme-cycle')).toBeVisible();
   });
 
   test('the theme button cycles System, Light, Dark, System; announces the mode; and remembers it', async ({ page }) => {
@@ -153,20 +152,20 @@ test.describe('The top bar on a phone is one compact row', () => {
     await page.emulateMedia({ colorScheme: 'light' });
     await page.goto('/');
     const button = page.locator('.theme-cycle');
-    const state = () => page.evaluate(() => ({ attr: document.documentElement.getAttribute('data-theme'), stored: localStorage.getItem('theme'), label: document.querySelector('.theme-cycle').getAttribute('aria-label'), mode: document.querySelector('.theme-cycle').dataset.mode, checked: document.querySelector('input[name="theme"]:checked').value }));
-    expect(await state()).toMatchObject({ attr: null, mode: 'system', checked: 'system' });
+    const state = () => page.evaluate(() => ({ attr: document.documentElement.getAttribute('data-theme'), stored: localStorage.getItem('theme'), label: document.querySelector('.theme-cycle').getAttribute('aria-label'), mode: document.querySelector('.theme-cycle').dataset.mode }));
+    expect(await state()).toMatchObject({ attr: null, mode: 'system' });
     expect((await state()).label).toMatch(/^Theme: System/);
     await button.click();
-    expect(await state()).toMatchObject({ attr: 'light', stored: 'light', mode: 'light', checked: 'light' });
+    expect(await state()).toMatchObject({ attr: 'light', stored: 'light', mode: 'light' });
     expect((await state()).label).toMatch(/^Theme: Light/);
     await button.click();
-    expect(await state()).toMatchObject({ attr: 'dark', stored: 'dark', mode: 'dark', checked: 'dark' });
+    expect(await state()).toMatchObject({ attr: 'dark', stored: 'dark', mode: 'dark' });
     expect(await page.evaluate(() => getComputedStyle(document.body).backgroundColor)).toBe('rgb(14, 15, 18)');
     await button.click();
-    expect(await state()).toMatchObject({ attr: null, stored: null, mode: 'system', checked: 'system' });
+    expect(await state()).toMatchObject({ attr: null, stored: null, mode: 'system' });
     await button.click();
     await page.reload();
-    expect(await state()).toMatchObject({ attr: 'light', mode: 'light', checked: 'light' });
+    expect(await state()).toMatchObject({ attr: 'light', mode: 'light' });
   });
 
   test('with JavaScript off the theme button is hidden, like the switch', async ({ browser }) => {

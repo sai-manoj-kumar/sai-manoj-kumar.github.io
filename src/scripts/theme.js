@@ -1,7 +1,7 @@
 /* The Light / Dark / System switch. System is plain CSS (prefers-color-scheme), so it needs no code and
    follows the OS live. This file handles the two overrides: it sets data-theme on <html>, remembers the
    choice, and keeps the theme-color metas in step. The head script in Base.astro applies a stored choice
-   before first paint; this runs afterwards and wires up the radios. */
+   before first paint; this runs afterwards and wires up the one button that steps through the three. */
 const root = document.documentElement;
 const KEY = 'theme';
 const COLOR = { light: '#ffffff', dark: '#0e0f12' };
@@ -43,35 +43,26 @@ function apply(value) {
   themeColor(value);
 }
 
-const current = read();
-apply(current);
-document.querySelectorAll('input[name="theme"]').forEach((input) => {
-  input.checked = input.value === current;
-  input.addEventListener('change', () => {
-    if (!input.checked) return;
-    write(input.value);
-    apply(input.value);
-  });
-});
-
-/* The phone button steps through the same three radios, so the choice, the storage and the theme-color metas all go
-   through the one code path above. */
-const radios = [...document.querySelectorAll('input[name="theme"]')];
+const NAME = { system: 'System', light: 'Light', dark: 'Dark' };
+const ORDER = ['system', 'light', 'dark'];
 const cycle = document.querySelector('.theme-cycle');
-if (cycle && radios.length === 3) {
-  const NAME = { system: 'System', light: 'Light', dark: 'Dark' };
-  const at = () => Math.max(0, radios.findIndex((r) => r.checked));
-  const sync = () => {
-    const now = radios[at()].value;
-    const next = radios[(at() + 1) % 3].value;
-    cycle.dataset.mode = now;
-    cycle.setAttribute('aria-label', `Theme: ${NAME[now]}. Switch to ${NAME[next]}`);
-  };
-  radios.forEach((r) => r.addEventListener('change', sync));
+let current = read();
+apply(current);
+
+function show() {
+  if (!cycle) return;
+  const next = ORDER[(ORDER.indexOf(current) + 1) % ORDER.length];
+  cycle.dataset.mode = current;
+  cycle.setAttribute('aria-label', `Theme: ${NAME[current]}. Switch to ${NAME[next]}`);
+}
+
+if (cycle) {
   cycle.addEventListener('click', () => {
-    const next = radios[(at() + 1) % 3];
-    next.checked = true;
-    next.dispatchEvent(new Event('change', { bubbles: true }));
+    current = ORDER[(ORDER.indexOf(current) + 1) % ORDER.length];
+    write(current);
+    apply(current);
+    show();
+    document.dispatchEvent(new CustomEvent('themechange', { detail: current }));
   });
-  sync();
+  show();
 }

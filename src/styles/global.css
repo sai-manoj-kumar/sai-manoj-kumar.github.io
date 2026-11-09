@@ -81,27 +81,22 @@ a { color: inherit; }
 
 /* Theme switch: three real radios. The inputs are clipped, not transparent, so keyboard focus can
    still be seen on the label beside them. Hidden without JavaScript (the page then follows the OS). */
-.theme { border: 0; padding: 0; min-width: 0; display: inline-flex; gap: 2px; }
-.theme legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-.theme label { position: relative; }
-.theme input { position: absolute; width: 1px; height: 1px; margin: 0; clip-path: inset(50%); }
-.theme span { display: inline-flex; align-items: center; min-height: 44px; padding: 0 0.7rem; color: var(--muted); font-size: var(--step-small); font-weight: 500; cursor: pointer; border-radius: 6px; }
-.theme input:checked + span { background: var(--ink); color: var(--bg); }
-.theme input:focus-visible + span { outline: 3px solid var(--ink); outline-offset: 2px; }
-.theme-cycle { display: none; }
+.theme-cycle { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; background: transparent; color: var(--muted); border: 1px solid var(--line); border-radius: 6px; cursor: pointer; transition: background-color 0.18s var(--ease); }
+.theme-cycle:hover { background: var(--surface); color: var(--ink); }
+.theme-cycle:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
 .theme-cycle svg { display: none; width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .theme-cycle[data-mode="system"] .mode-system, .theme-cycle[data-mode="light"] .mode-light, .theme-cycle[data-mode="dark"] .mode-dark { display: block; }
-html:not(.js) .theme { display: none; }
 html:not(.js) .theme-cycle { display: none; }
 
 /* Top bar: the one place to reach me. Sticky on wide screens, an ordinary row on phones. -------- */
-.topbar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 8px 10px; flex-wrap: wrap; min-height: var(--topbar); padding: 8px var(--gutter); background: var(--bg); border-bottom: 1px solid var(--line); }
+.topbar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 8px 10px; flex-wrap: nowrap; min-height: var(--topbar); padding: 8px var(--gutter); background: var(--bg); border-bottom: 1px solid var(--line); }
 .topbar-name { margin-right: auto; font-weight: 700; text-decoration: none; padding: 10px 0; }
-.topbar-link { display: inline-flex; align-items: center; gap: 0.5em; min-height: 44px; padding: 0 1rem; border: 1px solid var(--line); border-radius: 6px; font-size: var(--step-small); font-weight: 500; text-decoration: none; transition: filter 0.18s var(--ease), background-color 0.18s var(--ease); }
+.topbar-link { display: inline-flex; flex: none; align-items: center; justify-content: center; gap: 0.5em; width: 44px; min-height: 44px; padding: 0; border: 1px solid var(--line); border-radius: 6px; font-size: var(--step-small); font-weight: 500; text-decoration: none; transition: filter 0.18s var(--ease), background-color 0.18s var(--ease); }
 .topbar-link:hover { background: var(--surface); }
 .topbar-link[data-track^="linkedin"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 .topbar-link[data-track^="linkedin"]:hover { filter: brightness(1.08); }
 .topbar-link:focus-visible { outline-color: var(--ink); }
+.topbar-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 main > section { padding-inline: var(--gutter); }
 main > section > * { max-width: var(--measure); }
@@ -236,12 +231,6 @@ html.js .fallback { display: none; }
 /* Phones and narrow windows ---------------------------------------------------- */
 @media (max-width: 860px) {
   :root { --gutter: 16px; }
-  .topbar { flex-wrap: nowrap; }
-  .topbar-link { flex: none; justify-content: center; width: 44px; padding: 0; }
-  .topbar-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-  .theme { display: none; }
-  .theme-cycle { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; background: transparent; color: var(--ink); border: 1px solid var(--line); border-radius: 6px; cursor: pointer; }
-  .theme-cycle:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
   .topbar { position: static; }
   .pipeline { flex-direction: column; }
   .pipeline > li { flex: none; flex-direction: column; }

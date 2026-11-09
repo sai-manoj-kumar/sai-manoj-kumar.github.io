@@ -8,13 +8,9 @@ const astro = new URL('../../dist/_astro/', import.meta.url);
 const allCss = [html, ...(existsSync(astro) ? readdirSync(astro) : []).filter((f) => f.endsWith('.css')).map((f) => readFileSync(new URL(f, astro), 'utf8'))].join('\n');
 const headScript = () => [...doc.querySelectorAll('head script')].map((s) => s.textContent).find((t) => t.includes('localStorage')) ?? '';
 
-test('the switch is a fieldset of three radios, System first and checked', () => {
-  const fieldset = doc.querySelector('.topbar fieldset.theme');
-  assert.ok(fieldset, 'a theme fieldset in the top bar');
-  assert.equal(fieldset.querySelector('legend').textContent.trim(), 'Theme');
-  const radios = [...fieldset.querySelectorAll('input[type="radio"][name="theme"]')];
-  assert.deepEqual(radios.map((r) => r.value), ['system', 'light', 'dark']);
-  assert.deepEqual(radios.filter((r) => r.hasAttribute('checked')).map((r) => r.value), ['system']);
+test('the theme control is one button in the top bar, and the old three-way radio switch is gone', () => {
+  assert.equal(doc.querySelectorAll('.topbar button.theme-cycle').length, 1);
+  assert.equal(doc.querySelectorAll('fieldset.theme, input[name="theme"]').length, 0);
 });
 
 test('the head script reads the stored choice before first paint, safely', () => {
