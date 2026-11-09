@@ -43,7 +43,7 @@ if (dispenser && list && label) {
   const layer = document.querySelector('.arch-parcels');
   const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const FLASH_MS = 450;
-  const FLIGHT_MS = 2200;
+  const FLIGHT_MS = 3200;
   let flashTimer = null;
 
   function flash(ok) {
@@ -98,7 +98,7 @@ if (dispenser && list && label) {
      the admitted tickets, then the 429s, then the refill rhythm. There is nothing to click. data-auto on the
      dispenser says whether it is on or off (waiting or paused). Reduced motion never plays by itself. The list is
      never announced to screen readers. */
-  const AUTO_MS = 1000;
+  const AUTO_MS = 1200;
   const canAuto = !window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window;
   let mode = 'off';
   let timer = null;

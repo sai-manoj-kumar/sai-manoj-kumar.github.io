@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 // The demo has no controls: it plays by itself while it is on screen. Every test drives it with a fake clock, so the
-// 1 s rhythm and the refill are exact. Reduced motion is the one case where it never plays.
+// 1.2 s rhythm and the refill are exact. Reduced motion is the one case where it never plays.
 test.use({ reducedMotion: 'no-preference' });
 
 // The site scrolls smoothly on purpose. Playwright would chase a scroll-into-view while that animation runs,
@@ -28,7 +28,7 @@ async function start(page, { watch = true } = {}) {
 /* Run the clock one tick at a time until the newest ticket is a 429. */
 async function untilDenied(page) {
   for (let i = 0; i < 30; i += 1) {
-    await page.clock.runFor(1000);
+    await page.clock.runFor(1200);
     if (await page.locator('#tickets .ticket').first().evaluate((el) => el.classList.contains('deny'))) return;
   }
   throw new Error('the demo never answered 429');
@@ -39,10 +39,10 @@ test('there is nothing to click: no button, link or focusable element in the dem
   expect(await page.locator('#dispenser button, #dispenser a, #dispenser input, #dispenser [tabindex]').count()).toBe(0);
 });
 
-test('it sends a ticket every 1 s: admitted first, then 429s as the bucket runs dry, then admitted again as tokens refill', async ({ page }) => {
+test('it sends a ticket every 1.2 s: admitted first, then 429s as the bucket runs dry, then admitted again as tokens refill', async ({ page }) => {
   await start(page);
   expect(await tickets(page).count()).toBe(0);
-  await page.clock.runFor(3000);
+  await page.clock.runFor(3600);
   await expect(tickets(page)).toHaveCount(3);
   await expect(page.locator('#tickets .ticket.deny')).toHaveCount(0);
   await untilDenied(page);
@@ -116,7 +116,7 @@ test.describe('Tickets travel the diagram', () => {
 
   test('an admitted ticket goes Clients, gateway, asks the rate limiter, comes back to the gateway, then ends at the backend; then it is gone', async ({ page }) => {
     await start(page);
-    await page.clock.runFor(1000);
+    await page.clock.runFor(1200);
     await expect(page.locator('.arch-parcel')).toHaveCount(1);
     const p = await points(page, 0);
     expect(p.cls).toMatch(/\bok\b/);
@@ -130,7 +130,7 @@ test.describe('Tickets travel the diagram', () => {
     expect(p.path.slice(askedAt + 1).some((pt) => near(pt, p.gate)), 'and returns to the gateway with the answer').toBe(true);
     expect(last[0], 'then ends at the backend').toBeGreaterThan(p.gate[0] + 40);
     expect(Math.abs(last[1] - p.service[1])).toBeLessThan(2);
-    await expect(page.locator('.arch-parcel')).toHaveCount(0, { timeout: 4000 });
+    await expect(page.locator('.arch-parcel')).toHaveCount(0, { timeout: 5000 });
   });
 
   test('a denied ticket goes to the rate limiter and comes back to Clients, marked as denied', async ({ page }) => {
@@ -152,11 +152,11 @@ test.describe('Tickets travel the diagram', () => {
     await start(page);
     const arch = page.locator('figure.arch');
     await expect(arch).not.toHaveAttribute('data-flash', /.+/);
-    await page.clock.runFor(1000);
+    await page.clock.runFor(1200);
     await expect(arch).toHaveAttribute('data-flash', 'admit');
     await page.clock.runFor(460);
     await expect(arch).not.toHaveAttribute('data-flash', /.+/);
-    await page.clock.runFor(540); // back on the 1 s beat, so each step below ends exactly on a ticket
+    await page.clock.runFor(740); // back on the 1.2 s beat, so each step below ends exactly on a ticket
     await untilDenied(page);
     await expect(arch).toHaveAttribute('data-flash', 'deny');
     await page.clock.runFor(460);
@@ -165,7 +165,7 @@ test.describe('Tickets travel the diagram', () => {
 
   test('the tokens in the rate limiter node drain as tickets are admitted', async ({ page }) => {
     await start(page);
-    await page.clock.runFor(2100);
+    await page.clock.runFor(2500);
     await expect(page.locator('.arch-node.hot .chip.empty')).toHaveCount(2);
     await expect(page.locator('.arch-node.hot #bucket-label')).toHaveText('3 of 5 tokens left');
   });
