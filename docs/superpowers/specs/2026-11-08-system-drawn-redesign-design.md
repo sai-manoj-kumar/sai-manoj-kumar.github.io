@@ -69,7 +69,7 @@ and file structure are not a starting point. Content, analytics, SEO and the wor
   or lightness to pass contrast but keeps one blue accent and no second hue.
 - **Type.** One sans-serif family, headline large, body quiet. `General Sans` is what the site loads today; the
   builder may keep it or choose another sans if it lays out better. No serif anywhere.
-- **Top bar.** Name on the left; LinkedIn, GitHub and the theme switch on the right. It stays at the top of the
+- **Top bar.** Name on the left; LinkedIn, GitHub and the theme control on the right, as icons at every screen width (the names stay for screen readers). The theme control is one button that steps System, Light, Dark and shows the current mode (owner request, replacing the three-word switch). It stays at the top of the
   screen while scrolling, thin, with no content hidden behind it. (If it covers anything on a phone, it scrolls
   away on phones instead.)
 - **Order of the page.** Top bar, hero, roles (newest first), rate limiter, tech stack, About, footer.

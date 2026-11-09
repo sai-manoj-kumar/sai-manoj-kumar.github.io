@@ -7,7 +7,7 @@ import { test, expect } from '@playwright/test';
 
 const TARGETS = [
   { name: 'top bar LinkedIn link', selector: '.topbar-link[data-track="linkedin:topbar"]' },
-  { name: 'selected theme option', selector: '.theme input:checked + span', focus: '.theme input:checked' },
+  { name: 'theme button', selector: '.theme-cycle' },
 ];
 
 async function tabTo(page, focusSelector) {

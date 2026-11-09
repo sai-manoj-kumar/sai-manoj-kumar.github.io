@@ -20,7 +20,8 @@ test('the top bar has the name link and exactly the two profile links, tagged fo
     ['github:topbar', site.links.github],
   ]);
   assert.equal(bar.querySelectorAll('h1,h2,h3').length, 0, 'the name is a link, not a heading');
-  assert.equal(bar.querySelectorAll('fieldset.theme').length, 1);
+  assert.equal(bar.querySelectorAll('button.theme-cycle').length, 1);
+  assert.equal(bar.querySelectorAll('fieldset').length, 0);
 });
 
 test('the hero has no buttons or links: the connect buttons live in the top bar only', () => {

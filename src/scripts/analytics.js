@@ -31,11 +31,7 @@ function start() {
     if (link) send('link', link.dataset.track);
   });
 
-  document.addEventListener('change', (event) => {
-    if (event.target instanceof HTMLInputElement && event.target.name === 'theme' && event.target.checked) {
-      send('theme', event.target.value);
-    }
-  });
+  document.addEventListener('themechange', (event) => send('theme', event.detail));
 
   /* A role counts as read once it crosses the middle of the screen, and so does the rate limiter. */
   if ('IntersectionObserver' in window) {

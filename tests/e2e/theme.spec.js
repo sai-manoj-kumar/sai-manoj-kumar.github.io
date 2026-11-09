@@ -3,7 +3,11 @@ import { test, expect } from '@playwright/test';
 const LIGHT = 'rgb(255, 255, 255)'; // #ffffff
 const DARK = 'rgb(14, 15, 18)'; // #0e0f12
 const bg = (page) => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-const choose = (page, name) => page.locator('.theme label', { hasText: name }).click();
+// The theme control is one button that steps System, Light, Dark; this clicks it until the wanted mode is showing.
+const choose = async (page, name) => {
+  const button = page.locator('.theme-cycle');
+  for (let i = 0; i < 3 && (await button.getAttribute('data-mode')) !== name.toLowerCase(); i += 1) await button.click();
+};
 const themeAttr = (page) => page.evaluate(() => document.documentElement.getAttribute('data-theme'));
 
 test.use({ viewport: { width: 1440, height: 900 } });
@@ -48,7 +52,7 @@ test('the choice survives a reload and is applied before the page body exists (n
   await page.reload();
   expect(await page.evaluate(() => window.__firstTheme)).toEqual({ theme: 'dark', bodyExisted: false });
   expect(await bg(page)).toBe(DARK);
-  await expect(page.locator('.theme input[value="dark"]')).toBeChecked();
+  await expect(page.locator('.theme-cycle')).toHaveAttribute('data-mode', 'dark');
 });
 
 test('the theme-color metas follow an override', async ({ page }) => {
@@ -85,14 +89,14 @@ test('junk in storage is ignored', async ({ page }) => {
   await page.goto('/');
   expect(await themeAttr(page)).toBeNull();
   expect(await bg(page)).toBe(LIGHT);
-  await expect(page.locator('.theme input[value="system"]')).toBeChecked();
+  await expect(page.locator('.theme-cycle')).toHaveAttribute('data-mode', 'system');
 });
 
 test('with JavaScript off the switch is hidden and the page still follows the OS', async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false, colorScheme: 'dark', viewport: { width: 1440, height: 900 } });
   const page = await context.newPage();
   await page.goto('/');
-  await expect(page.locator('.theme')).toBeHidden();
+  await expect(page.locator('.theme-cycle')).toBeHidden();
   expect(await bg(page)).toBe(DARK);
   await context.close();
 });

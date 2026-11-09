@@ -37,8 +37,10 @@ test('a ?ref= tag becomes the source on every event', async ({ page }) => {
 test('the theme switch reports the choice', async ({ page }) => {
   await record(page);
   await page.goto('/');
-  await page.locator('.theme label', { hasText: 'Dark' }).click();
-  expect((await beacons(page)).at(-1)).toMatchObject({ e: 'theme', l: 'dark' });
+  await page.locator('.theme-cycle').click();
+  await expect.poll(async () => (await beacons(page)).at(-1)).toMatchObject({ e: 'theme', l: 'light' });
+  await page.locator('.theme-cycle').click();
+  await expect.poll(async () => (await beacons(page)).at(-1)).toMatchObject({ e: 'theme', l: 'dark' });
 });
 
 test('reading down to a role reports it once', async ({ page }) => {
