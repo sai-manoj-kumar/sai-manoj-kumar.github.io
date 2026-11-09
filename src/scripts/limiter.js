@@ -43,7 +43,7 @@ if (dispenser && list && label) {
   const layer = document.querySelector('.arch-parcels');
   const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const FLASH_MS = 450;
-  const FLIGHT_MS = 3200;
+  const FLIGHT_MS = 4200;
   let flashTimer = null;
 
   function flash(ok) {
@@ -58,24 +58,58 @@ if (dispenser && list && label) {
     return [Math.round((r.left - box.left + r.width / 2 - 7) * 10) / 10, Math.round((r.top - box.top + r.height / 2 - 7) * 10) / 10];
   }
 
+  /* A lane's two ends, in the map's coordinates: left to right when it lies flat, top to bottom when it stands. */
+  function ends(lane, box) {
+    const r = lane.getBoundingClientRect();
+    const m = (x, y) => [Math.round((x - box.left - 7) * 10) / 10, Math.round((y - box.top - 7) * 10) / 10];
+    return r.width > r.height
+      ? [m(r.left, r.top + r.height / 2), m(r.right, r.top + r.height / 2)]
+      : [m(r.left + r.width / 2, r.top), m(r.left + r.width / 2, r.bottom)];
+  }
+
+  /* The ticket rides the grey lines, never cutting across a box: out of a node along the lane, then to the centre of
+     the next one. Speed is constant, with a short rest at the rate limiter while it decides. */
   function send(ok) {
     if (calm || !map || !layer || !layer.animate) return;
     const box = map.getBoundingClientRect();
-    const at = (sel, i = 0) => centre(document.querySelectorAll(sel)[i], box);
+    const at = (sel) => centre(document.querySelector(sel), box);
+    const lane = (sel) => ends(document.querySelector(sel), box);
     const clients = at('.arch-clients .arch-node');
     const gate = at('.arch-gateway .arch-node');
     const hot = at('.arch-node.hot');
+    const [inA, inB] = lane('.arch-in');
+    const [askA, askB] = lane('.arch-ask .arch-lane');
+    const [goA, goB] = lane('.arch-go');
     /* Admitted tickets land at the left edge of the service, clear of its name. */
     const service = at('.arch-services .arch-node');
     const edge = document.querySelector('.arch-services .arch-node').getBoundingClientRect().left - box.left + 4;
-    const end = ok ? [Math.round(edge * 10) / 10, service[1]] : clients;
+    const door = [Math.round(edge * 10) / 10, service[1]];
+    const there = [clients, inA, inB, gate, askA, askB, hot, 'rest', askB, askA, gate];
+    const route = ok ? [...there, goA, goB, door] : [...there, inB, inA, clients];
+    const REST = 90; /* pixels of travel the rest at the rate limiter is worth */
+    const points = [];
+    const stops = [];
+    let total = 0;
+    route.forEach((step) => {
+      if (step === 'rest') {
+        total += REST;
+        points.push(points.at(-1));
+      } else {
+        const prev = points.at(-1);
+        if (prev) total += Math.hypot(step[0] - prev[0], step[1] - prev[1]);
+        points.push(step);
+      }
+      stops.push(total);
+    });
     const parcel = document.createElement('span');
     parcel.className = `arch-parcel ${ok ? 'ok' : 'no'}`;
     layer.append(parcel);
     const frame = ([x, y], offset, opacity = 1) => ({ transform: `translate(${x}px, ${y}px)`, opacity, offset });
-    const run = parcel.animate([
-      frame(clients, 0, 0), frame(clients, 0.04), frame(gate, 0.28), frame(hot, 0.46), frame(hot, 0.54), frame(gate, 0.72), frame(end, 0.96), frame(end, 1, 0),
-    ], { duration: FLIGHT_MS, easing: 'ease-in-out', fill: 'both' });
+    const frames = points.map((p, i) => frame(p, 0.04 + 0.92 * (stops[i] / total), i === 0 ? 0 : 1));
+    frames.unshift(frame(points[0], 0, 0));
+    frames[1] = frame(points[0], 0.04);
+    frames.push(frame(points.at(-1), 1, 0));
+    const run = parcel.animate(frames, { duration: FLIGHT_MS, easing: 'linear', fill: 'both' });
     run.onfinish = () => parcel.remove();
   }
 
