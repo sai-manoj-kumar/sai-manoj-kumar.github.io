@@ -63,6 +63,43 @@ test('the rate limiter section says what it is, then explains the demo', () => {
   const section = doc.getElementById('limiter');
   assert.equal(section.querySelector('h2').textContent.trim(), 'Rate limiter');
   assert.equal(section.querySelector('.tagline').textContent.trim(), 'A crucial part of Gateways that I built');
-  const kids = [...section.children].map((c) => c.className || c.tagName.toLowerCase());
+  const kids = [...section.children].filter((c) => c.tagName !== 'SCRIPT').map((c) => c.className || c.tagName.toLowerCase());
   assert.deepEqual(kids.slice(0, 3), ['h2', 'tagline', 'note']);
+});
+
+test('the rate limiter is one demo: the diagram, the tokens and the log in a single panel', () => {
+  const section = doc.getElementById('limiter');
+  assert.deepEqual([...section.children].filter((c) => c.tagName !== 'SCRIPT').map((c) => c.className || c.tagName.toLowerCase()), ['h2', 'tagline', 'note', 'dispenser']);
+  const demo = doc.getElementById('dispenser');
+  const arch = demo.querySelector('figure.arch');
+  assert.ok(arch, 'the diagram is inside the demo');
+  const names = [...arch.querySelectorAll('.arch-node')].map((n) => n.firstChild.textContent.trim());
+  assert.deepEqual(names, ['Clients', 'Authentication', 'Rate limiter', 'Backend services']);
+  assert.equal(arch.querySelector('.arch-gateway .arch-label').textContent.trim(), 'API Gateway');
+  const hot = arch.querySelectorAll('.arch-node.hot');
+  assert.equal(hot.length, 1);
+  assert.ok(!hot[0].closest('.arch-gateway'), 'the rate limiter is its own service, not a part of the gateway');
+  assert.ok(hot[0].closest('.arch-quota'), 'it sits in the quota check the gateway makes');
+  assert.equal(arch.querySelector('.arch-gateway .arch-node').firstChild.textContent.trim(), 'Authentication');
+  assert.match(arch.querySelector('.arch-quota .arch-ask').textContent, /Is quota available for this user\?/);
+  assert.equal(arch.querySelectorAll('.arch-services .arch-node').length, 1);
+  assert.equal(demo.querySelectorAll('button, a, input').length, 0, 'there is nothing to click in the demo');
+  assert.equal(hot[0].querySelectorAll('.bucket .chip').length, 5, 'the five tokens live inside the rate limiter');
+  assert.ok(hot[0].querySelector('#bucket-label'));
+  assert.ok(demo.querySelector('ol#tickets'), 'the log is in the same panel');
+  assert.ok(demo.querySelector('#fallback'));
+  assert.equal(doc.querySelectorAll('#take').length, 0);
+});
+
+test('the diagram explains itself in words, and the lanes and the layer tickets travel on are decoration', () => {
+  const arch = doc.querySelector('figure.arch');
+  const caption = arch.querySelector('figcaption').textContent;
+  assert.match(caption, /authentication/i);
+  assert.match(caption, /429/);
+  assert.match(caption, /never sees it/i);
+  assert.match(caption, /asks the rate limiter/i);
+  assert.match(caption, /quota/i);
+  for (const el of arch.querySelectorAll('.arch-lane, .arch-parcels')) assert.equal(el.getAttribute('aria-hidden'), 'true');
+  assert.match(arch.querySelector('.arch-back').textContent, /429 Too Many Requests/);
+  assert.equal(arch.querySelectorAll('.arch-parcel').length, 0, 'no tickets in flight until the demo sends one');
 });

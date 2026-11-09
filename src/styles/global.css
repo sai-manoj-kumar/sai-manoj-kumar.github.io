@@ -161,6 +161,45 @@ main h2 { font-size: var(--step-h2); font-weight: 600; line-height: 1.15; letter
 .chip.empty { background: var(--chip-off); transform: scale(0.82); }
 .bucket-label { font-weight: 500; font-variant-numeric: tabular-nums; }
 .dispenser .btn { align-self: flex-start; }
+.limiter .dispenser { max-width: none; }
+.arch { display: flex; flex-direction: column; gap: 16px; margin: 0; }
+.arch-map { position: relative; display: flex; flex-direction: column; align-items: stretch; gap: 0; }
+.arch-node { display: block; padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); font-weight: 500; line-height: 1.25; }
+.arch-clients { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.arch-gateway, .arch-services { display: flex; flex-direction: column; gap: 10px; padding: 12px; border: 1px dashed var(--line); border-radius: 10px; }
+.arch-services { border-style: solid; border-color: transparent; padding: 0; }
+.arch-label { font-size: var(--step-small); color: var(--muted); font-weight: 500; letter-spacing: 0.02em; }
+.arch-quota { display: flex; flex-direction: column; align-items: stretch; }
+.arch-ask { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; column-gap: 10px; margin: 0; color: var(--muted); font-size: var(--step-small); }
+.arch-ask .arch-lane { align-self: stretch; height: auto; min-height: 36px; margin: 0; }
+.arch-lane { display: block; align-self: flex-start; width: 2px; height: 28px; margin-left: 22px; background: var(--line); }
+.arch-node.hot { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); display: flex; flex-direction: column; gap: 10px; transition: background-color 0.2s var(--ease), box-shadow 0.2s var(--ease), color 0.2s var(--ease); }
+.arch-node.hot .bucket { gap: 6px; }
+.arch-node.hot .chip { width: 28px; height: 28px; background: var(--accent-ink); }
+.arch-node.hot .chip.empty { background: color-mix(in srgb, var(--accent-ink) 28%, transparent); }
+.arch-node.hot .bucket-label { font-size: var(--step-small); }
+.arch[data-flash="admit"] .arch-node.hot { box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 30%, transparent); }
+.arch[data-flash="deny"] .arch-node.hot { background: var(--deny); border-color: var(--deny); color: var(--deny-ink); }
+.arch[data-flash="deny"] .arch-node.hot .chip { background: var(--deny-ink); }
+.arch-back { color: var(--muted); font-size: var(--step-small); display: flex; align-items: center; gap: 10px; margin: 0; }
+.arch-back .arch-lane { width: 12px; height: 12px; margin: 0; flex: none; border-radius: 50%; background: var(--deny); }
+.arch figcaption { color: var(--muted); font-size: var(--step-small); max-width: var(--measure); }
+.arch-parcels { position: absolute; inset: 0; pointer-events: none; }
+.arch-parcel { position: absolute; left: 0; top: 0; width: 14px; height: 14px; border-radius: 50%; opacity: 0; box-shadow: 0 0 0 2px var(--bg); }
+.arch-parcel.ok { background: var(--accent); }
+.arch-parcel.no { background: var(--deny); }
+.dispenser .tickets { max-width: 26rem; }
+@media (min-width: 861px) {
+  .arch-map { display: grid; grid-template-columns: auto 36px minmax(0, 1.4fr) 36px minmax(0, 1fr); grid-template-areas: "c i g o s" ". . q . ."; align-items: center; }
+  .arch-clients { grid-area: c; }
+  .arch-in { grid-area: i; }
+  .arch-gateway { grid-area: g; }
+  .arch-quota { grid-area: q; }
+  .arch-go { grid-area: o; }
+  .arch-services { grid-area: s; }
+  .arch-lane { align-self: center; width: auto; height: 2px; margin: 0; }
+  .arch-ask .arch-lane { width: 2px; height: auto; margin: 0; }
+}
 .tickets { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 6px; min-height: 0; font-size: var(--step-small); font-variant-numeric: tabular-nums; }
 .ticket { display: flex; justify-content: space-between; gap: 12px; padding: 10px 12px; background: var(--surface); border-radius: 6px; font-weight: 500; animation: ticket-in 0.3s var(--ease); }
 .ticket.deny { background: var(--deny); color: var(--deny-ink); }
@@ -212,4 +251,7 @@ html.js .fallback { display: none; }
 }
 @media (prefers-reduced-motion: reduce) and (max-width: 860px) {
   .dot { left: -3px; top: calc(var(--i) * (100% - 8px) / var(--n)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .arch-node.hot { transition: none; }
 }

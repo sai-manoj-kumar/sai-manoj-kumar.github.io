@@ -1,11 +1,41 @@
+---
+/* The rate limiter, drawn and playable in one panel. Clients send requests to the API Gateway, which checks
+   authentication and then asks the rate limiter, a separate service that holds the token bucket: "is quota available
+   for this user?". Yes: the request goes on to the backend. No: the gateway answers 429 itself. The service names are
+   generic, not product names. Tickets travel the diagram via limiter.js. */
+---
 <div class="dispenser" id="dispenser">
-  <div class="bucket" aria-hidden="true">
-    <span class="chip"></span><span class="chip"></span><span class="chip"></span><span class="chip"></span><span class="chip"></span>
-  </div>
-  <p class="bucket-label" id="bucket-label">5 of 5 tokens left</p>
-  <button class="btn" type="button" id="take" disabled>Take a ticket</button>
-  <ol class="tickets" id="tickets" aria-live="polite"></ol>
-  <p class="fallback" id="fallback">This demo needs JavaScript. It lets you take five tickets, then answers 429 Too Many Requests until a new token arrives.</p>
+  <figure class="arch">
+    <div class="arch-map">
+      <div class="arch-clients">
+        <span class="arch-node">Clients</span>
+      </div>
+      <span class="arch-lane arch-in" aria-hidden="true"></span>
+      <div class="arch-gateway">
+        <span class="arch-label">API Gateway</span>
+        <span class="arch-node">Authentication</span>
+      </div>
+      <div class="arch-quota">
+        <p class="arch-ask"><span></span><span class="arch-lane" aria-hidden="true"></span><span>Is quota available for this user?</span></p>
+        <div class="arch-node hot">Rate limiter
+          <div class="bucket" aria-hidden="true">
+            <span class="chip"></span><span class="chip"></span><span class="chip"></span><span class="chip"></span><span class="chip"></span>
+          </div>
+          <p class="bucket-label" id="bucket-label">5 of 5 tokens left</p>
+        </div>
+      </div>
+      <span class="arch-lane arch-go" aria-hidden="true"></span>
+      <div class="arch-services">
+        <span class="arch-label">Behind the gateway</span>
+        <span class="arch-node">Backend services</span>
+      </div>
+      <div class="arch-parcels" aria-hidden="true"></div>
+    </div>
+    <p class="arch-back"><span class="arch-lane arch-return" aria-hidden="true"></span>429 Too Many Requests: over the limit, answered at the gateway</p>
+    <figcaption>Every request reaches the API Gateway, which checks authentication and then asks the rate limiter: is quota available for this user? If yes, the request goes on to the backend. If no, the gateway answers 429 Too Many Requests and the backend never sees it.</figcaption>
+  </figure>
+  <ol class="tickets" id="tickets" aria-live="off"></ol>
+  <p class="fallback" id="fallback">This demo needs JavaScript. It sends tickets through the rate limiter, which admits five and then answers 429 Too Many Requests until a new token arrives.</p>
 </div>
 <script>
   import '../../scripts/limiter.js';
