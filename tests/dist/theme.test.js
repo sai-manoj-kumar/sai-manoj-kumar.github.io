@@ -47,3 +47,18 @@ test('the 404 page applies the stored theme too', () => {
   assert.ok(script, 'the 404 page has the head script');
   assert.equal(lost.querySelectorAll('fieldset.theme').length, 0, 'but no switch on the 404 page');
 });
+
+test('the top bar also has a one-button theme cycle for phones, labelled with the current mode', () => {
+  const button = doc.querySelector('.topbar button.theme-cycle');
+  assert.ok(button, 'a cycle button in the top bar');
+  assert.equal(button.getAttribute('type'), 'button');
+  assert.match(button.getAttribute('aria-label'), /^Theme: System\b/);
+  assert.equal(button.getAttribute('data-mode'), 'system');
+  assert.equal(button.querySelectorAll('svg[aria-hidden="true"]').length, 3, 'one icon per mode, only the current one shown');
+});
+
+test('the profile links keep their names as text, so icon-only buttons still have an accessible name', () => {
+  const names = [...doc.querySelectorAll('.topbar a.topbar-link')].map((a) => a.textContent.trim());
+  assert.deepEqual(names, ['LinkedIn', 'GitHub']);
+  assert.equal(doc.querySelectorAll('.topbar a.topbar-link .topbar-text').length, 2);
+});

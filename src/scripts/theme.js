@@ -53,3 +53,25 @@ document.querySelectorAll('input[name="theme"]').forEach((input) => {
     apply(input.value);
   });
 });
+
+/* The phone button steps through the same three radios, so the choice, the storage and the theme-color metas all go
+   through the one code path above. */
+const radios = [...document.querySelectorAll('input[name="theme"]')];
+const cycle = document.querySelector('.theme-cycle');
+if (cycle && radios.length === 3) {
+  const NAME = { system: 'System', light: 'Light', dark: 'Dark' };
+  const at = () => Math.max(0, radios.findIndex((r) => r.checked));
+  const sync = () => {
+    const now = radios[at()].value;
+    const next = radios[(at() + 1) % 3].value;
+    cycle.dataset.mode = now;
+    cycle.setAttribute('aria-label', `Theme: ${NAME[now]}. Switch to ${NAME[next]}`);
+  };
+  radios.forEach((r) => r.addEventListener('change', sync));
+  cycle.addEventListener('click', () => {
+    const next = radios[(at() + 1) % 3];
+    next.checked = true;
+    next.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+  sync();
+}
