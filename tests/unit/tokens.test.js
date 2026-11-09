@@ -34,3 +34,28 @@ test('the scales are defined once, in the root', () => {
   assert.deepEqual(['radius-sm', 'radius-md', 'radius-lg'].map(token), ['4px', '6px', '8px']);
   assert.equal(css.match(/--space-1:/g).length, 1);
 });
+
+test('control sizes come from tokens: no 44px or 48px literal in width, height or min-height', () => {
+  const stray = declarations('width|height|min-height').filter(([, value]) => /\b(44|48)px\b/.test(value));
+  assert.deepEqual(stray, [], 'use var(--control) for chrome controls and var(--control-lg) for the primary button');
+});
+
+test('the control tokens are defined, and the lane inset is half a control', () => {
+  const root = css.slice(css.indexOf('--space-1:'), css.indexOf('}', css.indexOf('--space-1:')));
+  const token = (name) => root.match(new RegExp(`--${name}:\\s*([^;]+);`))?.[1].trim();
+  assert.equal(token('control'), '44px');
+  assert.equal(token('control-lg'), '48px');
+  assert.equal(token('lane-inset'), 'calc(var(--control) / 2)');
+});
+
+test('motion timing comes from tokens: no seconds or milliseconds literal in transition or animation', () => {
+  const stray = declarations('transition|animation').filter(([, value]) => /\d(\.\d+)?m?s\b/.test(value));
+  assert.deepEqual(stray, [], 'use var(--duration-fast) or var(--duration-base)');
+});
+
+test('the durations are defined once: fast for hover, base for state changes and entrances', () => {
+  const root = css.slice(css.indexOf('--space-1:'), css.indexOf('}', css.indexOf('--space-1:')));
+  const token = (name) => root.match(new RegExp(`--${name}:\\s*([^;]+);`))?.[1].trim();
+  assert.equal(token('duration-fast'), '0.18s');
+  assert.equal(token('duration-base'), '0.25s');
+});
