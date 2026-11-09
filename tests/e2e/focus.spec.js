@@ -7,7 +7,6 @@ import { test, expect } from '@playwright/test';
 
 const TARGETS = [
   { name: 'top bar LinkedIn link', selector: '.topbar-link[data-track="linkedin:topbar"]' },
-  { name: 'Take a ticket button', selector: '#take' },
   { name: 'selected theme option', selector: '.theme input:checked + span', focus: '.theme input:checked' },
 ];
 
@@ -30,7 +29,6 @@ for (const scheme of ['light', 'dark']) {
     for (const t of TARGETS) {
       test(`${t.name} shows a keyboard focus ring with 3:1 contrast against what it sits on`, async ({ page }) => {
         expect(await page.evaluate(() => document.documentElement.getAttribute('data-theme'))).toBe(scheme);
-        if (t.selector === '#take') await expect(page.locator('#take')).toBeEnabled();
         await tabTo(page, t.focus ?? t.selector);
 
         const r = await page.evaluate((sel) => {

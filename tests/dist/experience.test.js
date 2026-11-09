@@ -35,9 +35,9 @@ test('there is no way to close a role: no buttons, details, summaries or aria-ex
 });
 
 test('the demo is not a role: it is its own section after Experience', () => {
-  assert.equal(doc.querySelectorAll('#work #take').length, 0);
-  assert.equal(doc.querySelectorAll('#limiter #take').length, 1);
-  assert.ok(doc.querySelector('#take').closest('#limiter'));
+  assert.equal(doc.querySelectorAll('#work #dispenser').length, 0);
+  assert.equal(doc.querySelectorAll('#limiter #dispenser').length, 1);
+  assert.ok(doc.querySelector('#dispenser').closest('#limiter'));
 });
 
 test('illustrations are labelled as illustrations', () => {
@@ -48,7 +48,6 @@ test('illustrations are labelled as illustrations', () => {
 
 test('the demo has a plain fallback when JavaScript is off', () => {
   assert.match(doc.getElementById('fallback').textContent, /needs JavaScript/);
-  assert.ok(doc.getElementById('take').hasAttribute('disabled'));
 });
 
 test('nothing scroll-driven is set up: no reveal class and no role-opening script', () => {

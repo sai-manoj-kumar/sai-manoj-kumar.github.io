@@ -63,30 +63,30 @@ test.describe('The rate limiter demo and diagram are one panel', () => {
     return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, width: r.width, height: r.height };
   });
 
-  test('on a wide screen the panel uses the full column and reads left to right: button, limiter, services', async ({ page }) => {
+  test('on a wide screen the panel uses the full column and reads left to right: clients, limiter, service', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
     const panel = await box(page, '#dispenser');
-    const take = await box(page, '#take');
+    const clients = await box(page, '.arch-clients .arch-node');
     const hot = await box(page, '.arch-node.hot');
     const services = await box(page, '.arch-services');
     expect(panel.width).toBeGreaterThan(900);
-    expect(take.right).toBeLessThanOrEqual(hot.left);
+    expect(clients.right).toBeLessThanOrEqual(hot.left);
     expect(hot.right).toBeLessThanOrEqual(services.left);
     expect(panel.right).toBeLessThanOrEqual(1440);
     const tokens = await page.locator('.arch-node.hot .chip').count();
     expect(tokens).toBe(5);
   });
 
-  test('on a phone it reads top to bottom, with the button first, and nothing overflows', async ({ page }) => {
+  test('on a phone it reads top to bottom, with Clients first, and nothing overflows', async ({ page }) => {
     for (const width of [320, 390]) {
       await page.setViewportSize({ width, height: 800 });
       await page.goto('/');
-      const take = await box(page, '#take');
+      const clients = await box(page, '.arch-clients .arch-node');
       const hot = await box(page, '.arch-node.hot');
       const services = await box(page, '.arch-services');
       const panel = await box(page, '#dispenser');
-      expect(take.bottom).toBeLessThanOrEqual(hot.top);
+      expect(clients.bottom).toBeLessThanOrEqual(hot.top);
       expect(hot.bottom).toBeLessThanOrEqual(services.top);
       expect(panel.right).toBeLessThanOrEqual(width);
       expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);

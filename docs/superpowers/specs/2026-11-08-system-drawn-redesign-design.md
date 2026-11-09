@@ -105,11 +105,7 @@ numbers, an inline diagram where one exists). All roles are always shown in full
 rest with reduced motion.
 
 **Rate limiter.** The existing token-bucket demo (take a ticket, get a 429 when the bucket is empty) keeps its
-behaviour and its analytics, restyled to match, placed after the roles. It is one panel that is both the picture and the demo: Clients (with the "Take a ticket" button) lead to an API Gateway holding Authentication and the Rate limiter, then to the services behind it (generic names, my guess, not product names). The Rate limiter node is the one filled in the accent colour and holds the five tokens. Each ticket, from the button or from auto-play, visibly travels Clients, Authentication, Rate limiter and then on to a service, or back to Clients as a 429; the node flashes with each decision. It also plays by itself: while it is on screen and
-the tab is showing it takes a ticket every 0.7 s, so a visitor sees the admitted tickets, the 429s and the refill rhythm
-without clicking. The first click takes over for good. It never plays with reduced motion (tickets do not travel then, but the node still flashes), and its list is not announced
-to screen readers while it plays (owner request: "auto pick up the tickets"; the 0.7 s rhythm and the hand-over on click
-are my choices).
+behaviour and its analytics, restyled to match, placed after the roles. It is one panel that is both the picture and the demo, with no controls: Clients lead to an API Gateway holding Authentication and the Rate limiter, then to the service behind it (a generic name, my guess, not a product name). The Rate limiter node is the one filled in the accent colour and holds the five tokens. While the panel is on screen and the tab is showing, it sends a ticket every 0.7 s. Each ticket visibly travels Clients, Authentication, Rate limiter and then on to the service, or back to Clients as a 429, and the node flashes with each decision, so a visitor sees the admitted tickets, the 429s and the refill rhythm. The owner removed the "Take a ticket" button, so there is nothing to click. With reduced motion it does not play at all and stays at rest with five tokens. Its list is never announced to screen readers (owner requests: "auto pick up the tickets", then removing the button; the 0.7 s rhythm is my choice).
 
 **Theme.** System / Light / Dark switch stays in the top bar. The choice is remembered as today (`localStorage`
 key `theme`, `data-theme` on the root). Dark follows the system by default.

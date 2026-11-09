@@ -1,62 +1,98 @@
 import { test, expect } from '@playwright/test';
 
-// The demo plays by itself when motion is allowed, which would add tickets under a test that is counting clicks, so the
-// manual tests below run with reduced motion; the auto-play tests turn it back on.
-test.use({ reducedMotion: 'reduce' });
+// The demo has no controls: it plays by itself while it is on screen. Every test drives it with a fake clock, so the
+// 0.7 s rhythm and the refill are exact. Reduced motion is the one case where it never plays.
+test.use({ reducedMotion: 'no-preference' });
 
-// The site scrolls smoothly on purpose. Playwright scrolls a button into view before clicking it
-// and would chase it while that animation runs, so the demo specs switch smooth scrolling off.
+// The site scrolls smoothly on purpose. Playwright would chase a scroll-into-view while that animation runs,
+// so the demo specs switch smooth scrolling off.
 async function openPage(page) {
   await page.goto('/');
   await page.addStyleTag({ content: 'html { scroll-behavior: auto !important; }' });
 }
 
-test('admits five, then answers 429 with a live countdown, then refills', async ({ page }) => {
-  // A fake clock makes the refill timing exact: time only moves when the test says so.
+const tickets = (page) => page.locator('#tickets .ticket');
+const auto = (page) => page.locator('#dispenser').getAttribute('data-auto');
+
+/* `watch` scrolls the demo into view and waits until it has noticed and started. */
+async function start(page, { watch = true } = {}) {
   await page.clock.install({ time: 0 });
   await openPage(page);
-  const take = page.locator('#take');
-  const label = page.locator('#bucket-label');
-  await expect(take).toBeEnabled();
   await page.clock.pauseAt(10000);
+  if (watch) {
+    await page.locator('#dispenser').scrollIntoViewIfNeeded();
+    await expect(page.locator('#dispenser')).toHaveAttribute('data-auto', 'on', { timeout: 3000 });
+  }
+}
 
-  for (let i = 0; i < 5; i += 1) await take.click();
-  await expect(page.locator('#tickets .ticket', { hasText: '200 Admitted' })).toHaveCount(4); // list keeps the last four
-  await expect(label).toHaveText('0 of 5 tokens left');
+/* Run the clock one tick at a time until the newest ticket is a 429. */
+async function untilDenied(page) {
+  for (let i = 0; i < 30; i += 1) {
+    await page.clock.runFor(700);
+    if (await page.locator('#tickets .ticket').first().evaluate((el) => el.classList.contains('deny'))) return;
+  }
+  throw new Error('the demo never answered 429');
+}
 
-  await take.click();
-  const denied = page.locator('#tickets .ticket.deny').first();
-  await expect(denied).toContainText('429 Too Many Requests. Try again in 2s');
-
-  await page.clock.runFor(1000);
-  await expect(denied).toContainText('Try again in 1s');
-  await expect(label).toHaveText('0 of 5 tokens left');
-
-  await page.clock.runFor(1000);
-  await expect(denied).toContainText('Try again now');
-  await expect(label).toHaveText('1 of 5 tokens left');
-
-  await page.clock.runFor(2000);
-  await expect(label).toHaveText('2 of 5 tokens left');
+test('there is nothing to click: no button, link or focusable element in the demo', async ({ page }) => {
+  await openPage(page);
+  expect(await page.locator('#dispenser button, #dispenser a, #dispenser input, #dispenser [tabindex]').count()).toBe(0);
 });
 
-test('thirty rapid clicks keep the list at four tickets and throw nothing (Review Focus 3)', async ({ page }) => {
+test('it sends a ticket every 0.7 s: admitted first, then 429s as the bucket runs dry, then admitted again as tokens refill', async ({ page }) => {
+  await start(page);
+  expect(await tickets(page).count()).toBe(0);
+  await page.clock.runFor(2200);
+  await expect(tickets(page)).toHaveCount(3);
+  await expect(page.locator('#tickets .ticket.deny')).toHaveCount(0);
+  await untilDenied(page);
+  const denied = page.locator('#tickets .ticket.deny').first();
+  await expect(denied).toContainText('429 Too Many Requests. Try again in');
+  await page.clock.runFor(8000);
+  expect(await tickets(page).count()).toBeLessThanOrEqual(4);
+  await expect(page.locator('#tickets .ticket', { hasText: '200 Admitted' }).first()).toBeVisible();
+});
+
+test('a minute of it keeps the list at four tickets and throws nothing', async ({ page }) => {
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
-  await openPage(page);
-  const take = page.locator('#take');
-  await take.scrollIntoViewIfNeeded();
-  // force: mash as fast as a thumb would, without Playwright waiting for the button between clicks
-  for (let i = 0; i < 30; i += 1) await take.click({ force: true });
-  expect(await page.locator('#tickets .ticket').count()).toBeLessThanOrEqual(4);
+  await start(page);
+  for (let i = 0; i < 12; i += 1) await page.clock.runFor(5000);
+  expect(await tickets(page).count()).toBeLessThanOrEqual(4);
   await expect(page.locator('#tickets .ticket.deny').first()).toContainText(/Try again (in [12]s|now)/);
   expect(errors).toEqual([]);
+});
+
+test('it does nothing while the demo is off screen', async ({ page }) => {
+  await start(page, { watch: false });
+  expect(await auto(page)).toBe('off');
+  await page.clock.runFor(8000);
+  expect(await tickets(page).count()).toBe(0);
+});
+
+test('it pauses when the demo scrolls away and carries on when it comes back', async ({ page }) => {
+  await start(page);
+  await page.clock.runFor(1500);
+  await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
+  await expect(page.locator('#dispenser')).toHaveAttribute('data-auto', 'off', { timeout: 3000 });
+  const frozen = await page.locator('#tickets .ticket').first().innerText();
+  await page.clock.runFor(8000);
+  expect(await page.locator('#tickets .ticket').first().innerText()).toBe(frozen);
+  await page.locator('#dispenser').scrollIntoViewIfNeeded();
+  await expect(page.locator('#dispenser')).toHaveAttribute('data-auto', 'on', { timeout: 3000 });
+  await page.clock.runFor(1500);
+  expect(await page.locator('#tickets .ticket').first().innerText()).not.toBe(frozen);
+});
+
+test('the list is never announced to a screen reader', async ({ page }) => {
+  await start(page);
+  await expect(page.locator('#tickets')).toHaveAttribute('aria-live', 'off');
 });
 
 test.describe('The demo on a phone', () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
-  test('it is a section in the flow, not pinned, and Tab reaches it after the roles', async ({ page }) => {
+  test('it is a section in the flow, not pinned, after the roles', async ({ page }) => {
     await openPage(page);
     const fixed = await page.evaluate(() => [...document.querySelectorAll('body *')].filter((el) => ['fixed', 'sticky'].includes(getComputedStyle(el).position)).map((el) => el.className));
     expect(fixed).toEqual([]);
@@ -65,87 +101,6 @@ test.describe('The demo on a phone', () => {
       return [pos('#work'), pos('#limiter'), pos('#stack'), pos('#about')];
     });
     expect([...order].sort((a, b) => a - b)).toEqual(order);
-    await expect(page.locator('#take')).toBeEnabled();
-    await page.locator('#take').focus();
-    await expect(page.locator('#take')).toBeFocused();
-  });
-});
-
-test.describe('Auto-play', () => {
-  test.use({ reducedMotion: 'no-preference' });
-
-  const tickets = (page) => page.locator('#tickets .ticket');
-  const auto = (page) => page.locator('#dispenser').getAttribute('data-auto');
-
-  /* A fake clock, so the 0.7 s rhythm is exact. `watch` scrolls the demo into view and waits until it has noticed. */
-  async function start(page, { watch = true } = {}) {
-    await page.clock.install({ time: 0 });
-    await openPage(page);
-    await page.clock.pauseAt(10000);
-    if (watch) {
-      await page.locator('#dispenser').scrollIntoViewIfNeeded();
-      await expect(page.locator('#dispenser')).toHaveAttribute('data-auto', 'on', { timeout: 3000 });
-    }
-  }
-
-  test('it takes a ticket by itself every 0.7 s: admitted first, then 429s as the bucket runs dry, then admitted again as tokens refill', async ({ page }) => {
-    await start(page);
-    expect(await tickets(page).count()).toBe(0);
-    await page.clock.runFor(2200);
-    await expect(tickets(page)).toHaveCount(3);
-    await expect(page.locator('#tickets .ticket.deny')).toHaveCount(0);
-    await page.clock.runFor(6000);
-    await expect(page.locator('#tickets .ticket.deny').first()).toContainText('429 Too Many Requests');
-    await page.clock.runFor(1000);
-    expect(await tickets(page).count()).toBeLessThanOrEqual(4);
-    await expect(page.locator('#tickets .ticket', { hasText: '200 Admitted' }).first()).toBeVisible();
-  });
-
-  test('it does nothing while the demo is off screen', async ({ page }) => {
-    await start(page, { watch: false });
-    expect(await auto(page)).toBe('off');
-    await page.clock.runFor(8000);
-    expect(await tickets(page).count()).toBe(0);
-  });
-
-  test('it pauses when the demo scrolls away and carries on when it comes back', async ({ page }) => {
-    await start(page);
-    await page.clock.runFor(1500);
-    await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
-    await expect(page.locator('#dispenser')).toHaveAttribute('data-auto', 'off', { timeout: 3000 });
-    const frozen = await page.locator('#tickets .ticket').first().innerText();
-    await page.clock.runFor(8000);
-    expect(await page.locator('#tickets .ticket').first().innerText()).toBe(frozen);
-    await page.locator('#dispenser').scrollIntoViewIfNeeded();
-    await expect(page.locator('#dispenser')).toHaveAttribute('data-auto', 'on', { timeout: 3000 });
-    await page.clock.runFor(1500);
-    expect(await page.locator('#tickets .ticket').first().innerText()).not.toBe(frozen);
-  });
-
-  test('the first click takes over for good: auto-play stops and the list is announced again', async ({ page }) => {
-    await start(page);
-    await expect(page.locator('#tickets')).toHaveAttribute('aria-live', 'off');
-    await page.clock.runFor(1500);
-    await page.locator('#take').click();
-    expect(await auto(page)).toBe('manual');
-    await expect(page.locator('#tickets')).toHaveAttribute('aria-live', 'polite');
-    const newest = () => page.evaluate(() => document.querySelector('#tickets .ticket span').textContent);
-    const mine = await newest();
-    await page.clock.runFor(10000);
-    expect(await newest()).toBe(mine);
-    expect(await auto(page)).toBe('manual');
-  });
-
-  test.describe('Reduced motion', () => {
-    test.use({ reducedMotion: 'reduce' });
-    test('nothing plays by itself', async ({ page }) => {
-      await start(page, { watch: false });
-      await page.locator('#dispenser').scrollIntoViewIfNeeded();
-      await page.clock.runFor(8000);
-      expect(await tickets(page).count()).toBe(0);
-      expect(await auto(page)).toBe('off');
-      await expect(page.locator('#tickets')).toHaveAttribute('aria-live', 'polite');
-    });
   });
 });
 
@@ -159,12 +114,9 @@ test.describe('Tickets travel the diagram', () => {
     return { cls: parcel.className, path: frames.map(xy), clients: centre('.arch-clients .arch-node'), hot: centre('.arch-node.hot') };
   }, which);
 
-  test.use({ reducedMotion: 'no-preference' });
-
-  test('an admitted ticket leaves Clients, stops at the rate limiter and ends at a service; then it is gone', async ({ page }) => {
-    await openPage(page);
-    await expect(page.locator('#take')).toBeEnabled();
-    await page.locator('#take').click({ force: true });
+  test('an admitted ticket leaves Clients, stops at the rate limiter and ends at the service; then it is gone', async ({ page }) => {
+    await start(page);
+    await page.clock.runFor(700);
     await expect(page.locator('.arch-parcel')).toHaveCount(1);
     const p = await points(page, 0);
     expect(p.cls).toMatch(/\bok\b/);
@@ -172,15 +124,13 @@ test.describe('Tickets travel the diagram', () => {
     const last = p.path.at(-1);
     expect(Math.abs(first[0] - p.clients[0])).toBeLessThan(2);
     expect(p.path.some(([x, y]) => Math.abs(x - p.hot[0]) < 2 && Math.abs(y - p.hot[1]) < 2), 'it stops at the rate limiter').toBe(true);
-    expect(last[0], 'and ends past the limiter, at a service').toBeGreaterThan(p.hot[0] + 40);
+    expect(last[0], 'and ends past the limiter, at the service').toBeGreaterThan(p.hot[0] + 40);
     await expect(page.locator('.arch-parcel')).toHaveCount(0, { timeout: 4000 });
   });
 
   test('a denied ticket goes to the rate limiter and comes back to Clients, marked as denied', async ({ page }) => {
-    await openPage(page);
-    const take = page.locator('#take');
-    await expect(take).toBeEnabled();
-    for (let i = 0; i < 6; i += 1) await take.click({ force: true });
+    await start(page);
+    await untilDenied(page);
     const count = await page.locator('.arch-parcel').count();
     const p = await points(page, count - 1);
     expect(p.cls).toMatch(/\bno\b/);
@@ -191,43 +141,37 @@ test.describe('Tickets travel the diagram', () => {
   });
 
   test('the rate limiter node flashes with each ticket: accent glow when admitted, dark when denied, then settles', async ({ page }) => {
-    await page.clock.install({ time: 0 });
-    await openPage(page);
-    await page.clock.pauseAt(10000);
+    await start(page);
     const arch = page.locator('figure.arch');
-    const take = page.locator('#take');
-    await expect(take).toBeEnabled();
     await expect(arch).not.toHaveAttribute('data-flash', /.+/);
-    await take.click();
+    await page.clock.runFor(700);
     await expect(arch).toHaveAttribute('data-flash', 'admit');
-    await page.clock.runFor(900);
+    await page.clock.runFor(460);
     await expect(arch).not.toHaveAttribute('data-flash', /.+/);
-    for (let i = 0; i < 5; i += 1) await take.click();
+    await page.clock.runFor(240); // back on the 0.7 s beat, so each step below ends exactly on a ticket
+    await untilDenied(page);
     await expect(arch).toHaveAttribute('data-flash', 'deny');
-    await page.clock.runFor(900);
+    await page.clock.runFor(460);
     await expect(arch).not.toHaveAttribute('data-flash', /.+/);
   });
 
   test('the tokens in the rate limiter node drain as tickets are admitted', async ({ page }) => {
-    await page.clock.install({ time: 0 });
-    await openPage(page);
-    await page.clock.pauseAt(10000);
-    await expect(page.locator('#take')).toBeEnabled();
-    await page.locator('#take').click();
-    await page.locator('#take').click();
+    await start(page);
+    await page.clock.runFor(1400);
     await expect(page.locator('.arch-node.hot .chip.empty')).toHaveCount(2);
     await expect(page.locator('.arch-node.hot #bucket-label')).toHaveText('3 of 5 tokens left');
   });
 
   test.describe('Reduced motion', () => {
     test.use({ reducedMotion: 'reduce' });
-    test('nothing travels, but the node still flashes and the log still fills', async ({ page }) => {
-      await openPage(page);
-      await expect(page.locator('#take')).toBeEnabled();
-      await page.locator('#take').click({ force: true });
-      await expect(page.locator('figure.arch')).toHaveAttribute('data-flash', 'admit');
+    test('nothing plays and nothing travels: the diagram stays at rest with all five tokens', async ({ page }) => {
+      await start(page, { watch: false });
+      await page.locator('#dispenser').scrollIntoViewIfNeeded();
+      await page.clock.runFor(8000);
+      expect(await tickets(page).count()).toBe(0);
       expect(await page.locator('.arch-parcel').count()).toBe(0);
-      await expect(page.locator('#tickets .ticket')).toHaveCount(1);
+      expect(await auto(page)).toBe('off');
+      await expect(page.locator('#bucket-label')).toHaveText('5 of 5 tokens left');
     });
   });
 });
