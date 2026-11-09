@@ -101,11 +101,20 @@ a { color: inherit; }
 .btn:focus-visible { outline-color: var(--ink); }
 .icon { width: 1.1em; height: 1.1em; flex: none; fill: currentColor; }
 
+/* A bordered box on the page: the diagrams in the roles and the rate limiter panel. */
+.card { padding: var(--card-pad); border: 1px solid var(--line); border-radius: var(--radius-lg); }
+
+/* A square, icon-only control: the profile links and the theme button. Primary is the filled variant. */
+.icon-btn { display: inline-flex; flex: none; align-items: center; justify-content: center; width: var(--control); min-height: var(--control); padding: 0; background: transparent; border: 1px solid var(--line); border-radius: var(--radius-md); text-decoration: none; cursor: pointer; transition: filter var(--duration-fast) var(--ease), background-color var(--duration-fast) var(--ease); }
+.icon-btn:hover { background: var(--surface); }
+.icon-btn[data-variant="primary"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.icon-btn[data-variant="primary"]:hover { filter: brightness(1.08); }
+.icon-btn:focus-visible { outline-color: var(--ink); }
+
 /* Theme button: one button that steps System, Light, Dark; the icon shows the current mode.
    Hidden without JavaScript (the page then follows the OS). */
-.theme-cycle { display: inline-flex; flex: none; align-items: center; justify-content: center; width: var(--control); height: var(--control); padding: 0; background: transparent; color: var(--muted); border: 1px solid var(--line); border-radius: var(--radius-md); cursor: pointer; transition: background-color var(--duration-fast) var(--ease); }
-.theme-cycle:hover { background: var(--surface); color: var(--ink); }
-.theme-cycle:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.theme-cycle { color: var(--muted); }
+.theme-cycle:hover { color: var(--ink); }
 .theme-cycle svg { display: none; width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .theme-cycle[data-mode="system"] .mode-system, .theme-cycle[data-mode="light"] .mode-light, .theme-cycle[data-mode="dark"] .mode-dark { display: block; }
 html:not(.js) .theme-cycle { display: none; }
@@ -113,11 +122,6 @@ html:not(.js) .theme-cycle { display: none; }
 /* Top bar: the one place to reach me. Sticky on wide screens, an ordinary row on phones. -------- */
 .topbar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: var(--space-2); flex-wrap: nowrap; min-height: var(--topbar); padding: var(--space-2) var(--gutter); background: var(--bg); border-bottom: 1px solid var(--line); }
 .topbar-name { margin-right: auto; font-weight: 700; text-decoration: none; padding: var(--space-2) 0; }
-.topbar-link { display: inline-flex; flex: none; align-items: center; justify-content: center; gap: 0.5em; width: var(--control); min-height: var(--control); padding: 0; border: 1px solid var(--line); border-radius: var(--radius-md); font-size: var(--step-small); font-weight: 500; text-decoration: none; transition: filter var(--duration-fast) var(--ease), background-color var(--duration-fast) var(--ease); }
-.topbar-link:hover { background: var(--surface); }
-.topbar-link[data-track^="linkedin"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-.topbar-link[data-track^="linkedin"]:hover { filter: brightness(1.08); }
-.topbar-link:focus-visible { outline-color: var(--ink); }
 .topbar-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 main > section { padding-inline: var(--gutter); }
@@ -156,7 +160,7 @@ main h2 { font-size: var(--step-h2); font-weight: 600; line-height: 1.15; letter
 .role-body > * { margin-top: 1em; }
 
 /* Diagrams inside roles --------------------------------------------------------- */
-.viz { display: flex; flex-direction: column; gap: var(--space-3); padding: var(--card-pad); border: 1px solid var(--line); border-radius: var(--radius-lg); }
+.viz { display: flex; flex-direction: column; gap: var(--space-3); }
 .viz-title { font-weight: 700; }
 .viz-note { font-size: var(--step-small); color: var(--muted); }
 .bars { display: flex; flex-direction: column; gap: var(--space-3); }
@@ -176,7 +180,7 @@ main h2 { font-size: var(--step-h2); font-weight: 600; line-height: 1.15; letter
 .limiter h2 { margin-bottom: var(--space-2); }
 .limiter .tagline { font-size: var(--step-lead); font-weight: 500; line-height: 1.35; }
 .limiter .note { color: var(--muted); margin-top: var(--space-3); margin-bottom: var(--space-5); }
-.dispenser { display: flex; flex-direction: column; gap: var(--space-4); padding: var(--card-pad); border: 1px solid var(--line); border-radius: var(--radius-lg); max-width: 26rem; }
+.dispenser { display: flex; flex-direction: column; gap: var(--space-4); max-width: 26rem; }
 .bucket { display: flex; gap: var(--space-2); }
 .chip { width: 36px; height: 36px; background: var(--accent); border-radius: var(--radius-md); transition: background-color var(--duration-base) var(--ease), transform var(--duration-base) var(--ease); }
 .chip.empty { background: var(--chip-off); transform: scale(0.82); }
@@ -264,7 +268,7 @@ html.js .fallback { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .btn, .chip, .topbar-link, .theme-cycle, .arch-node.hot { transition: none; }
+  .btn, .chip, .icon-btn, .arch-node.hot { transition: none; }
   .ticket { animation: none; }
   .dot { animation: none; opacity: 1; left: calc(var(--i) * (100% - 8px) / var(--n)); }
 }
