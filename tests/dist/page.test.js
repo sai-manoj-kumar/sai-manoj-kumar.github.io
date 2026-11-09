@@ -70,7 +70,7 @@ test('the rate limiter section says what it is, then explains the demo', () => {
 
 test('the rate limiter is one demo: the diagram, the tokens and the log in a single panel', () => {
   const section = doc.getElementById('limiter');
-  assert.deepEqual([...section.children].filter((c) => c.tagName !== 'SCRIPT').map((c) => c.className || c.tagName.toLowerCase()), ['h2', 'tagline', 'note', 'dispenser']);
+  assert.deepEqual([...section.children].filter((c) => c.tagName !== 'SCRIPT').map((c) => c.className.split(' ')[0] || c.tagName.toLowerCase()), ['h2', 'tagline', 'note', 'dispenser']);
   const demo = doc.getElementById('dispenser');
   const arch = demo.querySelector('figure.arch');
   assert.ok(arch, 'the diagram is inside the demo');
@@ -103,4 +103,20 @@ test('the diagram explains itself in words, and the lanes and the layer tickets 
   for (const el of arch.querySelectorAll('.arch-lane, .arch-parcels')) assert.equal(el.getAttribute('aria-hidden'), 'true');
   assert.match(arch.querySelector('.arch-back').textContent, /429 Too Many Requests/);
   assert.equal(arch.querySelectorAll('.arch-parcel').length, 0, 'no tickets in flight until the demo sends one');
+});
+
+test('the top bar controls share one icon button, and LinkedIn is its primary variant', () => {
+  const bar = doc.querySelector('header.topbar');
+  const controls = [...bar.querySelectorAll('a.topbar-link, button.theme-cycle')];
+  assert.equal(controls.length, 3);
+  for (const control of controls) assert.ok(control.classList.contains('icon-btn'), control.className);
+  assert.equal(bar.querySelector('[data-track="linkedin:topbar"]').getAttribute('data-variant'), 'primary');
+  assert.equal(bar.querySelector('[data-track="github:topbar"]').hasAttribute('data-variant'), false);
+  assert.equal(bar.querySelector('.theme-cycle').hasAttribute('data-variant'), false);
+});
+
+test('the diagram boxes and the rate limiter panel are cards', () => {
+  const boxes = [...doc.querySelectorAll('.viz, #dispenser')];
+  assert.equal(boxes.length, 4);
+  for (const box of boxes) assert.ok(box.classList.contains('card'), box.className);
 });
