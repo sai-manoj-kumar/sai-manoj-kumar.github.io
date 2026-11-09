@@ -35,8 +35,8 @@ if (dispenser && list && label) {
     while (list.children.length > 4) list.removeChild(list.lastChild);
   }
 
-  /* A ticket travels the diagram: Clients, Authentication, the rate limiter, then on to a service if admitted or back
-     to Clients if denied. Positions come from the nodes themselves, so it follows the layout on any screen size.
+  /* A ticket travels the diagram: Clients, the gateway, which asks the rate limiter and gets the answer back, then on to the backend if
+     admitted or back to Clients as a 429 if denied. Positions come from the nodes themselves, so it follows the layout on any screen size.
      Reduced motion gets no parcels; the diagram still flashes. */
   const arch = document.querySelector('figure.arch');
   const map = document.querySelector('.arch-map');
@@ -63,7 +63,7 @@ if (dispenser && list && label) {
     const box = map.getBoundingClientRect();
     const at = (sel, i = 0) => centre(document.querySelectorAll(sel)[i], box);
     const clients = at('.arch-clients .arch-node');
-    const auth = at('.arch-gateway .arch-node');
+    const gate = at('.arch-gateway .arch-node');
     const hot = at('.arch-node.hot');
     /* Admitted tickets land at the left edge of the service, clear of its name. */
     const service = at('.arch-services .arch-node');
@@ -74,7 +74,7 @@ if (dispenser && list && label) {
     layer.append(parcel);
     const frame = ([x, y], offset, opacity = 1) => ({ transform: `translate(${x}px, ${y}px)`, opacity, offset });
     const run = parcel.animate([
-      frame(clients, 0, 0), frame(clients, 0.04), frame(auth, 0.3), frame(hot, 0.5), frame(hot, 0.62), frame(end, 0.96), frame(end, 1, 0),
+      frame(clients, 0, 0), frame(clients, 0.04), frame(gate, 0.28), frame(hot, 0.46), frame(hot, 0.54), frame(gate, 0.72), frame(end, 0.96), frame(end, 1, 0),
     ], { duration: FLIGHT_MS, easing: 'ease-in-out', fill: 'both' });
     run.onfinish = () => parcel.remove();
   }

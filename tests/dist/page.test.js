@@ -78,7 +78,10 @@ test('the rate limiter is one demo: the diagram, the tokens and the log in a sin
   assert.equal(arch.querySelector('.arch-gateway .arch-label').textContent.trim(), 'API Gateway');
   const hot = arch.querySelectorAll('.arch-node.hot');
   assert.equal(hot.length, 1);
-  assert.ok(hot[0].closest('.arch-gateway'), 'the rate limiter sits inside the gateway');
+  assert.ok(!hot[0].closest('.arch-gateway'), 'the rate limiter is its own service, not a part of the gateway');
+  assert.ok(hot[0].closest('.arch-quota'), 'it sits in the quota check the gateway makes');
+  assert.equal(arch.querySelector('.arch-gateway .arch-node').firstChild.textContent.trim(), 'Authentication');
+  assert.match(arch.querySelector('.arch-quota .arch-ask').textContent, /Is quota available for this user\?/);
   assert.equal(arch.querySelectorAll('.arch-services .arch-node').length, 1);
   assert.equal(demo.querySelectorAll('button, a, input').length, 0, 'there is nothing to click in the demo');
   assert.equal(hot[0].querySelectorAll('.bucket .chip').length, 5, 'the five tokens live inside the rate limiter');
@@ -94,6 +97,8 @@ test('the diagram explains itself in words, and the lanes and the layer tickets 
   assert.match(caption, /authentication/i);
   assert.match(caption, /429/);
   assert.match(caption, /never sees it/i);
+  assert.match(caption, /asks the rate limiter/i);
+  assert.match(caption, /quota/i);
   for (const el of arch.querySelectorAll('.arch-lane, .arch-parcels')) assert.equal(el.getAttribute('aria-hidden'), 'true');
   assert.match(arch.querySelector('.arch-back').textContent, /429 Too Many Requests/);
   assert.equal(arch.querySelectorAll('.arch-parcel').length, 0, 'no tickets in flight until the demo sends one');

@@ -63,15 +63,19 @@ test.describe('The rate limiter demo and diagram are one panel', () => {
     return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, width: r.width, height: r.height };
   });
 
-  test('on a wide screen the panel uses the full column and reads left to right: clients, limiter, service', async ({ page }) => {
+  test('on a wide screen the panel uses the full column and reads left to right: clients, gateway, backend, with the limiter below the gateway', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/');
     const panel = await box(page, '#dispenser');
     const clients = await box(page, '.arch-clients .arch-node');
+    const gateway = await box(page, '.arch-gateway');
     const hot = await box(page, '.arch-node.hot');
     const services = await box(page, '.arch-services');
     expect(panel.width).toBeGreaterThan(900);
-    expect(clients.right).toBeLessThanOrEqual(hot.left);
+    expect(clients.right).toBeLessThanOrEqual(gateway.left);
+    expect(gateway.right).toBeLessThanOrEqual(services.left);
+    expect(hot.top, 'the limiter is below the gateway, not between the gateway and the backend').toBeGreaterThanOrEqual(gateway.bottom);
+    expect(hot.left).toBeLessThan(services.left);
     expect(hot.right).toBeLessThanOrEqual(services.left);
     expect(panel.right).toBeLessThanOrEqual(1440);
     const tokens = await page.locator('.arch-node.hot .chip').count();
@@ -83,10 +87,12 @@ test.describe('The rate limiter demo and diagram are one panel', () => {
       await page.setViewportSize({ width, height: 800 });
       await page.goto('/');
       const clients = await box(page, '.arch-clients .arch-node');
+      const gateway = await box(page, '.arch-gateway');
       const hot = await box(page, '.arch-node.hot');
       const services = await box(page, '.arch-services');
       const panel = await box(page, '#dispenser');
-      expect(clients.bottom).toBeLessThanOrEqual(hot.top);
+      expect(clients.bottom).toBeLessThanOrEqual(gateway.top);
+      expect(gateway.bottom).toBeLessThanOrEqual(hot.top);
       expect(hot.bottom).toBeLessThanOrEqual(services.top);
       expect(panel.right).toBeLessThanOrEqual(width);
       expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);

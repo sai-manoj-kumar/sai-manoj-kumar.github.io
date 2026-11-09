@@ -111,10 +111,10 @@ test.describe('Tickets travel the diagram', () => {
     const xy = (f) => f.transform.match(/translate\((-?[\d.]+)px,\s*(-?[\d.]+)px\)/).slice(1).map(Number);
     const map = document.querySelector('.arch-map').getBoundingClientRect();
     const centre = (sel) => { const r = document.querySelector(sel).getBoundingClientRect(); return [r.left - map.left + r.width / 2 - 7, r.top - map.top + r.height / 2 - 7]; };
-    return { cls: parcel.className, path: frames.map(xy), clients: centre('.arch-clients .arch-node'), hot: centre('.arch-node.hot') };
+    return { cls: parcel.className, path: frames.map(xy), clients: centre('.arch-clients .arch-node'), gate: centre('.arch-gateway .arch-node'), hot: centre('.arch-node.hot'), service: centre('.arch-services .arch-node') };
   }, which);
 
-  test('an admitted ticket leaves Clients, stops at the rate limiter and ends at the service; then it is gone', async ({ page }) => {
+  test('an admitted ticket goes Clients, gateway, asks the rate limiter, comes back to the gateway, then ends at the backend; then it is gone', async ({ page }) => {
     await start(page);
     await page.clock.runFor(700);
     await expect(page.locator('.arch-parcel')).toHaveCount(1);
@@ -123,8 +123,13 @@ test.describe('Tickets travel the diagram', () => {
     const first = p.path[0];
     const last = p.path.at(-1);
     expect(Math.abs(first[0] - p.clients[0])).toBeLessThan(2);
-    expect(p.path.some(([x, y]) => Math.abs(x - p.hot[0]) < 2 && Math.abs(y - p.hot[1]) < 2), 'it stops at the rate limiter').toBe(true);
-    expect(last[0], 'and ends past the limiter, at the service').toBeGreaterThan(p.hot[0] + 40);
+    const near = ([x, y], to) => Math.abs(x - to[0]) < 2 && Math.abs(y - to[1]) < 2;
+    const askedAt = p.path.findIndex((pt) => near(pt, p.hot));
+    expect(askedAt, 'it goes to the rate limiter').toBeGreaterThan(0);
+    expect(p.path.slice(0, askedAt).some((pt) => near(pt, p.gate)), 'after the gateway').toBe(true);
+    expect(p.path.slice(askedAt + 1).some((pt) => near(pt, p.gate)), 'and returns to the gateway with the answer').toBe(true);
+    expect(last[0], 'then ends at the backend').toBeGreaterThan(p.gate[0] + 40);
+    expect(Math.abs(last[1] - p.service[1])).toBeLessThan(2);
     await expect(page.locator('.arch-parcel')).toHaveCount(0, { timeout: 4000 });
   });
 
@@ -137,7 +142,10 @@ test.describe('Tickets travel the diagram', () => {
     const last = p.path.at(-1);
     expect(Math.abs(last[0] - p.clients[0])).toBeLessThan(2);
     expect(Math.abs(last[1] - p.clients[1])).toBeLessThan(2);
-    expect(p.path.some(([x, y]) => Math.abs(x - p.hot[0]) < 2 && Math.abs(y - p.hot[1]) < 2)).toBe(true);
+    const near = ([x, y], to) => Math.abs(x - to[0]) < 2 && Math.abs(y - to[1]) < 2;
+    const askedAt = p.path.findIndex((pt) => near(pt, p.hot));
+    expect(askedAt).toBeGreaterThan(0);
+    expect(p.path.slice(askedAt + 1).some((pt) => near(pt, p.gate)), 'the gateway gets the no, then answers 429').toBe(true);
   });
 
   test('the rate limiter node flashes with each ticket: accent glow when admitted, dark when denied, then settles', async ({ page }) => {
