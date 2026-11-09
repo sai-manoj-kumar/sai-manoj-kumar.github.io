@@ -111,7 +111,8 @@ test.describe('Tickets travel the diagram', () => {
     const xy = (f) => f.transform.match(/translate\((-?[\d.]+)px,\s*(-?[\d.]+)px\)/).slice(1).map(Number);
     const map = document.querySelector('.arch-map').getBoundingClientRect();
     const centre = (sel) => { const r = document.querySelector(sel).getBoundingClientRect(); return [r.left - map.left + r.width / 2 - 7, r.top - map.top + r.height / 2 - 7]; };
-    return { cls: parcel.className, path: frames.map(xy), clients: centre('.arch-clients .arch-node'), gate: centre('.arch-gateway .arch-node'), hot: centre('.arch-node.hot'), service: centre('.arch-services .arch-node') };
+    const lane = (sel) => { const r = document.querySelector(sel).getBoundingClientRect(); const wide = r.width > r.height; const m = (x, y) => [x - map.left - 7, y - map.top - 7]; return wide ? [m(r.left, r.top + r.height / 2), m(r.right, r.top + r.height / 2)] : [m(r.left + r.width / 2, r.top), m(r.left + r.width / 2, r.bottom)]; };
+    return { lanes: { in: lane('.arch-in'), ask: lane('.arch-ask .arch-lane'), go: lane('.arch-go') }, cls: parcel.className, path: frames.map(xy), clients: centre('.arch-clients .arch-node'), gate: centre('.arch-gateway .arch-node'), hot: centre('.arch-node.hot'), service: centre('.arch-services .arch-node') };
   }, which);
 
   test('an admitted ticket goes Clients, gateway, asks the rate limiter, comes back to the gateway, then ends at the backend; then it is gone', async ({ page }) => {
@@ -131,6 +132,41 @@ test.describe('Tickets travel the diagram', () => {
     expect(last[0], 'then ends at the backend').toBeGreaterThan(p.gate[0] + 40);
     expect(Math.abs(last[1] - p.service[1])).toBeLessThan(2);
     await expect(page.locator('.arch-parcel')).toHaveCount(0, { timeout: 5000 });
+  });
+
+  /* The dot rides the grey lines: it never cuts across a box from one centre to the next. */
+  const idx = (path, to, from = 0) => path.findIndex((pt, i) => i >= from && Math.abs(pt[0] - to[0]) < 1.5 && Math.abs(pt[1] - to[1]) < 1.5);
+  const rides = (path, [a, b], from = 0) => {
+    const i = idx(path, a, from);
+    const j = idx(path, b, i + 1);
+    return i >= 0 && j === i + 1 ? j : -1;
+  };
+
+  test('an admitted ticket rides the line from Clients to the gateway, then moves to the centre; asks along its line; and leaves along the line to the backend', async ({ page }) => {
+    await start(page);
+    await page.clock.runFor(1200);
+    await expect(page.locator('.arch-parcel')).toHaveCount(1);
+    const p = await points(page, 0);
+    const intoGate = rides(p.path, p.lanes.in);
+    expect(intoGate, 'along the lane from Clients to the gateway').toBeGreaterThan(0);
+    expect(idx(p.path, p.gate, intoGate), 'and only then to the centre of the gateway box').toBe(intoGate + 1);
+    const down = rides(p.path, p.lanes.ask, intoGate);
+    expect(down, 'down the question line to the rate limiter').toBeGreaterThan(intoGate);
+    expect(idx(p.path, p.hot, down)).toBe(down + 1);
+    const up = rides(p.path, [p.lanes.ask[1], p.lanes.ask[0]], down + 1);
+    expect(up, 'and back up the same line with the answer').toBeGreaterThan(down);
+    const out = rides(p.path, p.lanes.go, up);
+    expect(out, 'then along the line to the backend').toBeGreaterThan(up);
+  });
+
+  test('a denied ticket comes back along the same line into Clients', async ({ page }) => {
+    await start(page);
+    await untilDenied(page);
+    const count = await page.locator('.arch-parcel').count();
+    const p = await points(page, count - 1);
+    const home = rides(p.path, [p.lanes.in[1], p.lanes.in[0]], idx(p.path, p.hot));
+    expect(home, 'back along the lane from the gateway to Clients').toBeGreaterThan(0);
+    expect(idx(p.path, p.clients, home)).toBe(home + 1);
   });
 
   test('a denied ticket goes to the rate limiter and comes back to Clients, marked as denied', async ({ page }) => {
