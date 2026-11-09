@@ -206,6 +206,30 @@ test.describe('Tickets travel the diagram', () => {
     await expect(page.locator('.arch-node.hot #bucket-label')).toHaveText('3 of 5 tokens left');
   });
 
+  test.describe('On a phone', () => {
+    test.use({ viewport: { width: 390, height: 844 } });
+
+    test('an admitted ticket never passes through the rate limiter on its way to the backend', async ({ page }) => {
+      await start(page);
+      await page.clock.runFor(1200);
+      await expect(page.locator('.arch-parcel')).toHaveCount(1);
+      const { path, hot, back } = await page.evaluate(() => {
+        const parcel = document.querySelector('.arch-parcel');
+        const xy = (f) => f.transform.match(/translate\((-?[\d.]+)px,\s*(-?[\d.]+)px\)/).slice(1).map(Number);
+        const map = document.querySelector('.arch-map').getBoundingClientRect();
+        const h = document.querySelector('.arch-node.hot').getBoundingClientRect();
+        const g = document.querySelector('.arch-gateway .arch-node').getBoundingClientRect();
+        return { path: parcel.getAnimations()[0].effect.getKeyframes().map(xy), hot: { l: h.left - map.left, r: h.right - map.left, t: h.top - map.top, b: h.bottom - map.top }, back: g.left - map.left };
+      });
+      const inside = ([x, y]) => x + 7 > hot.l && x + 7 < hot.r && y + 7 > hot.t && y + 7 < hot.b;
+      const visits = path.map((pt, i) => [inside(pt), i]).filter(([yes]) => yes).map(([, i]) => i);
+      const lastVisit = visits.at(-1);
+      expect(lastVisit, 'it does visit the limiter').toBeGreaterThan(0);
+      expect(path.slice(lastVisit + 1).every((pt) => !inside(pt)), 'and everything after leaves it behind, heading for the backend').toBe(true);
+      expect(path.slice(lastVisit + 1).every(([x]) => x + 7 <= hot.l + 0.5), 'the way on to the backend stays on the gateway side').toBe(true);
+    });
+  });
+
   test.describe('Reduced motion', () => {
     test.use({ reducedMotion: 'reduce' });
     test('nothing plays and nothing travels: the diagram stays at rest with all five tokens', async ({ page }) => {

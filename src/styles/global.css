@@ -255,3 +255,24 @@ html.js .fallback { display: none; }
 @media (prefers-reduced-motion: reduce) {
   .arch-node.hot { transition: none; }
 }
+
+/* The rate limiter diagram on a phone: the gateway and the rate limiter sit side by side, because the gateway asks
+   the limiter; the limiter is not a step on the way to the backend. */
+@media (max-width: 860px) {
+  .arch-map { display: grid; grid-template-columns: minmax(0, 1.25fr) 18px minmax(0, 1fr); grid-template-areas: "c c c" "i . ." "g a q" "o . t" "s s s"; align-items: center; }
+  .arch-clients { grid-area: c; }
+  .arch-in { grid-area: i; }
+  .arch-gateway { grid-area: g; padding: 8px; gap: 8px; }
+  .arch-quota, .arch-ask { display: contents; }
+  .arch-ask > :first-child { display: none; }
+  .arch-ask .arch-lane { grid-area: a; align-self: center; width: auto; height: 2px; min-height: 0; margin: 0; }
+  .arch-ask > :last-child { grid-area: t; align-self: start; padding: 8px 0 0 4px; line-height: 1.3; }
+  .arch-node.hot { grid-area: q; }
+  .arch-go { grid-area: o; }
+  .arch-services { grid-area: s; }
+  .arch-node { padding: 10px; font-size: var(--step-small); }
+  .arch-node.hot { gap: 8px; }
+  .arch-node.hot .bucket { gap: 4px; }
+  .arch-node.hot .chip { width: 14px; height: 14px; border-radius: 4px; }
+  .arch-node.hot .bucket-label { font-size: 12px; line-height: 1.25; }
+}

@@ -92,7 +92,10 @@ test.describe('The rate limiter demo and diagram are one panel', () => {
       const services = await box(page, '.arch-services');
       const panel = await box(page, '#dispenser');
       expect(clients.bottom).toBeLessThanOrEqual(gateway.top);
-      expect(gateway.bottom).toBeLessThanOrEqual(hot.top);
+      // The limiter is beside the gateway (the gateway asks it), not between the gateway and the backend.
+      expect(hot.left, 'limiter is to the right of the gateway').toBeGreaterThanOrEqual(gateway.right);
+      expect(Math.min(hot.bottom, gateway.bottom) - Math.max(hot.top, gateway.top), 'in the same row').toBeGreaterThan(20);
+      expect(gateway.bottom).toBeLessThanOrEqual(services.top);
       expect(hot.bottom).toBeLessThanOrEqual(services.top);
       expect(panel.right).toBeLessThanOrEqual(width);
       expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
