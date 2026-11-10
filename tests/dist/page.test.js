@@ -48,11 +48,11 @@ test('nothing from the old split layout, photos or Connect band is left', () => 
   assert.equal(doc.getElementById('top').tagName, 'DIV');
 });
 
-test('the footer has the copyright and the two profile links, and no photo credit', () => {
+test('the footer has the copyright, the two profile links and the small link to /projects, and no photo credit', () => {
   const footer = doc.querySelector('footer');
   assert.match(footer.textContent, /© 2026 Sai Manoj/);
   assert.doesNotMatch(footer.textContent, /Photo|Wikimedia|CC BY/);
-  assert.deepEqual([...footer.querySelectorAll('a')].map((a) => a.getAttribute('href')), [site.links.linkedin, site.links.github]);
+  assert.deepEqual([...footer.querySelectorAll('a')].map((a) => a.getAttribute('href')), [site.links.linkedin, site.links.github, '/projects']);
 });
 
 test('page order: hero, experience, rate limiter, tech stack, about', () => {

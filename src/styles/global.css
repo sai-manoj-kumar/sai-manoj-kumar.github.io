@@ -247,6 +247,18 @@ html.js .fallback { display: none; }
 .end { padding: var(--space-6) var(--gutter); border-top: 1px solid var(--line); font-size: var(--step-small); color: var(--muted); }
 .end a { color: var(--ink); }
 .end .icon { vertical-align: -0.2em; margin-inline: 0.35em; }
+.end-more { margin-top: var(--space-1); font-size: var(--step-micro); }
+.end .end-more a { display: inline-block; padding-block: var(--space-2); color: var(--muted); }
+.end .end-more a:hover { color: var(--ink); }
+
+/* The projects page ------------------------------------------------------------ */
+.projects { padding-top: var(--hero-top); }
+.projects h1 { font-size: var(--step-hero); font-weight: 700; line-height: 1.04; letter-spacing: -0.035em; }
+.projects .lead { margin-top: var(--space-3); color: var(--muted); font-size: var(--step-lead); }
+.project-list { list-style: none; padding: 0; margin-top: var(--space-6); display: flex; flex-direction: column; gap: var(--space-4); }
+.project h2 { margin-bottom: var(--space-2); font-size: var(--step-lead); font-weight: 600; line-height: 1.2; letter-spacing: -0.01em; }
+.project h2 a { text-underline-offset: 0.25em; }
+.project .host { margin-top: var(--space-3); color: var(--muted); font-size: var(--step-small); }
 
 /* The 404 page ----------------------------------------------------------------- */
 .lost { min-height: 100svh; max-width: 40rem; margin-inline: auto; padding: var(--space-5); display: grid; align-content: center; justify-items: start; gap: 1.25rem; }

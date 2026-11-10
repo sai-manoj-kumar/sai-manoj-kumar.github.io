@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../data/site.js';
+
+const { projects, name } = site;
+---
+<Base title={projects.title} description={projects.description} shareDescription={projects.shareDescription} path="/projects">
+  <header class="topbar">
+    <a class="topbar-name" href="/">{name}</a>
+  </header>
+  <main>
+    <section class="projects" aria-labelledby="projects-h">
+      <h1 id="projects-h">{projects.heading}</h1>
+      <p class="lead">{projects.intro}</p>
+      <ul class="project-list">
+        {projects.items.map((project) => (
+          <li class="project card">
+            <h2><a href={project.url}>{project.name}</a></h2>
+            <p>{project.about}</p>
+            <p class="host">{new URL(project.url).hostname}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </main>
+  <Footer />
+</Base>
