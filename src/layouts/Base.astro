@@ -3,21 +3,29 @@ import '../styles/fonts.generated.css';
 import '../styles/global.css';
 import { site } from '../data/site.js';
 
-const { title = site.title, description = site.description, notFound = false } = Astro.props;
-const canonical = new URL('/', site.url).href;
+const {
+  title = site.title,
+  description = site.description,
+  shareDescription = site.shareDescription,
+  notFound = false,
+  path = '/',
+} = Astro.props;
+const home = new URL('/', site.url).href;
+const canonical = new URL(path, site.url).href;
+const isHome = path === '/';
 const ogImage = new URL('/og.jpg', site.url).href;
 const structuredData = {
   '@context': 'https://schema.org',
   '@graph': [
     {
       '@type': 'Person',
-      '@id': `${canonical}#person`,
+      '@id': `${home}#person`,
       name: site.name,
       jobTitle: 'Senior Software Engineer',
-      url: canonical,
+      url: home,
       sameAs: [site.links.linkedin, site.links.github],
     },
-    { '@type': 'WebSite', '@id': `${canonical}#website`, url: canonical, name: site.name, publisher: { '@id': `${canonical}#person` } },
+    { '@type': 'WebSite', '@id': `${home}#website`, url: home, name: site.name, publisher: { '@id': `${home}#person` } },
   ],
 };
 ---
@@ -36,7 +44,7 @@ const structuredData = {
     <meta property="og:site_name" content={site.name} />
     <meta property="og:locale" content="en_US" />
     <meta property="og:title" content={title} />
-    <meta property="og:description" content={site.shareDescription} />
+    <meta property="og:description" content={shareDescription} />
     {!notFound && <meta property="og:url" content={canonical} />}
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
@@ -44,9 +52,9 @@ const structuredData = {
     <meta property="og:image:alt" content="Sai Manoj, senior software engineer" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={site.shareDescription} />
+    <meta name="twitter:description" content={shareDescription} />
     <meta name="twitter:image" content={ogImage} />
-    {!notFound && <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />}
+    {!notFound && isHome && <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />}
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
@@ -66,7 +74,7 @@ const structuredData = {
     </script>
   </head>
   <body>
-    {!notFound && <a class="skip" href="#work">Skip to experience</a>}
+    {!notFound && isHome && <a class="skip" href="#work">Skip to experience</a>}
     <slot />
   </body>
 </html>

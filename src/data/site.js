@@ -120,5 +120,24 @@ export const site = {
     },
     signRole: 'Senior software engineer',
   },
+  projects: {
+    title: 'Projects | Sai Manoj',
+    description: 'Side projects by Sai Manoj: Cloud Cert Mastery, Azure certification practice exams, and Steadion, an iPhone blood glucose tracker.',
+    shareDescription: 'Side projects by Sai Manoj: Azure certification practice exams and an iPhone blood glucose tracker.',
+    heading: 'Projects',
+    intro: 'Side projects I build outside work.',
+    items: [
+      {
+        name: 'Cloud Cert Mastery',
+        url: 'https://cloudcertmastery.com',
+        about: 'Study guides and timed practice exams for the AZ-900, AZ-104 and AI-200 Azure certifications, with instant feedback and detailed explanations.',
+      },
+      {
+        name: 'Steadion',
+        url: 'https://steadion.fit',
+        about: 'An iPhone tracker for people with diabetes or prediabetes: blood glucose, time in range and HbA1c in one place. No account, no tracking.',
+      },
+    ],
+  },
   footer: { year: 2026 },
 };
