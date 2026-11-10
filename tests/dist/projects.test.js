@@ -10,8 +10,8 @@ const sitemap = readFileSync(new URL('../../dist/sitemap.xml', import.meta.url),
 
 test('/projects is its own page: title, canonical and share URL point at /projects', () => {
   assert.equal(doc.title, 'Projects | Sai Manoj');
-  assert.equal(doc.querySelector('link[rel="canonical"]').getAttribute('href'), 'https://saimanoj.com/projects');
-  assert.equal(doc.querySelector('meta[property="og:url"]').getAttribute('content'), 'https://saimanoj.com/projects');
+  assert.equal(doc.querySelector('link[rel="canonical"]').getAttribute('href'), 'https://saimanoj.com/projects/');
+  assert.equal(doc.querySelector('meta[property="og:url"]').getAttribute('content'), 'https://saimanoj.com/projects/');
   assert.ok(doc.querySelector('meta[name="description"]').getAttribute('content').length > 20);
   assert.equal(doc.querySelector('meta[name="robots"]'), null, 'it is meant to be indexed');
   assert.equal(doc.documentElement.getAttribute('lang'), 'en');
@@ -48,13 +48,13 @@ test('it tracks nothing and carries none of the home page', () => {
 
 test('the sitemap lists the home page and /projects', () => {
   const locs = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
-  assert.deepEqual(locs, ['https://saimanoj.com/', 'https://saimanoj.com/projects']);
+  assert.deepEqual(locs, ['https://saimanoj.com/', 'https://saimanoj.com/projects/']);
 });
 
 test('the home page ends with one small link to /projects, and its canonical is unchanged', () => {
-  const link = home.querySelector('footer a[href="/projects"]');
+  const link = home.querySelector('footer a[href="/projects/"]');
   assert.ok(link, 'a /projects link in the footer');
   assert.equal(link.textContent.trim(), 'Side projects');
-  assert.equal(home.querySelectorAll('a[href="/projects"]').length, 1, 'only the footer links there');
+  assert.equal(home.querySelectorAll('a[href="/projects/"]').length, 1, 'only the footer links there');
   assert.equal(home.querySelector('link[rel="canonical"]').getAttribute('href'), 'https://saimanoj.com/');
 });
