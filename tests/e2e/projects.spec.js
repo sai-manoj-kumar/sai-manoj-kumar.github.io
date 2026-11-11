@@ -27,13 +27,13 @@ test('each project links to its own site, and the name takes you back home', asy
 test('the home page ends with a small link that opens /projects, and it is a usable tap target', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 800 });
   await page.goto('/');
-  const link = page.locator('footer a[href="/projects"]');
+  const link = page.locator('footer a[href="/projects/"]');
   await link.scrollIntoViewIfNeeded();
   const box = await link.boundingBox();
   expect(box.height, 'at least a 24px target (WCAG 2.2)').toBeGreaterThanOrEqual(24);
   const size = await link.evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
   expect(size, 'smaller than the body text').toBeLessThan(14);
   await link.click();
-  await expect(page).toHaveURL('/projects');
+  await expect(page).toHaveURL('/projects/');
   await expect(page.getByRole('heading', { level: 1, name: 'Projects' })).toBeVisible();
 });

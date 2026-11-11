@@ -52,7 +52,7 @@ test('the footer has the copyright, the two profile links and the small link to 
   const footer = doc.querySelector('footer');
   assert.match(footer.textContent, /© 2026 Sai Manoj/);
   assert.doesNotMatch(footer.textContent, /Photo|Wikimedia|CC BY/);
-  assert.deepEqual([...footer.querySelectorAll('a')].map((a) => a.getAttribute('href')), [site.links.linkedin, site.links.github, '/projects']);
+  assert.deepEqual([...footer.querySelectorAll('a')].map((a) => a.getAttribute('href')), [site.links.linkedin, site.links.github, '/projects/']);
 });
 
 test('page order: hero, experience, rate limiter, tech stack, about', () => {
