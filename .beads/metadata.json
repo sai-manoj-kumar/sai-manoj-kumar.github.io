@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "saimanoj_site",
+  "project_id": "270ccbe6-f04e-43ba-a8aa-156a1d62fa1b"
+}
