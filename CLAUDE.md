@@ -2,6 +2,10 @@
 
 This file provides instructions and context for AI coding agents working on this project.
 
+## Beads storage (server mode)
+
+Issue data lives on a private Dolt SQL server, not in this repository and not on this machine, and the server backs itself up off-site. Nothing needs pushing or pulling: `bd dolt push` and `bd dolt pull` are not needed, and `refs/dolt/data` is not used. `bd` finds the server through `.beads/metadata.json` and `.beads/dolt-server.port`, and the password comes from `~/.config/beads/credentials` or `BEADS_DOLT_PASSWORD`. Do not edit, commit or print any of these. If `bd` cannot reach the server, report it; do not run `bd init`, `bd bootstrap` or `bd dolt start`, which would create a local database that diverges from the real one. If the generated Beads block below disagrees with this section, this section wins.
+
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:1105d646 -->
 ## Beads Issue Tracker
 
@@ -22,7 +26,7 @@ bd close <id>         # Complete work
 - Run `bd prime` for detailed command reference and session close protocol
 - Use `bd remember` for persistent knowledge — do NOT use MEMORY.md files
 
-**Architecture in one line:** issues live in a local Dolt DB; sync uses `refs/dolt/data` on your git remote; `.beads/issues.jsonl` is a passive export. See https://github.com/gastownhall/beads/blob/main/docs/core-concepts/sync-concepts.md for details and anti-patterns.
+**Architecture in one line:** issues live in a Dolt database on a private server that backs itself up off-site; there is no `refs/dolt/data` sync (see "Beads storage (server mode)" above, which overrides this block); `.beads/issues.jsonl` is a passive export.
 
 ## Agent Context Profiles
 
