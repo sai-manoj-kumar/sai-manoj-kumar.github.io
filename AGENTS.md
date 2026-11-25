@@ -39,7 +39,7 @@ cp -rf source dest          # NOT: cp -r source dest
 
 ## Beads storage (server mode)
 
-Issue data lives on a private Dolt SQL server, not in this repository and not on this machine, and the server backs itself up off-site. Nothing needs pushing or pulling: `bd dolt push` and `bd dolt pull` are not needed, and `refs/dolt/data` is not used. `bd` finds the server through `.beads/metadata.json` and `.beads/dolt-server.port`, and the password comes from `~/.config/beads/credentials` or `BEADS_DOLT_PASSWORD`. Do not edit, commit or print any of these. If `bd` cannot reach the server, report it; do not run `bd init`, `bd bootstrap` or `bd dolt start`, which would create a local database that diverges from the real one. If the generated Beads block below disagrees with this section, this section wins.
+Issue data lives on a private Dolt SQL server, not in this repository and not on this machine, and the server backs itself up off-site. Everyone connects to that one server. Nothing needs pushing or pulling: `bd dolt push` and `bd dolt pull` are not needed, and `refs/dolt/data` is not used. `bd` finds the server through `.beads/metadata.json`, which is committed and shared: it names the host, port, user and database, never a password. Leave those fields alone unless the server moves. The password comes from `~/.config/beads/credentials` or `BEADS_DOLT_PASSWORD`; never commit or print it. If `bd` cannot reach the server, report it; do not run `bd init`, `bd bootstrap` or `bd dolt start`, which would create a local database that diverges from the real one. If the generated Beads block below disagrees with this section, this section wins.
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:46cd31e7 -->
 ## Beads Issue Tracker
