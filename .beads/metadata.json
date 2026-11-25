@@ -5,6 +5,5 @@
   "dolt_server_host": "beads-dolt",
   "dolt_server_user": "beads",
   "dolt_database": "saimanoj_site",
-  "project_id": "270ccbe6-f04e-43ba-a8aa-156a1d62fa1b",
-  "dolt_server_port": 3307
+  "project_id": "270ccbe6-f04e-43ba-a8aa-156a1d62fa1b"
 }

@@ -52,7 +52,8 @@ ephemeral.sqlite3-shm
 dolt-server.pid
 dolt-server.log
 dolt-server.lock
-dolt-server.port
+# dolt-server.port is deliberately NOT ignored: it is committed so a fresh clone reaches the shared
+# server (the dolt_server_port field in metadata.json is deprecated by bd).
 dolt-server.activity
 dolt-server-config.yaml
 
@@ -80,3 +81,7 @@ bd.db
 # They would override fork protection in .git/info/exclude.
 # Config files (metadata.json, config.yaml) are tracked by git by default
 # since no pattern above ignores them.
+
+# Issues are not exported: the server keeps the off-site copy and the daily snapshots.
+# A stray "bd export" must not be committed.
+issues.jsonl
